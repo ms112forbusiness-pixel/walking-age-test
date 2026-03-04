@@ -106,7 +106,8 @@ body{font-family:'Noto Sans JP',sans-serif;overflow:hidden;background:#f1f5f9;ma
   <div class="flex items-center gap-2">
     <button id="btn-shoe-mode" class="px-3 py-1.5 bg-white border border-slate-200 text-slate-600 rounded-lg font-bold text-xs hover:bg-slate-50 transition-all flex items-center gap-1.5 shadow-sm" title="シューズレコメンドを表示/非表示">
       <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 14c0-1.1.9-2 2-2h4l1.5-3h5l1.5 3H20a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-4z"/><path d="M6.5 12V8a2.5 2.5 0 0 1 5 0v4"/></svg>
-      <span class="hidden sm:inline">シューズ推薦</span>
+      <span class="hidden sm:inline">シューズレコメンド</span>
+      <span id="shoe-mode-badge" class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-black bg-slate-100 text-slate-500 leading-none">OFF</span>
     </button>
     <button id="btn-print" class="px-3 py-1.5 bg-white border border-slate-200 text-slate-600 rounded-lg font-bold text-xs hover:bg-slate-50 transition-all flex items-center gap-1.5 shadow-sm">
       <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect width="12" height="8" x="6" y="14"/></svg>
@@ -1983,20 +1984,24 @@ function init() {
   // ---- シューズモード トグル ----
   function setShoeMode(active) {
     const section = document.getElementById('shoe-url-section');
-    const page3 = document.getElementById('page3-shoes');
-    const btn = document.getElementById('btn-shoe-mode');
+    const page3   = document.getElementById('page3-shoes');
+    const btn     = document.getElementById('btn-shoe-mode');
+    const badge   = document.getElementById('shoe-mode-badge');
     if (active) {
       section.classList.remove('hidden');
       page3.classList.remove('hidden');
       btn.classList.add('bg-blue-600', 'text-white', '!border-blue-600');
       btn.classList.remove('text-slate-600');
-      // 左パネルを靴セクションまでスクロール
+      badge.textContent = 'ON';
+      badge.className = 'inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-black bg-white/30 text-white leading-none';
       section.scrollIntoView({ behavior: 'smooth', block: 'start' });
     } else {
       section.classList.add('hidden');
       page3.classList.add('hidden');
       btn.classList.remove('bg-blue-600', 'text-white', '!border-blue-600');
       btn.classList.add('text-slate-600');
+      badge.textContent = 'OFF';
+      badge.className = 'inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-black bg-slate-100 text-slate-500 leading-none';
     }
     window._shoeModeActive = active;
   }
