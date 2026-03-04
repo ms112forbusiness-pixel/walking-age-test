@@ -1167,49 +1167,7 @@ function buildWalkingRequirements() {
   return reqs;
 }
 
-// OGメタデータ + JSON-LD から靴情報を抽出
-function extractShoeData(html, url) {
-  const parser = new DOMParser();
-  const doc = parser.parseFromString(html, 'text/html');
-
-  const getMeta = (selector) => {
-    const el = doc.querySelector(selector);
-    return el ? (el.getAttribute('content') || el.getAttribute('href') || el.textContent || '').trim() : '';
-  };
-
-  // JSON-LD (schema.org Product) を優先
-  let name = '', description = '', image = '', price = '';
-  doc.querySelectorAll('script[type="application/ld+json"]').forEach(s => {
-    try {
-      const data = JSON.parse(s.textContent);
-      const items = Array.isArray(data) ? data : [data];
-      items.forEach(item => {
-        const type = item['@type'] || '';
-        if (/product/i.test(type)) {
-          if (!name) name = item.name || '';
-          if (!description) description = item.description || '';
-          if (!image) image = Array.isArray(item.image) ? item.image[0] : (item.image || '');
-          if (!price) {
-            const offer = Array.isArray(item.offers) ? item.offers[0] : item.offers;
-            if (offer) price = offer.price ? `¥${offer.price}` : '';
-          }
-        }
-      });
-    } catch(e) {}
-  });
-
-  // OG タグへのフォールバック
-  if (!name) name = getMeta('meta[property="og:title"]') || getMeta('title') || '';
-  if (!description) description = getMeta('meta[property="og:description"]') || getMeta('meta[name="description"]') || '';
-  if (!image) image = getMeta('meta[property="og:image"]') || '';
-
-  // ドメインをフォールバック名に
-  if (!name) {
-    try { name = new URL(url).hostname; } catch(e) { name = url; }
-  }
-
-  return { name, description, image, price, url };
-}
+// extractShoeData は shoe-info Netlify Function に移行（サーバーサイド解析）
 
 // 靴スコア計算
 function scoreShoe(shoe, requirements) {
@@ -1250,47 +1208,49 @@ function renderPage3() {
 
   const cardsHtml = scored.map((shoe, i) => {
     const rank = i + 1;
-    const pct = Math.round((shoe.score / maxScore) * 100);
+    const pct = maxScore > 0 ? Math.round((shoe.score / maxScore) * 100) : 0;
     const rankColor = rank === 1 ? 'bg-amber-400 text-white' : rank === 2 ? 'bg-slate-400 text-white' : rank === 3 ? 'bg-orange-400 text-white' : 'bg-slate-200 text-slate-600';
+    const borderCls = rank === 1 ? 'border-amber-300 bg-amber-50' : 'border-slate-200 bg-white';
     const matchHtml = shoe.matched.length
-      ? shoe.matched.map(m => `<span class="inline-block px-1.5 py-0.5 bg-green-100 text-green-700 text-[8px] font-bold rounded">${m}</span>`).join(' ')
-      : '<span class="text-[9px] text-slate-400">マッチ条件なし</span>';
-    // imageDataUrl（base64）を優先、なければ直リンク
-    const imgSrc = shoe.imageDataUrl || shoe.image;
+      ? shoe.matched.map(m => `<span class="inline-block px-1.5 py-0.5 bg-green-100 text-green-700 text-[7.5px] font-bold rounded-full">${m}</span>`).join(' ')
+      : '<span class="text-[8px] text-slate-400">汎用モデル</span>';
+    // shoe.image は shoe-info Function からのbase64データURL
+    const imgSrc = shoe.image || shoe.imageDataUrl || '';
     const imgHtml = imgSrc
-      ? `<img src="${imgSrc}" alt="" crossorigin="anonymous" class="w-16 h-16 object-contain rounded-lg border border-slate-100 shrink-0" onerror="this.style.display='none'">`
-      : `<div class="w-16 h-16 bg-slate-100 rounded-lg border border-slate-200 shrink-0 flex items-center justify-center text-slate-300"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="m3 9 4-4 4 4 4-4 4 4"/><path d="m3 15 4 4 4-4 4 4 4-4"/></svg></div>`;
-    const descHtml = shoe.description
-      ? `<p class="text-[8.5px] text-slate-500 leading-relaxed line-clamp-2 mt-0.5">${shoe.description.slice(0, 120)}${shoe.description.length > 120 ? '…' : ''}</p>`
-      : '';
-    const priceHtml = shoe.price ? `<span class="text-[9px] font-bold text-slate-600">${shoe.price}</span>` : '';
+      ? `<img src="${imgSrc}" alt="${shoe.name}" class="w-20 h-20 object-contain rounded-lg border border-slate-100 bg-white shrink-0" onerror="this.outerHTML='<div class=\\'w-20 h-20 bg-slate-100 rounded-lg border border-slate-200 shrink-0 flex items-center justify-center text-slate-300\\'><svg xmlns=\\'http://www.w3.org/2000/svg\\' width=\\'28\\' height=\\'28\\' viewBox=\\'0 0 24 24\\' fill=\\'none\\' stroke=\\'currentColor\\' stroke-width=\\'1.5\\' stroke-linecap=\\'round\\' stroke-linejoin=\\'round\\'><rect width=\\'18\\' height=\\'18\\' x=\\'3\\' y=\\'3\\' rx=\\'2\\'/></svg></div>'">`
+      : `<div class="w-20 h-20 bg-slate-100 rounded-lg border border-slate-200 shrink-0 flex items-center justify-center text-slate-300"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="m3 9 4-4 4 4 4-4 4 4"/><path d="m3 15 4 4 4-4 4 4 4-4"/></svg></div>`;
+    const descText = (shoe.description || '').replace(/<[^>]+>/g, '').slice(0, 100);
+    const descHtml = descText ? `<p class="text-[8px] text-slate-500 leading-snug mt-0.5 line-clamp-2">${descText}${descText.length >= 100 ? '…' : ''}</p>` : '';
+    const priceHtml = shoe.price ? `<span class="text-[10px] font-black text-rose-600 shrink-0">${shoe.price}</span>` : '';
+    const linkHtml = `<a href="${shoe.url}" target="_blank" rel="noopener noreferrer" class="text-[8px] text-blue-500 hover:underline truncate block mt-0.5">${shoe.url.replace(/^https?:\/\//, '').slice(0, 40)}…</a>`;
 
-    return `<div class="flex gap-3 p-2.5 rounded-xl border ${rank === 1 ? 'border-amber-200 bg-amber-50' : 'border-slate-200 bg-white'} items-start">
-      <div class="flex flex-col items-center gap-1.5 shrink-0">
-        <span class="w-6 h-6 rounded-full ${rankColor} flex items-center justify-center text-[10px] font-black">${rank}</span>
+    return `<div class="flex gap-2.5 p-2.5 rounded-xl border ${borderCls} items-start">
+      <div class="flex flex-col items-center gap-1 shrink-0">
+        <span class="w-5 h-5 rounded-full ${rankColor} flex items-center justify-center text-[9px] font-black leading-none">${rank}</span>
         ${imgHtml}
       </div>
       <div class="flex-1 min-w-0">
-        <div class="flex items-start justify-between gap-2">
-          <p class="text-[11px] font-bold text-slate-800 leading-tight">${shoe.name}</p>
+        <div class="flex items-start justify-between gap-1">
+          <p class="text-[10px] font-black text-slate-800 leading-tight line-clamp-2 flex-1">${shoe.name || '商品名不明'}</p>
           ${priceHtml}
         </div>
         ${descHtml}
-        <div class="mt-1 flex flex-wrap gap-1">${matchHtml}</div>
-        <div class="mt-1.5 flex items-center gap-2">
-          <div class="flex-1 h-1.5 bg-slate-100 rounded-full overflow-hidden"><div class="h-full bg-blue-500 rounded-full" style="width:${pct}%"></div></div>
-          <span class="text-[9px] text-slate-400 shrink-0">適合度 ${pct}%</span>
+        ${linkHtml}
+        <div class="mt-1 flex flex-wrap gap-0.5">${matchHtml}</div>
+        <div class="mt-1 flex items-center gap-1.5">
+          <div class="flex-1 h-1 bg-slate-100 rounded-full overflow-hidden"><div class="h-full rounded-full ${rank === 1 ? 'bg-amber-400' : 'bg-blue-400'}" style="width:${pct}%"></div></div>
+          <span class="text-[8px] text-slate-400 shrink-0">適合度 ${pct}%</span>
         </div>
       </div>
     </div>`;
   }).join('');
 
   el.innerHTML = `
-    <div class="mb-3 shrink-0">
-      <p class="text-[9px] font-bold text-slate-500 mb-1.5">歩行プロファイルから導出した必要特性：</p>
-      <div class="flex flex-wrap gap-1">${profileHtml}</div>
+    <div class="mb-2.5 pb-2 border-b border-slate-100 shrink-0">
+      <p class="text-[9px] font-bold text-slate-500 mb-1">歩行プロファイルから導出した必要特性：</p>
+      <div class="flex flex-wrap gap-1">${profileHtml || '<span class="text-[9px] text-slate-400">データなし（CSVを読み込んでください）</span>'}</div>
     </div>
-    <div class="grid grid-cols-2 gap-2 overflow-hidden" style="max-height:calc(100% - 60px)">${cardsHtml}</div>
+    <div class="grid grid-cols-2 gap-2">${cardsHtml}</div>
   `;
 }
 
@@ -1828,56 +1788,47 @@ function init() {
     if (!urls.length) { showNotif('有効なURLを入力してください', true); return; }
 
     const statusEl = document.getElementById('shoe-fetch-status');
-    statusEl.textContent = `取得中 0/${urls.length}…`;
     statusEl.classList.remove('hidden');
-
-    const isNetlify = location.hostname !== 'localhost' && location.hostname !== '' && location.protocol === 'https:';
-    const proxyBase = '/.netlify/functions/proxy';
-
-    // ページ3を確実に表示
     setShoeMode(true);
+
+    // shoe-info Netlify Function が使えるか確認
+    // ローカル(file://)では Functions が動かないため案内を表示
+    const isNetlify = location.protocol === 'https:' && location.hostname !== '';
+    if (!isNetlify) {
+      statusEl.textContent = '⚠ 商品情報の取得はNetlify環境でのみ動作します（netlify dev でローカルテスト可）';
+      showNotif('Netlify環境でデプロイ後にご利用ください', true);
+      return;
+    }
 
     const results = [];
     for (let i = 0; i < urls.length; i++) {
       const url = urls[i].trim();
       let hostname = url;
       try { hostname = new URL(url).hostname; } catch(e) {}
-      statusEl.textContent = `取得中 ${i+1}/${urls.length}… ${hostname}`;
-      try {
-        let html = '';
-        if (isNetlify) {
-          const res = await fetch(`${proxyBase}?url=${encodeURIComponent(url)}`, { signal: AbortSignal.timeout(12000) });
-          html = await res.text();
-        } else {
-          try {
-            const res = await fetch(url, { signal: AbortSignal.timeout(12000), mode: 'cors' });
-            html = await res.text();
-          } catch(e) { html = ''; }
-        }
-        const shoe = extractShoeData(html, url);
+      statusEl.textContent = `取得中 ${i + 1}/${urls.length}… ${hostname}`;
 
-        // 画像をプロキシ経由でbase64化（PDF描画のためCORS回避）
-        if (shoe.image && isNetlify) {
-          try {
-            const imgRes = await fetch(`${proxyBase}?url=${encodeURIComponent(shoe.image)}&type=image`, { signal: AbortSignal.timeout(10000) });
-            const imgData = await imgRes.text();
-            if (imgData.startsWith('data:image/')) shoe.imageDataUrl = imgData;
-          } catch(e) {}
-        }
-        results.push(shoe);
+      try {
+        const res = await fetch(
+          `/.netlify/functions/shoe-info?url=${encodeURIComponent(url)}`,
+          { signal: AbortSignal.timeout(25000) }
+        );
+        const data = await res.json();
+        // フォールバック: 商品名がなければドメインを表示
+        if (!data.name) data.name = hostname;
+        results.push(data);
       } catch(err) {
-        results.push({ name: '', description: '', image: '', price: '', url });
+        results.push({ name: hostname, description: '', image: '', price: '', url, error: err.message });
       }
     }
 
     window._shoeData = results;
     renderPage3();
-    statusEl.textContent = `✓ ${results.length} 件の靴情報を取得しました`;
+    statusEl.textContent = `✓ ${results.length} 件の商品情報を取得しました`;
     showNotif(`靴情報 ${results.length} 件を取得しました`);
 
     // Page 3 へスクロール
     const page3 = document.getElementById('page3-shoes');
-    if (page3) page3.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    if (page3) setTimeout(() => page3.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
   });
 
   // Demo data
