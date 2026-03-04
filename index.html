@@ -1222,9 +1222,17 @@ function renderPage3() {
     const descText = (shoe.description || '').replace(/<[^>]+>/g, '').slice(0, 100);
     const descHtml = descText ? `<p class="text-[8px] text-slate-500 leading-snug mt-0.5 line-clamp-2">${descText}${descText.length >= 100 ? '…' : ''}</p>` : '';
     const priceHtml = shoe.price ? `<span class="text-[10px] font-black text-rose-600 shrink-0">${shoe.price}</span>` : '';
-    const linkHtml = `<a href="${shoe.url}" target="_blank" rel="noopener noreferrer" class="text-[8px] text-blue-500 hover:underline truncate block mt-0.5">${shoe.url.replace(/^https?:\/\//, '').slice(0, 40)}…</a>`;
+    const domainText = (() => { try { return new URL(shoe.url).hostname; } catch(e) { return shoe.url.slice(0, 30); } })();
 
-    return `<div class="flex gap-2.5 p-2.5 rounded-xl border ${borderCls} items-start">
+    // QRコード（base64優先、フォールバックで直リンク）
+    const qrSrc = shoe.qrDataUrl || shoe.qrApiUrl || `https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=${encodeURIComponent(shoe.url)}&format=png&margin=1`;
+    const qrHtml = `
+      <div class="flex flex-col items-center gap-0.5 shrink-0">
+        <img src="${qrSrc}" alt="QR" class="w-[52px] h-[52px] rounded border border-slate-200 bg-white">
+        <span class="text-[6.5px] text-slate-400 text-center leading-tight max-w-[52px] truncate">${domainText}</span>
+      </div>`;
+
+    return `<div class="flex gap-2 p-2.5 rounded-xl border ${borderCls} items-start">
       <div class="flex flex-col items-center gap-1 shrink-0">
         <span class="w-5 h-5 rounded-full ${rankColor} flex items-center justify-center text-[9px] font-black leading-none">${rank}</span>
         ${imgHtml}
@@ -1235,13 +1243,13 @@ function renderPage3() {
           ${priceHtml}
         </div>
         ${descHtml}
-        ${linkHtml}
         <div class="mt-1 flex flex-wrap gap-0.5">${matchHtml}</div>
         <div class="mt-1 flex items-center gap-1.5">
           <div class="flex-1 h-1 bg-slate-100 rounded-full overflow-hidden"><div class="h-full rounded-full ${rank === 1 ? 'bg-amber-400' : 'bg-blue-400'}" style="width:${pct}%"></div></div>
           <span class="text-[8px] text-slate-400 shrink-0">適合度 ${pct}%</span>
         </div>
       </div>
+      ${qrHtml}
     </div>`;
   }).join('');
 
@@ -1815,6 +1823,21 @@ function init() {
         const data = await res.json();
         // フォールバック: 商品名がなければドメインを表示
         if (!data.name) data.name = hostname;
+
+        // QRコードをプロキシ経由でbase64化（PDF対応）
+        const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=${encodeURIComponent(url)}&format=png&margin=1`;
+        try {
+          const qrRes = await fetch(
+            `/.netlify/functions/proxy?url=${encodeURIComponent(qrApiUrl)}&type=image`,
+            { signal: AbortSignal.timeout(8000) }
+          );
+          const qrData = await qrRes.text();
+          if (qrData.startsWith('data:image/')) data.qrDataUrl = qrData;
+        } catch(e) {
+          // QR取得失敗時は直リンクURLを保持
+          data.qrApiUrl = qrApiUrl;
+        }
+
         results.push(data);
       } catch(err) {
         results.push({ name: hostname, description: '', image: '', price: '', url, error: err.message });
