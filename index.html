@@ -104,6 +104,10 @@ body{font-family:'Noto Sans JP',sans-serif;overflow:hidden;background:#f1f5f9;ma
     歩行年齢テスト<span class="text-slate-400 text-xs font-normal ml-2 hidden sm:inline">診断システム v6</span>
   </div>
   <div class="flex items-center gap-2">
+    <button id="btn-shoe-mode" class="px-3 py-1.5 bg-white border border-slate-200 text-slate-600 rounded-lg font-bold text-xs hover:bg-slate-50 transition-all flex items-center gap-1.5 shadow-sm" title="シューズレコメンドを表示/非表示">
+      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 14c0-1.1.9-2 2-2h4l1.5-3h5l1.5 3H20a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-4z"/><path d="M6.5 12V8a2.5 2.5 0 0 1 5 0v4"/></svg>
+      <span class="hidden sm:inline">シューズ推薦</span>
+    </button>
     <button id="btn-print" class="px-3 py-1.5 bg-white border border-slate-200 text-slate-600 rounded-lg font-bold text-xs hover:bg-slate-50 transition-all flex items-center gap-1.5 shadow-sm">
       <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect width="12" height="8" x="6" y="14"/></svg>
       <span class="hidden sm:inline">印刷</span>
@@ -246,8 +250,8 @@ body{font-family:'Noto Sans JP',sans-serif;overflow:hidden;background:#f1f5f9;ma
         </div>
       </section>
 
-      <!-- ★ 靴URL入力セクション -->
-      <section class="pb-6 border-t border-slate-100 pt-4">
+      <!-- ★ 靴URL入力セクション (初期非表示) -->
+      <section id="shoe-url-section" class="pb-6 border-t border-slate-100 pt-4 hidden">
         <h3 class="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2 mb-3">
           <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><polyline points="13 2 13 9 20 9"/></svg>
           おすすめ靴 URL
@@ -446,8 +450,8 @@ body{font-family:'Noto Sans JP',sans-serif;overflow:hidden;background:#f1f5f9;ma
             </div>
           </div>
 
-          <!-- ★ Page 3: 靴レコメンド -->
-          <div class="pdf-page" data-page="2" id="page3-shoes">
+          <!-- ★ Page 3: 靴レコメンド (初期非表示) -->
+          <div class="pdf-page hidden" data-page="2" id="page3-shoes">
             <div class="flex flex-col h-full p-9 relative">
 
               <div class="border-b-2 border-slate-800 pb-3 mb-5 shrink-0">
@@ -1251,8 +1255,10 @@ function renderPage3() {
     const matchHtml = shoe.matched.length
       ? shoe.matched.map(m => `<span class="inline-block px-1.5 py-0.5 bg-green-100 text-green-700 text-[8px] font-bold rounded">${m}</span>`).join(' ')
       : '<span class="text-[9px] text-slate-400">マッチ条件なし</span>';
-    const imgHtml = shoe.image
-      ? `<img src="${shoe.image}" alt="" class="w-16 h-16 object-contain rounded-lg border border-slate-100 shrink-0" onerror="this.style.display='none'">`
+    // imageDataUrl（base64）を優先、なければ直リンク
+    const imgSrc = shoe.imageDataUrl || shoe.image;
+    const imgHtml = imgSrc
+      ? `<img src="${imgSrc}" alt="" crossorigin="anonymous" class="w-16 h-16 object-contain rounded-lg border border-slate-100 shrink-0" onerror="this.style.display='none'">`
       : `<div class="w-16 h-16 bg-slate-100 rounded-lg border border-slate-200 shrink-0 flex items-center justify-center text-slate-300"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="m3 9 4-4 4 4 4-4 4 4"/><path d="m3 15 4 4 4-4 4 4 4-4"/></svg></div>`;
     const descHtml = shoe.description
       ? `<p class="text-[8.5px] text-slate-500 leading-relaxed line-clamp-2 mt-0.5">${shoe.description.slice(0, 120)}${shoe.description.length > 120 ? '…' : ''}</p>`
@@ -1783,6 +1789,31 @@ function init() {
       </div>`).join('');
   }
 
+  // ---- シューズモード トグル ----
+  function setShoeMode(active) {
+    const section = document.getElementById('shoe-url-section');
+    const page3 = document.getElementById('page3-shoes');
+    const btn = document.getElementById('btn-shoe-mode');
+    if (active) {
+      section.classList.remove('hidden');
+      page3.classList.remove('hidden');
+      btn.classList.add('bg-blue-600', 'text-white', '!border-blue-600');
+      btn.classList.remove('text-slate-600');
+      // 左パネルを靴セクションまでスクロール
+      section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    } else {
+      section.classList.add('hidden');
+      page3.classList.add('hidden');
+      btn.classList.remove('bg-blue-600', 'text-white', '!border-blue-600');
+      btn.classList.add('text-slate-600');
+    }
+    window._shoeModeActive = active;
+  }
+
+  document.getElementById('btn-shoe-mode').addEventListener('click', () => {
+    setShoeMode(!window._shoeModeActive);
+  });
+
   window._shoeUrls = [''];
   renderShoeUrlList();
 
@@ -1803,26 +1834,36 @@ function init() {
     const isNetlify = location.hostname !== 'localhost' && location.hostname !== '' && location.protocol === 'https:';
     const proxyBase = '/.netlify/functions/proxy';
 
+    // ページ3を確実に表示
+    setShoeMode(true);
+
     const results = [];
     for (let i = 0; i < urls.length; i++) {
       const url = urls[i].trim();
-      statusEl.textContent = `取得中 ${i+1}/${urls.length}… ${new URL(url).hostname}`;
+      let hostname = url;
+      try { hostname = new URL(url).hostname; } catch(e) {}
+      statusEl.textContent = `取得中 ${i+1}/${urls.length}… ${hostname}`;
       try {
-        let html;
+        let html = '';
         if (isNetlify) {
-          const proxyUrl = `${proxyBase}?url=${encodeURIComponent(url)}`;
-          const res = await fetch(proxyUrl, { signal: AbortSignal.timeout(12000) });
+          const res = await fetch(`${proxyBase}?url=${encodeURIComponent(url)}`, { signal: AbortSignal.timeout(12000) });
           html = await res.text();
         } else {
-          // ローカル環境: 直接フェッチ試行（CORSで失敗する場合は URL のみ保持）
           try {
             const res = await fetch(url, { signal: AbortSignal.timeout(12000), mode: 'cors' });
             html = await res.text();
-          } catch(e) {
-            html = '';
-          }
+          } catch(e) { html = ''; }
         }
         const shoe = extractShoeData(html, url);
+
+        // 画像をプロキシ経由でbase64化（PDF描画のためCORS回避）
+        if (shoe.image && isNetlify) {
+          try {
+            const imgRes = await fetch(`${proxyBase}?url=${encodeURIComponent(shoe.image)}&type=image`, { signal: AbortSignal.timeout(10000) });
+            const imgData = await imgRes.text();
+            if (imgData.startsWith('data:image/')) shoe.imageDataUrl = imgData;
+          } catch(e) {}
+        }
         results.push(shoe);
       } catch(err) {
         results.push({ name: '', description: '', image: '', price: '', url });
@@ -1831,8 +1872,12 @@ function init() {
 
     window._shoeData = results;
     renderPage3();
-    statusEl.textContent = `✓ ${results.length} 件取得完了`;
+    statusEl.textContent = `✓ ${results.length} 件の靴情報を取得しました`;
     showNotif(`靴情報 ${results.length} 件を取得しました`);
+
+    // Page 3 へスクロール
+    const page3 = document.getElementById('page3-shoes');
+    if (page3) page3.scrollIntoView({ behavior: 'smooth', block: 'start' });
   });
 
   // Demo data
