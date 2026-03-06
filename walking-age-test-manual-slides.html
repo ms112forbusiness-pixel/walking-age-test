@@ -1,0 +1,2161 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta charset="UTF-8">
+  <title>歩行年齢テスト診断システム — 使用マニュアル v6</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Inter:wght@400;600;700;900&display=swap"
+    rel="stylesheet">
+  <style>
+    /*
+  ═══════════════════════════════════════════
+  DESIGN SYSTEM  v3  —  Zero-base redesign
+  A4 Landscape 1123 × 794 px
+  White bg / Single-hue blue / McKinsey-tone
+  ═══════════════════════════════════════════
+*/
+
+    /* ── Color tokens ───────────────────────── */
+    :root {
+      /* Blue scale (single hue, 10 stops) */
+      --blue-950: #06142B;
+      --blue-900: #0B2045;
+      --blue-800: #0E3170;
+      --blue-700: #0C4CB3;
+      --blue-600: #1760D8;
+      --blue-500: #2A78F4;
+      --blue-400: #5090F8;
+      --blue-300: #82B8FA;
+      --blue-200: #AECFF8;
+      --blue-100: #DBEEFF;
+      --blue-050: #EFF6FF;
+
+      /* Text */
+      --ink-900: #0C1928;
+      /* headlines */
+      --ink-700: #2C3A4A;
+      /* body */
+      --ink-500: #5E7080;
+      /* muted */
+      --ink-300: #98A9BA;
+      /* faint / labels */
+
+      /* Surface / border */
+      --surface: #FFFFFF;
+      --off: #F5F8FC;
+      --light: #EBF0F7;
+      --border: #D4E0EE;
+
+      /* Chapter accent (kept minimal) */
+      --c-setup: #0878B4;
+      /* teal-blue  — preparation */
+      --c-meas: #0A7848;
+      /* green      — measurement */
+      --c-sys: #0C4CB3;
+      /* = blue-700 — system */
+      --c-rep: #6A22A4;
+      /* purple     — report */
+      --c-opt: #B45500;
+      /* amber      — optional */
+    }
+
+    /* ── Reset ──────────────────────────────── */
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    /* ── Body (canvas outside slides) ───────── */
+    body {
+      font-family: 'Noto Sans JP', 'Inter', sans-serif;
+      background: #B8C8DC;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 64px 24px 48px;
+      gap: 28px;
+      min-height: 100vh;
+    }
+
+    /* ─────────────────────────────────────────
+   NAVIGATION BAR
+───────────────────────────────────────── */
+    #nav {
+      position: fixed;
+      inset: 0 0 auto 0;
+      z-index: 999;
+      height: 52px;
+      background: var(--blue-950);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      font-family: 'Inter', sans-serif;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .nav-brand {
+      font-size: 11px;
+      font-weight: 500;
+      color: rgba(255, 255, 255, 0.35);
+      letter-spacing: 0.4px;
+      margin: 0 8px;
+    }
+
+    #nav button {
+      padding: 5px 16px;
+      border-radius: 4px;
+      border: none;
+      cursor: pointer;
+      font-family: 'Inter', sans-serif;
+      font-size: 12px;
+      font-weight: 600;
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+      transition: background .15s;
+    }
+
+    #nav button:hover {
+      background: rgba(255, 255, 255, 0.18);
+    }
+
+    #btn-pdf {
+      background: var(--blue-700) !important;
+    }
+
+    #btn-pdf:hover {
+      background: var(--blue-800) !important;
+    }
+
+    #counter {
+      font-family: 'Inter', monospace;
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.3);
+      min-width: 48px;
+      text-align: center;
+    }
+
+    /* ─────────────────────────────────────────
+   SLIDE  (base)
+───────────────────────────────────────── */
+    .slides {
+      display: flex;
+      flex-direction: column;
+      gap: 28px;
+    }
+
+    .slide {
+      width: 1123px;
+      height: 794px;
+      background: var(--surface);
+      border-radius: 3px;
+      box-shadow: 0 4px 24px rgba(6, 20, 43, .20), 0 1px 3px rgba(0, 0, 0, .06);
+      overflow: hidden;
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    /* ─────────────────────────────────────────
+   CHAPTER BAR  (4 px top stripe)
+───────────────────────────────────────── */
+    .chbar {
+      height: 4px;
+      flex-shrink: 0;
+    }
+
+    .ch-title {
+      background: linear-gradient(90deg, var(--blue-700) 0%, var(--blue-500) 60%, #38BDF8 100%);
+    }
+
+    .ch-setup {
+      background: var(--c-setup);
+    }
+
+    .ch-meas {
+      background: var(--c-meas);
+    }
+
+    .ch-sys {
+      background: var(--c-sys);
+    }
+
+    .ch-rep {
+      background: var(--c-rep);
+    }
+
+    .ch-opt {
+      background: var(--c-opt);
+    }
+
+    /* ─────────────────────────────────────────
+   SLIDE HEADER
+───────────────────────────────────────── */
+    .shdr {
+      padding: 16px 44px 12px;
+      border-bottom: 1px solid var(--border);
+      background: var(--off);
+      flex-shrink: 0;
+    }
+
+    .shdr-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 5px;
+    }
+
+    .shdr h2 {
+      font-size: 21px;
+      font-weight: 900;
+      color: var(--ink-900);
+      letter-spacing: -.3px;
+      line-height: 1.2;
+    }
+
+    .shdr .lead {
+      font-size: 11.5px;
+      color: var(--ink-500);
+      line-height: 1.5;
+    }
+
+    .cpill {
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      padding: 3px 9px;
+      border-radius: 99px;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .cp-setup {
+      background: #E0F2FE;
+      color: var(--c-setup);
+    }
+
+    .cp-meas {
+      background: #DCFCE7;
+      color: var(--c-meas);
+    }
+
+    .cp-sys {
+      background: var(--blue-050);
+      color: var(--blue-700);
+    }
+
+    .cp-rep {
+      background: #F3E8FF;
+      color: var(--c-rep);
+    }
+
+    .cp-opt {
+      background: #FEF3C7;
+      color: var(--c-opt);
+    }
+
+    .pgnum {
+      font-family: 'Inter', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--ink-300);
+    }
+
+    /* slide header row (title + page number) */
+    .sh-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 5px;
+    }
+
+    /* subtitle (alias for .lead) */
+    .shdr .sub {
+      font-size: 11.5px;
+      color: var(--ink-500);
+      line-height: 1.5;
+    }
+
+    /* ─────────────────────────────────────────
+   SLIDE BODY
+───────────────────────────────────────── */
+    .sbody {
+      flex: 1;
+      overflow: hidden;
+      padding: 20px 44px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    /* ─────────────────────────────────────────
+   SLIDE FOOTER
+───────────────────────────────────────── */
+    .sftr {
+      height: 28px;
+      flex-shrink: 0;
+      background: var(--off);
+      border-top: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 44px;
+      font-family: 'Inter', sans-serif;
+      font-size: 9px;
+      font-weight: 600;
+      color: var(--ink-300);
+      letter-spacing: .3px;
+    }
+
+    /* ─────────────────────────────────────────
+   GRID LAYOUTS
+───────────────────────────────────────── */
+    .g2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .g3 {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 13px;
+    }
+
+    .g4 {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+    }
+
+    .g12 {
+      display: grid;
+      grid-template-columns: 1fr 2fr;
+      gap: 16px;
+    }
+
+    .g21 {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 16px;
+    }
+
+    .g23 {
+      display: grid;
+      grid-template-columns: 2fr 3fr;
+      gap: 16px;
+    }
+
+    .g32 {
+      display: grid;
+      grid-template-columns: 3fr 2fr;
+      gap: 16px;
+    }
+
+    /* ─────────────────────────────────────────
+   CARD
+───────────────────────────────────────── */
+    .card {
+      border-radius: 6px;
+      padding: 14px 16px;
+      border: 1px solid var(--border);
+      background: #fff;
+    }
+
+    .card.blue {
+      background: var(--blue-050);
+      border-color: var(--blue-200);
+    }
+
+    .card.setup {
+      background: #E0F2FE;
+      border-color: #7DD3FC;
+    }
+
+    .card.meas {
+      background: #DCFCE7;
+      border-color: #86EFAC;
+    }
+
+    .card.opt {
+      background: #FEF3C7;
+      border-color: #FCD34D;
+    }
+
+    .card.rep {
+      background: #F3E8FF;
+      border-color: #D8B4FE;
+    }
+
+    .card.off {
+      background: var(--off);
+      border-color: var(--border);
+    }
+
+    .card.warn {
+      background: #FFF7ED;
+      border-color: #FDBA74;
+    }
+
+    .clabel {
+      font-size: 9.5px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-bottom: 9px;
+      font-family: 'Inter', sans-serif;
+      color: var(--blue-700);
+    }
+
+    .card.setup .clabel {
+      color: var(--c-setup);
+    }
+
+    .card.meas .clabel {
+      color: var(--c-meas);
+    }
+
+    .card.opt .clabel {
+      color: var(--c-opt);
+    }
+
+    .card.rep .clabel {
+      color: var(--c-rep);
+    }
+
+    .card.warn .clabel {
+      color: #C2410C;
+    }
+
+    /* ─────────────────────────────────────────
+   STEP LIST
+───────────────────────────────────────── */
+    .steps {
+      display: flex;
+      flex-direction: column;
+      gap: 9px;
+    }
+
+    .step {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+    }
+
+    .snum {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: var(--blue-700);
+      color: #fff;
+      font-size: 11px;
+      font-weight: 700;
+      font-family: 'Inter', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .snum.s {
+      background: var(--c-setup);
+    }
+
+    .snum.m {
+      background: var(--c-meas);
+    }
+
+    .snum.o {
+      background: var(--c-opt);
+    }
+
+    .snum.r {
+      background: var(--c-rep);
+    }
+
+    .stxt {
+      font-size: 12px;
+      color: var(--ink-700);
+      line-height: 1.6;
+    }
+
+    .stxt b {
+      color: var(--ink-900);
+      font-weight: 700;
+    }
+
+    .stxt code {
+      background: var(--light);
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      padding: 1px 5px;
+      font-family: 'Inter', monospace;
+      font-size: 10.5px;
+      color: var(--blue-700);
+      font-weight: 600;
+    }
+
+    /* ─────────────────────────────────────────
+   BULLETS
+───────────────────────────────────────── */
+    ul.bul {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    ul.bul li {
+      padding-left: 14px;
+      position: relative;
+      font-size: 12px;
+      color: var(--ink-700);
+      line-height: 1.5;
+    }
+
+    ul.bul li::before {
+      content: '▸';
+      position: absolute;
+      left: 0;
+      color: var(--blue-500);
+      font-size: 9px;
+      top: 4px;
+    }
+
+    ul.bul.s li::before {
+      color: var(--c-setup);
+    }
+
+    ul.bul.m li::before {
+      color: var(--c-meas);
+    }
+
+    ul.bul.o li::before {
+      color: var(--c-opt);
+    }
+
+    /* ─────────────────────────────────────────
+   TABLE
+───────────────────────────────────────── */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 11.5px;
+    }
+
+    th {
+      background: var(--blue-900);
+      color: #fff;
+      padding: 7px 11px;
+      text-align: left;
+      font-size: 10px;
+      font-weight: 700;
+      font-family: 'Inter', sans-serif;
+      letter-spacing: .3px;
+    }
+
+    td {
+      padding: 6px 11px;
+      border-bottom: 1px solid var(--border);
+      color: var(--ink-700);
+      vertical-align: middle;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    tr:nth-child(even) td {
+      background: var(--off);
+    }
+
+    /* ─────────────────────────────────────────
+   BADGE
+───────────────────────────────────────── */
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 99px;
+      font-size: 10px;
+      font-weight: 700;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .b-blue {
+      background: var(--blue-100);
+      color: var(--blue-800);
+    }
+
+    .b-green {
+      background: #DCFCE7;
+      color: #166534;
+    }
+
+    .b-amber {
+      background: #FEF3C7;
+      color: #92400E;
+    }
+
+    .b-gray {
+      background: var(--light);
+      color: var(--ink-500);
+    }
+
+    .b-rep {
+      background: #F3E8FF;
+      color: #6B21A8;
+    }
+
+    /* ─────────────────────────────────────────
+   HIGHLIGHT (left-border accent)
+───────────────────────────────────────── */
+    .hl {
+      border-left: 3px solid var(--blue-700);
+      background: var(--blue-050);
+      padding: 8px 12px;
+      border-radius: 0 5px 5px 0;
+      font-size: 11.5px;
+      color: var(--blue-800);
+      line-height: 1.55;
+    }
+
+    .hl.s {
+      border-color: var(--c-setup);
+      background: #E0F2FE;
+      color: var(--c-setup);
+    }
+
+    .hl.m {
+      border-color: var(--c-meas);
+      background: #DCFCE7;
+      color: var(--c-meas);
+    }
+
+    .hl.w {
+      border-color: #EF4444;
+      background: #FEF2F2;
+      color: #B91C1C;
+    }
+
+    /* ─────────────────────────────────────────
+   FLOW (horizontal process)
+───────────────────────────────────────── */
+    .flow {
+      display: flex;
+      align-items: stretch;
+      gap: 0;
+    }
+
+    .fbox {
+      flex: 1;
+      background: var(--blue-050);
+      border: 1.5px solid var(--blue-200);
+      border-radius: 7px;
+      padding: 12px 8px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .fbox .fi {
+      font-size: 22px;
+    }
+
+    .fbox .fl {
+      font-size: 11.5px;
+      font-weight: 700;
+      color: var(--blue-800);
+      line-height: 1.3;
+    }
+
+    .fbox .fs {
+      font-size: 10px;
+      color: var(--ink-500);
+    }
+
+    .farr {
+      display: flex;
+      align-items: center;
+      flex-shrink: 0;
+      padding: 0 5px;
+      color: var(--ink-300);
+      font-size: 12px;
+    }
+
+    /* ─────────────────────────────────────────
+   DATA CALLOUT (large number)
+───────────────────────────────────────── */
+    .kpi {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      padding: 14px 10px;
+      background: var(--blue-050);
+      border: 1px solid var(--blue-200);
+      border-radius: 8px;
+    }
+
+    .kpi-n {
+      font-family: 'Inter', sans-serif;
+      font-size: 36px;
+      font-weight: 900;
+      color: var(--blue-700);
+      line-height: 1;
+    }
+
+    .kpi-u {
+      font-size: 13px;
+      color: var(--blue-500);
+      font-weight: 600;
+      margin-left: 2px;
+    }
+
+    .kpi-l {
+      font-size: 10px;
+      color: var(--ink-500);
+      margin-top: 5px;
+      font-weight: 500;
+      line-height: 1.4;
+    }
+
+    .kpi.s {
+      background: #E0F2FE;
+      border-color: #7DD3FC;
+    }
+
+    .kpi.s .kpi-n,
+    .kpi.s .kpi-u {
+      color: var(--c-setup);
+    }
+
+    .kpi.m {
+      background: #DCFCE7;
+      border-color: #86EFAC;
+    }
+
+    .kpi.m .kpi-n,
+    .kpi.m .kpi-u {
+      color: var(--c-meas);
+    }
+
+    /* ─────────────────────────────────────────
+   MOCKUP — Main App
+───────────────────────────────────────── */
+    .app-win {
+      background: var(--light);
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+
+    .app-win-bar {
+      background: #fff;
+      border-bottom: 1px solid #E2E8F0;
+      padding: 5px 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+    }
+
+    .app-win-logo {
+      font-size: 8.5px;
+      font-weight: 900;
+      color: #1D4ED8;
+    }
+
+    .app-win-btns {
+      display: flex;
+      gap: 4px;
+    }
+
+    .awb {
+      padding: 2px 7px;
+      border-radius: 3px;
+      border: 1px solid #E2E8F0;
+      font-size: 7.5px;
+      font-weight: 700;
+      color: #475569;
+      background: #fff;
+    }
+
+    .awb.p {
+      background: #2563EB;
+      color: #fff;
+      border-color: transparent;
+    }
+
+    .app-win-body {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+    }
+
+    .app-left-pane {
+      width: 136px;
+      background: #fff;
+      border-right: 1px solid #E2E8F0;
+      padding: 8px;
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      overflow: hidden;
+    }
+
+    .ap-sec {
+      font-size: 6.5px;
+      font-weight: 900;
+      color: #94A3B8;
+      text-transform: uppercase;
+      letter-spacing: .8px;
+      border-bottom: 1px solid #F1F5F9;
+      padding-bottom: 3px;
+      margin-bottom: 3px;
+    }
+
+    .ap-lbl {
+      font-size: 7px;
+      font-weight: 700;
+      color: #94A3B8;
+      text-transform: uppercase;
+      letter-spacing: .4px;
+      margin-bottom: 2px;
+    }
+
+    .ap-inp {
+      background: #F8FAFC;
+      border: 1px solid #E2E8F0;
+      border-radius: 3px;
+      padding: 3px 5px;
+      font-size: 7.5px;
+      color: #334155;
+    }
+
+    .ap-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 3px;
+    }
+
+    .ap-csv {
+      border: 1.5px dashed #93C5FD;
+      border-radius: 4px;
+      padding: 5px;
+      text-align: center;
+      font-size: 7.5px;
+      font-weight: 700;
+      color: #2563EB;
+      background: #EFF6FF;
+    }
+
+    .app-right-pane {
+      flex: 1;
+      background: var(--light);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* ─────────────────────────────────────────
+   MOCKUP — phyphox App
+───────────────────────────────────────── */
+    .phy-win {
+      background: #161624;
+      border-radius: 10px;
+      border: 1px solid #2A2A3E;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .phy-hdr {
+      background: #3A0A6E;
+      padding: 7px 10px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .phy-title {
+      font-size: 10px;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .phy-sub {
+      font-size: 8px;
+      color: rgba(255, 255, 255, .5);
+      margin-left: auto;
+    }
+
+    .phy-graph-wrap {
+      margin: 8px 8px 0;
+      background: #0C0C18;
+      border-radius: 4px;
+      border: 1px solid #2A2A3E;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .phy-graph-lbl {
+      position: absolute;
+      top: 2px;
+      left: 4px;
+      font-size: 6.5px;
+      color: #555;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .phy-legend {
+      display: flex;
+      gap: 8px;
+      padding: 4px 8px;
+    }
+
+    .phy-le {
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      font-size: 7.5px;
+      color: #999;
+    }
+
+    .phy-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 2px;
+    }
+
+    .phy-rec {
+      background: #D32F2F;
+      color: #fff;
+      margin: 0 8px 8px;
+      border-radius: 5px;
+      padding: 5px;
+      text-align: center;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 1px;
+    }
+
+    .phy-menu {
+      background: #1E1E30;
+      margin: 0 8px 6px;
+      border-radius: 4px;
+      padding: 5px 8px;
+      font-size: 8px;
+      color: #bbb;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .phy-mdot {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: #60A5FA;
+      flex-shrink: 0;
+    }
+
+    /* ─────────────────────────────────────────
+   MOCKUP — GAS Editor
+───────────────────────────────────────── */
+    .gas-win {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+
+    .gas-hdr {
+      background: #1565C0;
+      padding: 6px 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .gas-hdr-t {
+      font-size: 9.5px;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .gas-toolbar {
+      background: #F8F9FA;
+      border-bottom: 1px solid #E8EAED;
+      padding: 4px 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .gas-tbtn {
+      font-size: 8px;
+      font-weight: 600;
+      color: #3C4043;
+      padding: 2px 7px;
+      border-radius: 3px;
+      background: #fff;
+      border: 1px solid #E8EAED;
+    }
+
+    .gas-body {
+      flex: 1;
+      display: flex;
+      overflow: hidden;
+      background: #1E1E1E;
+    }
+
+    .gas-nums {
+      background: #252526;
+      width: 26px;
+      padding: 5px 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      flex-shrink: 0;
+    }
+
+    .gas-n {
+      font-family: 'Inter', monospace;
+      font-size: 8px;
+      color: #858585;
+      line-height: 15px;
+    }
+
+    .gas-code {
+      flex: 1;
+      padding: 5px 8px;
+      font-family: 'Inter', monospace;
+      font-size: 9px;
+      line-height: 15px;
+      color: #D4D4D4;
+      overflow: hidden;
+    }
+
+    .ck {
+      color: #569CD6;
+    }
+
+    .cf {
+      color: #DCDCAA;
+    }
+
+    .cs {
+      color: #CE9178;
+    }
+
+    .cc {
+      color: #6A9955;
+    }
+
+    .cn {
+      color: #B5CEA8;
+    }
+
+    /* ─────────────────────────────────────────
+   MOCKUP — Deploy dialog
+───────────────────────────────────────── */
+    .dep-win {
+      background: #fff;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      box-shadow: 0 8px 28px rgba(0, 0, 0, .14);
+      overflow: hidden;
+    }
+
+    .dep-hdr {
+      background: #F8F9FA;
+      border-bottom: 1px solid #E8EAED;
+      padding: 10px 14px;
+      font-size: 12px;
+      font-weight: 700;
+      color: #3C4043;
+    }
+
+    .dep-body {
+      padding: 13px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .dep-fl {
+      font-size: 9px;
+      font-weight: 700;
+      color: #5F6368;
+      margin-bottom: 3px;
+    }
+
+    .dep-fv {
+      background: #F8F9FA;
+      border: 1px solid #E8EAED;
+      border-radius: 4px;
+      padding: 6px 8px;
+      font-size: 8.5px;
+      color: #3C4043;
+      font-family: 'Inter', monospace;
+      word-break: break-all;
+    }
+
+    .dep-btn {
+      background: #1A73E8;
+      color: #fff;
+      border-radius: 4px;
+      padding: 7px 14px;
+      font-size: 11px;
+      font-weight: 700;
+      text-align: center;
+      display: inline-block;
+    }
+
+    /* ─────────────────────────────────────────
+   MOCKUP — PDF Report page
+───────────────────────────────────────── */
+    .rpt-win {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, .08);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .rpt-hdr {
+      background: linear-gradient(135deg, #1E3A8A 0%, #2563EB 100%);
+      padding: 8px 12px;
+    }
+
+    .rpt-hdr .rh1 {
+      font-size: 9px;
+      font-weight: 900;
+      color: #fff;
+    }
+
+    .rpt-hdr .rh2 {
+      font-size: 7px;
+      color: rgba(255, 255, 255, .6);
+    }
+
+    .rpt-body {
+      padding: 9px 11px;
+    }
+
+    /* ─────────────────────────────────────────
+   PRINT
+───────────────────────────────────────── */
+    @media print {
+      body {
+        background: #fff;
+        padding: 0;
+        gap: 0;
+      }
+
+      #nav {
+        display: none;
+      }
+
+      .slides {
+        gap: 0;
+      }
+
+      .slide {
+        width: 297mm;
+        height: 210mm;
+        box-shadow: none;
+        border-radius: 0;
+        page-break-after: always;
+        break-after: page;
+      }
+
+      @page {
+        margin: 0;
+        size: A4 landscape;
+      }
+
+      * {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- ═══ NAV ═══ -->
+  <div id="nav">
+    <button onclick="go(-1)">◀ 前へ</button>
+    <span id="counter">— / —</span>
+    <span class="nav-brand">歩行年齢テスト診断システム v6 — 使用マニュアル</span>
+    <button onclick="go(1)">次へ ▶</button>
+    <button id="btn-pdf" onclick="window.print()">🖨 印刷 / PDF保存</button>
+  </div>
+
+  <div class="slides" id="slides">
+
+    <!-- ═══════════════════════════════════════════════════════════
+     SLIDE 1  TITLE
+     左: 白 (60%)  ／  右: 紺 (40%)
+═══════════════════════════════════════════════════════════ -->
+    <div class="slide" style="flex-direction:row;">
+
+      <!-- ─── Left panel (white) ─── -->
+      <div
+        style="width:60%; background:#fff; display:flex; flex-direction:column; justify-content:space-between; padding:48px 48px 0 52px; position:relative;">
+
+        <!-- Chapter bar (left side only) -->
+        <div
+          style="position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--blue-700),var(--blue-500));">
+        </div>
+
+        <div>
+          <!-- Eyebrow -->
+          <p
+            style="font-family:'Inter',sans-serif; font-size:10px; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:var(--blue-500); margin-bottom:16px;">
+            使用マニュアル &ensp;|&ensp; Manual v6
+          </p>
+
+          <!-- Main title -->
+          <h1
+            style="font-size:40px; font-weight:900; color:var(--ink-900); letter-spacing:-.5px; line-height:1.1; margin-bottom:12px;">
+            歩行年齢テスト<br>診断システム
+          </h1>
+
+          <!-- Divider rule -->
+          <div style="width:64px; height:3px; background:var(--blue-700); border-radius:2px; margin-bottom:14px;"></div>
+
+          <!-- Subtitle -->
+          <p style="font-size:14px; color:var(--ink-500); line-height:1.7; margin-bottom:36px;">
+            スマートフォンの加速度センサーで歩き方を計測し、<br>
+            「歩行年齢」と「歩行機能スコア」を自動診断するシステムです。
+          </p>
+        </div>
+
+        <!-- Key stats row -->
+        <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:10px; padding-bottom:36px;">
+          <div style="border-top:3px solid var(--blue-700); padding-top:10px;">
+            <div
+              style="font-family:'Inter',sans-serif; font-size:30px; font-weight:900; color:var(--blue-700); line-height:1;">
+              7</div>
+            <div style="font-size:10px; color:var(--ink-500); font-weight:600; margin-top:4px; line-height:1.4;">
+              歩行パラメータ<br>計測・評価</div>
+          </div>
+          <div style="border-top:3px solid var(--c-setup); padding-top:10px;">
+            <div
+              style="font-family:'Inter',sans-serif; font-size:30px; font-weight:900; color:var(--c-setup); line-height:1;">
+              10<span style="font-size:14px; font-weight:600;"> 分</span></div>
+            <div style="font-size:10px; color:var(--ink-500); font-weight:600; margin-top:4px; line-height:1.4;">
+              計測〜PDF出力<br>の目安時間</div>
+          </div>
+          <div style="border-top:3px solid var(--c-meas); padding-top:10px;">
+            <div
+              style="font-family:'Inter',sans-serif; font-size:30px; font-weight:900; color:var(--c-meas); line-height:1;">
+              313</div>
+            <div style="font-size:10px; color:var(--ink-500); font-weight:600; margin-top:4px; line-height:1.4;">
+              規準値サンプル数<br>Mobbs 2025</div>
+          </div>
+          <div style="border-top:3px solid var(--c-rep); padding-top:10px;">
+            <div
+              style="font-family:'Inter',sans-serif; font-size:30px; font-weight:900; color:var(--c-rep); line-height:1;">
+              3</div>
+            <div style="font-size:10px; color:var(--ink-500); font-weight:600; margin-top:4px; line-height:1.4;">
+              レポート<br>出力ページ数</div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ─── Right panel (deep blue) ─── -->
+      <div
+        style="flex:1; background:linear-gradient(155deg,var(--blue-900) 0%,var(--blue-800) 100%); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:20px; padding:36px 32px; position:relative; overflow:hidden;">
+
+        <!-- Decorative ring (background) -->
+        <div
+          style="position:absolute; width:360px; height:360px; border-radius:50%; border:1px solid rgba(255,255,255,0.05); top:50%; left:50%; transform:translate(-50%,-50%); pointer-events:none;">
+        </div>
+        <div
+          style="position:absolute; width:240px; height:240px; border-radius:50%; border:1px solid rgba(255,255,255,0.07); top:50%; left:50%; transform:translate(-50%,-50%); pointer-events:none;">
+        </div>
+
+        <!-- App report mini-preview -->
+        <div
+          style="width:220px; background:#fff; border-radius:10px; box-shadow:0 8px 32px rgba(0,0,0,0.45); overflow:hidden; position:relative; z-index:1;">
+          <!-- App header bar -->
+          <div
+            style="background:linear-gradient(135deg,#1E3A8A,#2563EB); padding:7px 10px; display:flex; align-items:center; justify-content:space-between;">
+            <div style="color:#fff; font-size:8px; font-weight:900;">歩行年齢テスト 診断システム v6</div>
+            <div
+              style="background:rgba(255,255,255,0.2); border-radius:3px; padding:1px 6px; font-size:7px; font-weight:700; color:#fff;">
+              PDF出力</div>
+          </div>
+          <!-- Report content -->
+          <div style="padding:10px 11px;">
+            <!-- Walking age highlight box -->
+            <div
+              style="background:var(--blue-050); border-radius:6px; padding:8px 10px; text-align:center; margin-bottom:8px;">
+              <div
+                style="font-size:7px; font-weight:700; color:var(--blue-500); margin-bottom:3px; letter-spacing:.5px; text-transform:uppercase;">
+                歩行年齢</div>
+              <div
+                style="font-family:'Inter',sans-serif; font-size:30px; font-weight:900; color:var(--blue-800); line-height:1;">
+                52<span style="font-size:13px; font-weight:600; color:var(--blue-500);"> 歳</span></div>
+              <div style="font-size:6.5px; color:var(--ink-500); margin-top:3px;">実年齢より若い歩き方です ✓</div>
+            </div>
+            <!-- Score bar -->
+            <div style="margin-bottom:8px;">
+              <div
+                style="display:flex; justify-content:space-between; font-size:7px; color:var(--ink-500); font-weight:700; margin-bottom:3px;">
+                <span>総合スコア</span>
+                <span style="font-family:'Inter',sans-serif; color:var(--ink-900);">74 / 100点</span>
+              </div>
+              <div style="height:6px; background:#E2E8F0; border-radius:99px; overflow:hidden;">
+                <div
+                  style="width:74%; height:100%; background:linear-gradient(90deg,#22C55E,#16A34A); border-radius:99px;">
+                </div>
+              </div>
+            </div>
+            <!-- 4 metric mini cards -->
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:4px;">
+              <div style="background:var(--off); border:1px solid var(--border); border-radius:4px; padding:4px 6px;">
+                <div style="font-size:6.5px; color:var(--ink-300);">歩くスピード</div>
+                <div style="font-family:'Inter',sans-serif; font-size:12px; font-weight:900; color:var(--ink-900);">
+                  1.38<span style="font-size:6.5px; font-weight:400;"> m/s</span></div>
+              </div>
+              <div style="background:var(--off); border:1px solid var(--border); border-radius:4px; padding:4px 6px;">
+                <div style="font-size:6.5px; color:var(--ink-300);">歩幅</div>
+                <div style="font-family:'Inter',sans-serif; font-size:12px; font-weight:900; color:var(--ink-900);">
+                  0.68<span style="font-size:6.5px; font-weight:400;"> m</span></div>
+              </div>
+              <div style="background:var(--off); border:1px solid var(--border); border-radius:4px; padding:4px 6px;">
+                <div style="font-size:6.5px; color:var(--ink-300);">テンポ</div>
+                <div style="font-family:'Inter',sans-serif; font-size:12px; font-weight:900; color:var(--ink-900);">
+                  122<span style="font-size:6.5px; font-weight:400;"> 歩/分</span></div>
+              </div>
+              <div style="background:var(--off); border:1px solid var(--border); border-radius:4px; padding:4px 6px;">
+                <div style="font-size:6.5px; color:var(--ink-300);">左右対称性</div>
+                <div style="font-family:'Inter',sans-serif; font-size:12px; font-weight:900; color:var(--ink-900);">
+                  96<span style="font-size:6.5px; font-weight:400;"> %</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Feature badges -->
+        <div style="display:flex; flex-direction:column; gap:7px; width:220px; position:relative; z-index:1;">
+          <div
+            style="display:flex; align-items:center; gap:8px; background:rgba(255,255,255,0.09); border:1px solid rgba(255,255,255,0.12); border-radius:6px; padding:7px 12px;">
+            <span style="font-size:14px;">✅</span>
+            <span style="font-size:11px; font-weight:700; color:#fff;">インストール不要 — ブラウザのみ</span>
+          </div>
+          <div
+            style="display:flex; align-items:center; gap:8px; background:rgba(255,255,255,0.09); border:1px solid rgba(255,255,255,0.12); border-radius:6px; padding:7px 12px;">
+            <span style="font-size:14px;">🔒</span>
+            <span style="font-size:11px; font-weight:700; color:#fff;">個人情報はサーバーに送信されない</span>
+          </div>
+          <div
+            style="display:flex; align-items:center; gap:8px; background:rgba(255,255,255,0.09); border:1px solid rgba(255,255,255,0.12); border-radius:6px; padding:7px 12px;">
+            <span style="font-size:14px;">📄</span>
+            <span style="font-size:11px; font-weight:700; color:#fff;">A4 PDF レポートを即時出力・共有</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Footer (full width, positioned over both panels) -->
+      <div
+        style="position:absolute; bottom:0; left:0; right:0; height:28px; background:rgba(11,32,69,0.92); display:flex; align-items:center; justify-content:space-between; padding:0 52px; z-index:10;">
+        <span
+          style="font-family:'Inter',sans-serif; font-size:9px; font-weight:600; color:rgba(255,255,255,0.35); letter-spacing:.3px;">歩行年齢テスト診断システム
+          v6 — 使用マニュアル</span>
+        <span style="font-family:'Inter',sans-serif; font-size:9px; font-weight:600; color:rgba(255,255,255,0.3);">1 /
+          16</span>
+      </div>
+
+    </div>
+    <!-- /SLIDE 1 -->
+
+
+<!-- ══════════════════════════════════════════════════════════
+     SLIDE 2  システム全体フロー
+══════════════════════════════════════════════════════════ -->
+<div class="slide">
+  <div class="chbar ch-sys"></div>
+  <div class="shdr">
+    <div class="sh-row">
+      <div style="display:flex;align-items:center;gap:12px;">
+        <span class="cpill cp-sys">OVERVIEW</span>
+        <h2>診断システム — ご利用の全体フロー</h2>
+      </div>
+      <span class="pgnum">02 / 16</span>
+    </div>
+    <p class="lead">スマートフォンで歩く → データ解析 → PDF レポート出力まで、全 5 ステップで完了します。</p>
+  </div>
+  <div class="sbody" style="gap:16px;">
+
+    <!-- 5-step flow -->
+    <div style="display:flex;align-items:stretch;gap:0;">
+
+      <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px 10px;background:var(--blue-050);border:1.5px solid var(--blue-200);border-radius:8px;">
+        <div style="width:36px;height:36px;border-radius:50%;background:var(--c-setup);color:#fff;display:flex;align-items:center;justify-content:center;font-family:'Inter',sans-serif;font-size:15px;font-weight:900;">1</div>
+        <div style="font-size:20px;">📱</div>
+        <div style="font-size:12px;font-weight:900;color:var(--c-setup);text-align:center;">事前準備</div>
+        <div style="font-size:10.5px;color:var(--ink-500);text-align:center;line-height:1.6;">phyphox アプリを<br>スマートフォンに<br>インストール</div>
+      </div>
+
+      <div style="display:flex;align-items:center;padding:0 6px;color:var(--ink-300);font-size:16px;">▶</div>
+
+      <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px 10px;background:#DCFCE7;border:1.5px solid #86EFAC;border-radius:8px;">
+        <div style="width:36px;height:36px;border-radius:50%;background:var(--c-meas);color:#fff;display:flex;align-items:center;justify-content:center;font-family:'Inter',sans-serif;font-size:15px;font-weight:900;">2</div>
+        <div style="font-size:20px;">🚶</div>
+        <div style="font-size:12px;font-weight:900;color:var(--c-meas);text-align:center;">歩行計測</div>
+        <div style="font-size:10.5px;color:var(--ink-500);text-align:center;line-height:1.6;">腰にスマホを固定し<br>いつもの速さで<br>10 m を歩く</div>
+      </div>
+
+      <div style="display:flex;align-items:center;padding:0 6px;color:var(--ink-300);font-size:16px;">▶</div>
+
+      <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px 10px;background:var(--blue-050);border:1.5px solid var(--blue-200);border-radius:8px;">
+        <div style="width:36px;height:36px;border-radius:50%;background:var(--blue-700);color:#fff;display:flex;align-items:center;justify-content:center;font-family:'Inter',sans-serif;font-size:15px;font-weight:900;">3</div>
+        <div style="font-size:20px;">📤</div>
+        <div style="font-size:12px;font-weight:900;color:var(--blue-700);text-align:center;">データ転送</div>
+        <div style="font-size:10.5px;color:var(--ink-500);text-align:center;line-height:1.6;">CSV ファイルを PC へ<br>または WiFi で<br>直接取得</div>
+      </div>
+
+      <div style="display:flex;align-items:center;padding:0 6px;color:var(--ink-300);font-size:16px;">▶</div>
+
+      <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px 10px;background:var(--blue-050);border:1.5px solid var(--blue-200);border-radius:8px;">
+        <div style="width:36px;height:36px;border-radius:50%;background:var(--blue-700);color:#fff;display:flex;align-items:center;justify-content:center;font-family:'Inter',sans-serif;font-size:15px;font-weight:900;">4</div>
+        <div style="font-size:20px;">🔍</div>
+        <div style="font-size:12px;font-weight:900;color:var(--blue-700);text-align:center;">自動解析</div>
+        <div style="font-size:10.5px;color:var(--ink-500);text-align:center;line-height:1.6;">7 指標をリアルタイム<br>算出・年齢推定・<br>スコアリング</div>
+      </div>
+
+      <div style="display:flex;align-items:center;padding:0 6px;color:var(--ink-300);font-size:16px;">▶</div>
+
+      <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px 10px;background:#F3E8FF;border:1.5px solid #D8B4FE;border-radius:8px;">
+        <div style="width:36px;height:36px;border-radius:50%;background:var(--c-rep);color:#fff;display:flex;align-items:center;justify-content:center;font-family:'Inter',sans-serif;font-size:15px;font-weight:900;">5</div>
+        <div style="font-size:20px;">📄</div>
+        <div style="font-size:12px;font-weight:900;color:var(--c-rep);text-align:center;">レポート出力</div>
+        <div style="font-size:10.5px;color:var(--ink-500);text-align:center;line-height:1.6;">A4 PDF を出力・印刷<br>患者さんへ<br>フィードバック</div>
+      </div>
+
+    </div>
+
+    <!-- Bottom: metrics + outputs -->
+    <div class="g2" style="flex:1;">
+
+      <div class="card off" style="display:flex;flex-direction:column;gap:8px;">
+        <div class="clabel">解析される 7 つの指標</div>
+        <table>
+          <thead><tr><th>指標</th><th>単位</th><th>意味</th></tr></thead>
+          <tbody>
+            <tr><td><b>歩くスピード</b></td><td style="font-family:'Inter',monospace;color:var(--blue-700);">m/s</td><td>1秒間に進む距離</td></tr>
+            <tr><td><b>歩幅の広さ</b></td><td style="font-family:'Inter',monospace;color:var(--blue-700);">m</td><td>1歩の長さ</td></tr>
+            <tr><td><b>歩くテンポ</b></td><td style="font-family:'Inter',monospace;color:var(--blue-700);">歩/分</td><td>ケイデンス</td></tr>
+            <tr><td><b>リズムの安定性</b></td><td style="font-family:'Inter',monospace;color:var(--blue-700);">%</td><td>ステップ時間 CV</td></tr>
+            <tr><td><b>左右対称性</b></td><td style="font-family:'Inter',monospace;color:var(--blue-700);">%</td><td>左右バランス</td></tr>
+            <tr><td><b>ウォークレシオ</b></td><td style="font-family:'Inter',monospace;color:var(--blue-700);">m/Hz</td><td>効率性指標</td></tr>
+            <tr><td><b>RMS 加速度</b></td><td style="font-family:'Inter',monospace;color:var(--blue-700);">m/s²</td><td>揺れの大きさ</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <div class="clabel" style="color:var(--ink-700);">出力される 3 つのレポートページ</div>
+        <div style="display:flex;flex-direction:column;gap:7px;flex:1;">
+          <div style="background:#fff;border:1px solid var(--border);border-left:4px solid var(--blue-700);border-radius:0 6px 6px 0;padding:10px 14px;display:flex;flex-direction:column;gap:3px;">
+            <div style="font-size:11px;font-weight:700;color:var(--blue-700);">Page 1 — 患者さん向け</div>
+            <div style="font-size:11px;color:var(--ink-500);line-height:1.5;">歩行年齢・総合スコア・グラフ・コメント。わかりやすい言葉で書かれた結果シート。</div>
+          </div>
+          <div style="background:#fff;border:1px solid var(--border);border-left:4px solid var(--c-rep);border-radius:0 6px 6px 0;padding:10px 14px;display:flex;flex-direction:column;gap:3px;">
+            <div style="font-size:11px;font-weight:700;color:var(--c-rep);">Page 2 — 専門家向け</div>
+            <div style="font-size:11px;color:var(--ink-500);line-height:1.5;">臨床リスク評価・バイオメカニクス数値・レーダーチャート・加速度波形。</div>
+          </div>
+          <div style="background:#fff;border:1px solid var(--border);border-left:4px solid var(--c-opt);border-radius:0 6px 6px 0;padding:10px 14px;display:flex;flex-direction:column;gap:3px;">
+            <div style="font-size:11px;font-weight:700;color:var(--c-opt);">Page 3 — シューズレコメンド（任意）</div>
+            <div style="font-size:11px;color:var(--ink-500);line-height:1.5;">歩行プロファイルに基づくシューズ推薦。Google Sheets データと連携して表示。</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+  <div class="sftr">
+    <span>歩行年齢テスト診断システム v6 — 使用マニュアル</span>
+    <span>2 / 16</span>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════════
+     SLIDE 3  必要なものを用意する
+══════════════════════════════════════════════════════════ -->
+<div class="slide">
+  <div class="chbar ch-setup"></div>
+  <div class="shdr">
+    <div class="sh-row">
+      <div style="display:flex;align-items:center;gap:12px;">
+        <span class="cpill cp-setup">準備</span>
+        <h2>必要なものを用意する</h2>
+      </div>
+      <span class="pgnum">03 / 16</span>
+    </div>
+    <p class="lead">機器・アプリ・計測環境の 3 つを事前に確認してください。すべて無料または手持ちの機材で対応できます。</p>
+  </div>
+  <div class="sbody" style="gap:16px;">
+
+    <div class="g3" style="flex:1;">
+
+      <!-- スマートフォン -->
+      <div style="background:#fff;border:1px solid var(--border);border-radius:10px;padding:22px 20px;display:flex;flex-direction:column;gap:12px;">
+        <div style="font-size:36px;text-align:center;">📱</div>
+        <div style="text-align:center;">
+          <div style="font-size:13px;font-weight:900;color:var(--ink-900);margin-bottom:4px;">スマートフォン</div>
+          <span class="badge b-blue">必須</span>
+        </div>
+        <ul class="bul">
+          <li>iPhone または Android（加速度センサー内蔵）</li>
+          <li>ほぼ全機種対応</li>
+        </ul>
+        <div style="border-top:1px solid var(--border);padding-top:10px;">
+          <div style="font-size:10px;font-weight:700;color:var(--c-setup);letter-spacing:.8px;text-transform:uppercase;margin-bottom:6px;">必要なアプリ</div>
+          <div style="background:var(--blue-050);border:1px solid var(--blue-200);border-radius:7px;padding:10px 12px;display:flex;align-items:center;gap:10px;">
+            <div style="background:#3A0A6E;color:#fff;border-radius:6px;padding:5px 8px;font-size:9px;font-weight:900;white-space:nowrap;">phyphox</div>
+            <div>
+              <div style="font-size:11px;font-weight:700;color:var(--ink-900);">phyphox — 無料</div>
+              <div style="font-size:10px;color:var(--ink-500);">App Store / Google Play</div>
+              <div style="font-size:9.5px;color:var(--ink-300);">開発: RWTH Aachen Univ.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PC / タブレット -->
+      <div style="background:#fff;border:1px solid var(--border);border-radius:10px;padding:22px 20px;display:flex;flex-direction:column;gap:12px;">
+        <div style="font-size:36px;text-align:center;">💻</div>
+        <div style="text-align:center;">
+          <div style="font-size:13px;font-weight:900;color:var(--ink-900);margin-bottom:4px;">PC / タブレット</div>
+          <span class="badge b-blue">必須</span>
+        </div>
+        <ul class="bul">
+          <li>Windows / Mac / iPad など</li>
+          <li>最新 Chrome・Safari・Edge を推奨</li>
+          <li>インターネット接続が必要</li>
+          <li>インストール不要 — ブラウザで動作</li>
+        </ul>
+        <div style="border-top:1px solid var(--border);padding-top:10px;">
+          <div style="font-size:10px;font-weight:700;color:var(--blue-700);letter-spacing:.8px;text-transform:uppercase;margin-bottom:6px;">起動方法（3 択）</div>
+          <div style="display:flex;flex-direction:column;gap:4px;">
+            <div style="font-size:10.5px;color:var(--ink-700);">① GAS の URL をブラウザに貼り付ける <span class="badge b-green" style="margin-left:4px;">推奨</span></div>
+            <div style="font-size:10.5px;color:var(--ink-700);">② Netlify の URL をブラウザに貼り付ける</div>
+            <div style="font-size:10.5px;color:var(--ink-700);">③ index.html をダブルクリック</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 計測環境 -->
+      <div style="background:#fff;border:1px solid var(--border);border-radius:10px;padding:22px 20px;display:flex;flex-direction:column;gap:12px;">
+        <div style="font-size:36px;text-align:center;">🏃</div>
+        <div style="text-align:center;">
+          <div style="font-size:13px;font-weight:900;color:var(--ink-900);margin-bottom:4px;">計測スペース</div>
+          <span class="badge b-gray">確認が必要</span>
+        </div>
+        <ul class="bul m">
+          <li>直線で <b>10 m 以上</b> 歩けるスペース</li>
+          <li>平坦な床（屋内廊下・体育館など）</li>
+          <li>普段履いている靴でOK</li>
+          <li>杖・歩行器を使っている方もそのまま計測可</li>
+        </ul>
+        <div style="border-top:1px solid var(--border);padding-top:10px;">
+          <div class="hl m" style="font-size:11px;">
+            💡 床にテープで <b>10 m のライン</b> を貼っておくと計測がスムーズです。
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Bottom note -->
+    <div style="background:var(--blue-050);border:1px solid var(--blue-200);border-radius:7px;padding:10px 16px;display:flex;align-items:center;gap:16px;">
+      <span style="font-size:18px;">☑️</span>
+      <div style="font-size:12px;color:var(--blue-800);font-weight:500;line-height:1.5;">
+        <b>任意：Google アカウント</b>（GAS でのセットアップ時のみ必要）&ensp;/&ensp;
+        <b>同一 WiFi 環境</b>（phyphox WiFi リモート取得機能を使う場合のみ必要）
+      </div>
+    </div>
+
+  </div>
+  <div class="sftr">
+    <span>歩行年齢テスト診断システム v6 — 使用マニュアル</span>
+    <span>3 / 16</span>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════════
+     SLIDE 4  phyphox アプリのセットアップ
+     左: 手順  ／  右: phyphox 画面モックアップ
+══════════════════════════════════════════════════════════ -->
+<div class="slide">
+  <div class="chbar ch-setup"></div>
+  <div class="shdr">
+    <div class="sh-row">
+      <div style="display:flex;align-items:center;gap:12px;">
+        <span class="cpill cp-setup">準備</span>
+        <h2>phyphox アプリのセットアップ</h2>
+      </div>
+      <span class="pgnum">04 / 16</span>
+    </div>
+    <p class="lead">phyphox（フィフォックス）はドイツ・アーヘン工科大学が開発した無料の計測アプリです。加速度センサーを使って歩行データを収集します。</p>
+  </div>
+  <div class="sbody">
+    <div class="g23" style="flex:1;align-items:stretch;">
+
+      <!-- Left: steps -->
+      <div style="display:flex;flex-direction:column;gap:10px;">
+
+        <div class="card setup">
+          <div class="clabel">① インストール</div>
+          <div class="steps">
+            <div class="step">
+              <div class="snum s">1</div>
+              <div class="stxt">App Store（iPhone）または Google Play（Android）を開く</div>
+            </div>
+            <div class="step">
+              <div class="snum s">2</div>
+              <div class="stxt"><b>「phyphox」</b> で検索してインストール（完全無料）</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card blue">
+          <div class="clabel">② 計測メニューの選択</div>
+          <div class="steps">
+            <div class="step">
+              <div class="snum">1</div>
+              <div class="stxt">phyphox を起動 → 画面下の <b>「＋」ボタン</b> をタップ</div>
+            </div>
+            <div class="step">
+              <div class="snum">2</div>
+              <div class="stxt"><b>「Acceleration (without g)」</b> を選択する</div>
+            </div>
+            <div class="step">
+              <div class="snum">3</div>
+              <div class="stxt">新しい実験が作成される → タップして開く</div>
+            </div>
+          </div>
+          <div class="hl" style="margin-top:8px;font-size:11px;">日本語の場合は<b>「加速度（重力補正）」</b>または<b>「Linear Acceleration」</b></div>
+        </div>
+
+        <div class="card opt">
+          <div class="clabel">③ WiFi リモート機能（任意・便利）</div>
+          <div class="steps">
+            <div class="step">
+              <div class="snum o">1</div>
+              <div class="stxt">実験画面右上の <b>「⋮」→「Remote Access」</b> をタップ</div>
+            </div>
+            <div class="step">
+              <div class="snum o">2</div>
+              <div class="stxt"><b>「Port 8080」</b> が表示 → IP アドレスをメモ（例: <code>192.168.1.5</code>）</div>
+            </div>
+          </div>
+          <div class="hl" style="margin-top:8px;font-size:11px;border-color:var(--c-opt);background:#FEF3C7;color:var(--c-opt);">スマートフォンと PC が同じ WiFi に接続されている場合に使えます</div>
+        </div>
+
+      </div>
+
+      <!-- Right: phyphox mockup -->
+      <div style="display:flex;flex-direction:column;gap:10px;justify-content:center;">
+        <!-- phyphox app mockup -->
+        <div class="phy-win">
+          <div class="phy-hdr">
+            <div class="phy-title">Acceleration (without g)</div>
+            <div class="phy-sub">phyphox</div>
+          </div>
+          <!-- Graph area -->
+          <div class="phy-graph-wrap" style="height:80px;">
+            <div class="phy-graph-lbl">m/s²</div>
+            <svg width="100%" height="80" viewBox="0 0 320 80" preserveAspectRatio="none">
+              <rect width="320" height="80" fill="#0C0C18"/>
+              <line x1="0" y1="40" x2="320" y2="40" stroke="#ffffff" stroke-width="0.4" stroke-opacity="0.12"/>
+              <!-- x-axis: red -->
+              <polyline points="0,40 18,22 36,52 54,16 72,55 90,30 108,50 126,18 144,52 162,28 180,55 198,22 216,48 234,20 252,52 270,28 288,50 306,24 320,42"
+                fill="none" stroke="#FF5252" stroke-width="1.5" stroke-linejoin="round"/>
+              <!-- y-axis: green -->
+              <polyline points="0,46 22,52 44,34 66,56 88,36 110,50 132,34 154,56 176,38 198,52 220,34 242,54 264,36 286,50 320,40"
+                fill="none" stroke="#69F0AE" stroke-width="1.5" stroke-linejoin="round"/>
+              <!-- z-axis: blue -->
+              <polyline points="0,28 22,38 44,24 66,38 88,26 110,36 132,24 154,38 176,26 198,36 220,24 242,38 264,26 286,36 320,30"
+                fill="none" stroke="#64B5F6" stroke-width="1.5" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div class="phy-legend">
+            <div class="phy-le"><div class="phy-dot" style="background:#FF5252;"></div>x 軸</div>
+            <div class="phy-le"><div class="phy-dot" style="background:#69F0AE;"></div>y 軸</div>
+            <div class="phy-le"><div class="phy-dot" style="background:#64B5F6;"></div>z 軸</div>
+          </div>
+          <!-- Menu item showing Remote Access -->
+          <div class="phy-menu">
+            <div class="phy-mdot"></div>
+            <span>Remote Access — Port 8080</span>
+          </div>
+          <div class="phy-menu" style="margin-top:0;background:#2A2A3E;">
+            <div class="phy-mdot" style="background:#69F0AE;"></div>
+            <span style="color:#fff;">192.168.1.5:8080</span>
+          </div>
+          <div class="phy-rec">● REC</div>
+        </div>
+
+        <!-- Caption -->
+        <div style="background:var(--blue-050);border:1px solid var(--blue-200);border-radius:6px;padding:10px 12px;">
+          <div style="font-size:10px;font-weight:700;color:var(--blue-700);margin-bottom:4px;">画面の見方</div>
+          <ul class="bul" style="font-size:10.5px;">
+            <li>グラフの波形が歩行中の加速度</li>
+            <li>3色の線が x・y・z 軸それぞれ</li>
+            <li>REC ボタンで計測開始/停止</li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+  </div>
+  <div class="sftr">
+    <span>歩行年齢テスト診断システム v6 — 使用マニュアル</span>
+    <span>4 / 16</span>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════════════
+     SLIDE 5 — 計測手順
+═══════════════════════════════════════════════════════════════ -->
+<div class="slide">
+  <div class="chbar ch-setup"></div>
+  <div class="shdr">
+    <div style="display:flex;align-items:center;gap:12px;">
+      <span class="cpill cp-setup">STEP 1–2</span>
+      <h2>計測の準備と歩行手順</h2>
+    </div>
+    <p class="sub">スマートフォンをウエストに装着し、指定コースを歩行します</p>
+  </div>
+  <div class="sbody" style="display:flex;flex-direction:row;gap:32px;align-items:stretch;">
+
+    <!-- Left: Steps -->
+    <div style="flex:1;display:flex;flex-direction:column;gap:14px;">
+
+      <div class="card" style="padding:16px 18px;">
+        <div style="display:flex;gap:14px;align-items:flex-start;">
+          <div style="width:32px;height:32px;border-radius:50%;background:var(--c-setup);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:15px;flex-shrink:0;">1</div>
+          <div>
+            <div style="font-weight:700;font-size:13px;color:var(--blue-900);margin-bottom:6px;">スマートフォンの装着</div>
+            <ul style="margin:0;padding-left:16px;font-size:11.5px;color:var(--blue-700);line-height:1.7;">
+              <li>スマートフォンをウエストポーチまたはポケットに入れる</li>
+              <li>画面を<strong>外側</strong>に向け、端末の<strong>長軸が体軸と平行</strong>になるよう固定</li>
+              <li>ズレ防止のためポーチのジッパーをしっかり締める</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="padding:16px 18px;">
+        <div style="display:flex;gap:14px;align-items:flex-start;">
+          <div style="width:32px;height:32px;border-radius:50%;background:var(--c-setup);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:15px;flex-shrink:0;">2</div>
+          <div>
+            <div style="font-weight:700;font-size:13px;color:var(--blue-900);margin-bottom:6px;">phyphox の記録開始</div>
+            <ul style="margin:0;padding-left:16px;font-size:11.5px;color:var(--blue-700);line-height:1.7;">
+              <li>phyphox で「加速度 (m/s²)」を開き ▶ ボタンをタップ</li>
+              <li>または PCブラウザの「リモート制御」で <kbd style="background:var(--blue-100);border:1px solid var(--blue-300);border-radius:4px;padding:1px 5px;font-size:10px;">▶ 開始</kbd> をクリック</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="padding:16px 18px;">
+        <div style="display:flex;gap:14px;align-items:flex-start;">
+          <div style="width:32px;height:32px;border-radius:50%;background:var(--c-setup);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:15px;flex-shrink:0;">3</div>
+          <div>
+            <div style="font-weight:700;font-size:13px;color:var(--blue-900);margin-bottom:6px;">歩行と記録停止</div>
+            <ul style="margin:0;padding-left:16px;font-size:11.5px;color:var(--blue-700);line-height:1.7;">
+              <li>平坦な廊下を<strong>通常歩行速度</strong>で 10〜20 m 歩く</li>
+              <li>歩行完了後、phyphox の ⏹ ボタンで記録停止</li>
+              <li>開始・終了の静止区間（約 2 秒）を含めて記録すると解析精度が上がる</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div style="background:var(--blue-050);border-left:4px solid var(--c-setup);border-radius:0 8px 8px 0;padding:10px 14px;font-size:11px;color:var(--blue-800);">
+        <strong>注意：</strong>測定中は会話・立ち止まり・方向転換をしないでください。自然な歩行を保つことが重要です。
+      </div>
+
+    </div>
+
+    <!-- Right: SVG body diagram -->
+    <div style="width:260px;display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--blue-050);border-radius:12px;padding:20px 16px;">
+      <div style="font-size:11px;font-weight:700;color:var(--blue-600);margin-bottom:12px;letter-spacing:.06em;">装着位置イメージ</div>
+      <svg width="180" height="340" viewBox="0 0 180 340">
+        <!-- Head -->
+        <circle cx="90" cy="32" r="22" fill="none" stroke="var(--blue-400)" stroke-width="2.5"/>
+        <!-- Neck -->
+        <line x1="90" y1="54" x2="90" y2="72" stroke="var(--blue-400)" stroke-width="2.5"/>
+        <!-- Torso -->
+        <rect x="60" y="72" width="60" height="90" rx="8" fill="none" stroke="var(--blue-400)" stroke-width="2.5"/>
+        <!-- Arms -->
+        <line x1="60" y1="82" x2="32" y2="140" stroke="var(--blue-400)" stroke-width="2.5"/>
+        <line x1="120" y1="82" x2="148" y2="140" stroke="var(--blue-400)" stroke-width="2.5"/>
+        <!-- Legs -->
+        <line x1="75" y1="162" x2="65" y2="240" stroke="var(--blue-400)" stroke-width="2.5"/>
+        <line x1="105" y1="162" x2="115" y2="240" stroke="var(--blue-400)" stroke-width="2.5"/>
+        <!-- Feet -->
+        <line x1="65" y1="240" x2="52" y2="248" stroke="var(--blue-400)" stroke-width="2.5"/>
+        <line x1="115" y1="240" x2="128" y2="248" stroke="var(--blue-400)" stroke-width="2.5"/>
+        <!-- Waist band -->
+        <rect x="55" y="148" width="70" height="16" rx="4" fill="var(--c-setup)" opacity=".25" stroke="var(--c-setup)" stroke-width="1.5"/>
+        <!-- Phone at waist -->
+        <rect x="84" y="144" width="22" height="36" rx="4" fill="var(--blue-900)" stroke="var(--blue-600)" stroke-width="1.5"/>
+        <rect x="87" y="148" width="16" height="24" rx="2" fill="var(--blue-600)" opacity=".6"/>
+        <!-- Arrow pointing to phone -->
+        <line x1="140" y1="160" x2="112" y2="162" stroke="var(--c-setup)" stroke-width="2" marker-end="url(#arr)"/>
+        <defs>
+          <marker id="arr" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
+            <path d="M0,0 L6,3 L0,6 Z" fill="var(--c-setup)"/>
+          </marker>
+        </defs>
+        <!-- Label -->
+        <text x="143" y="155" font-size="10" fill="var(--blue-700)" font-family="sans-serif">ウエスト</text>
+        <text x="143" y="167" font-size="10" fill="var(--blue-700)" font-family="sans-serif">ポーチ</text>
+        <!-- Direction arrow (walking) -->
+        <text x="40" y="275" font-size="10" fill="var(--blue-500)" font-family="sans-serif">歩行方向</text>
+        <line x1="40" y1="280" x2="140" y2="280" stroke="var(--blue-400)" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arr2)"/>
+        <defs>
+          <marker id="arr2" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
+            <path d="M0,0 L6,3 L0,6 Z" fill="var(--blue-400)"/>
+          </marker>
+        </defs>
+        <!-- Distance label -->
+        <text x="72" y="298" font-size="9" fill="var(--blue-400)" font-family="sans-serif">10〜20 m</text>
+      </svg>
+    </div>
+
+  </div>
+  <div class="sftr">
+    <span>歩行年齢テスト診断システム v6 — 使用マニュアル</span>
+    <span>5 / 16</span>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════════════
+     SLIDE 6 — データのエクスポート
+═══════════════════════════════════════════════════════════════ -->
+<div class="slide">
+  <div class="chbar ch-setup"></div>
+  <div class="shdr">
+    <div style="display:flex;align-items:center;gap:12px;">
+      <span class="cpill cp-setup">STEP 3</span>
+      <h2>加速度データのエクスポート</h2>
+    </div>
+    <p class="sub">2 つの方法でCSVファイルを取得できます。どちらか使いやすい方を選んでください</p>
+  </div>
+  <div class="sbody" style="display:flex;flex-direction:row;gap:24px;align-items:stretch;">
+
+    <!-- Method A: WiFi / Remote -->
+    <div style="flex:1;display:flex;flex-direction:column;gap:12px;">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;">
+        <div style="width:28px;height:28px;border-radius:50%;background:var(--blue-700);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:13px;flex-shrink:0;">A</div>
+        <div style="font-weight:700;font-size:13px;color:var(--blue-900);">WiFi リモート経由でダウンロード</div>
+        <span style="font-size:10px;background:var(--c-setup);color:#fff;padding:2px 8px;border-radius:12px;font-weight:600;">推奨</span>
+      </div>
+      <!-- phyphox remote mockup -->
+      <div style="background:#1a0a2e;border-radius:10px;padding:14px;flex:1;min-height:0;">
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:10px;">
+          <div style="width:8px;height:8px;border-radius:50%;background:#ff5f57;"></div>
+          <div style="width:8px;height:8px;border-radius:50%;background:#ffbd2e;"></div>
+          <div style="width:8px;height:8px;border-radius:50%;background:#28c841;"></div>
+          <div style="color:#8b7bc8;font-size:10px;margin-left:6px;font-family:monospace;">192.168.1.xx — phyphox remote</div>
+        </div>
+        <!-- Export button area -->
+        <div style="background:#2d1b4e;border-radius:6px;padding:10px;margin-bottom:8px;">
+          <div style="color:#c9b8ff;font-size:10px;margin-bottom:8px;font-weight:600;">⬇  エクスポート</div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;">
+            <div style="background:#4a2d7a;border:1px solid #6a4d9a;border-radius:4px;padding:5px 10px;color:#e0d0ff;font-size:10px;cursor:pointer;">CSV (Raw)</div>
+            <div style="background:#3d5afe;border-radius:4px;padding:5px 10px;color:#fff;font-size:10px;font-weight:600;box-shadow:0 2px 8px rgba(61,90,254,.5);">CSV (time,ax,ay,az)</div>
+            <div style="background:#4a2d7a;border:1px solid #6a4d9a;border-radius:4px;padding:5px 10px;color:#e0d0ff;font-size:10px;">Excel</div>
+          </div>
+        </div>
+        <div style="color:#69f0ae;font-size:9.5px;font-family:monospace;">✓ ダウンロードが完了しました: acceleration_data.csv</div>
+      </div>
+      <!-- Steps -->
+      <div style="font-size:11px;color:var(--blue-700);line-height:1.8;padding-left:4px;">
+        <div>① phyphox → <strong>3点メニュー</strong> → <strong>リモートアクセス許可</strong></div>
+        <div>② PCブラウザで <kbd style="background:var(--blue-100);border:1px solid var(--blue-300);border-radius:3px;padding:1px 5px;font-size:10px;">http://192.168.x.x</kbd> を開く</div>
+        <div>③ 「エクスポート」→ <strong>CSV (time,ax,ay,az)</strong> をクリック</div>
+      </div>
+    </div>
+
+    <!-- Divider -->
+    <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;">
+      <div style="width:1px;flex:1;background:var(--blue-200);"></div>
+      <div style="font-size:11px;color:var(--blue-400);font-weight:600;">または</div>
+      <div style="width:1px;flex:1;background:var(--blue-200);"></div>
+    </div>
+
+    <!-- Method B: Direct share from phone -->
+    <div style="flex:1;display:flex;flex-direction:column;gap:12px;">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;">
+        <div style="width:28px;height:28px;border-radius:50%;background:var(--blue-600);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:13px;flex-shrink:0;">B</div>
+        <div style="font-weight:700;font-size:13px;color:var(--blue-900);">スマホから直接エクスポート</div>
+      </div>
+      <!-- Phone mockup showing phyphox share -->
+      <div style="background:#1a0a2e;border-radius:10px;padding:14px;flex:1;min-height:0;display:flex;flex-direction:column;">
+        <!-- Phone screen top bar -->
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+          <div style="color:#c9b8ff;font-size:10px;font-weight:600;">phyphox</div>
+          <div style="display:flex;gap:6px;">
+            <div style="width:18px;height:18px;border-radius:3px;background:#3d1e6e;display:flex;align-items:center;justify-content:center;">
+              <div style="color:#ff5252;font-size:11px;">⋮</div>
+            </div>
+          </div>
+        </div>
+        <!-- Menu items mockup -->
+        <div style="background:#2d1b4e;border-radius:6px;padding:4px 0;margin-bottom:8px;">
+          <div style="padding:6px 12px;color:#a090d0;font-size:10px;border-bottom:1px solid #3d2b5e;">タイムライン表示</div>
+          <div style="padding:6px 12px;color:#a090d0;font-size:10px;border-bottom:1px solid #3d2b5e;">リモートアクセス許可</div>
+          <div style="padding:6px 12px;color:#e0d0ff;font-size:10px;font-weight:600;background:#3d1e6e;">エクスポート ▶</div>
+          <div style="padding:6px 12px;color:#a090d0;font-size:10px;">設定</div>
+        </div>
+        <!-- Export submenu -->
+        <div style="background:#3d1e6e;border-radius:6px;padding:8px 10px;margin-left:20px;">
+          <div style="color:#c9b8ff;font-size:10px;margin-bottom:6px;font-weight:600;">形式を選択</div>
+          <div style="color:#69f0ae;font-size:10px;font-weight:700;padding:4px 8px;background:#1a6e3e;border-radius:4px;display:inline-block;">CSV (セパレータ: コンマ)</div>
+        </div>
+        <div style="color:#a090d0;font-size:9px;margin-top:8px;text-align:center;">→ メール / AirDrop / クラウドで PC に転送</div>
+      </div>
+      <!-- Steps -->
+      <div style="font-size:11px;color:var(--blue-700);line-height:1.8;padding-left:4px;">
+        <div>① phyphox → <strong>⋮ メニュー</strong> → <strong>エクスポート</strong></div>
+        <div>② <strong>CSV（コンマ区切り）</strong> を選択</div>
+        <div>③ AirDrop・メール等で PC へ転送</div>
+      </div>
+    </div>
+
+    <!-- File spec box -->
+    <div style="width:180px;display:flex;flex-direction:column;gap:10px;justify-content:center;">
+      <div style="background:var(--blue-900);border-radius:10px;padding:16px;color:#fff;">
+        <div style="font-size:10px;font-weight:700;letter-spacing:.08em;color:var(--blue-300);margin-bottom:10px;">出力ファイル仕様</div>
+        <div style="font-family:monospace;font-size:10px;background:var(--blue-950);border-radius:6px;padding:10px;margin-bottom:10px;color:#a8d8ff;line-height:1.7;">
+          time,ax,ay,az<br>
+          0.000,0.12,-9.81,0.05<br>
+          0.010,0.18,-9.79,0.11<br>
+          ···
+        </div>
+        <div style="font-size:10px;color:var(--blue-300);line-height:1.6;">
+          <div>• ヘッダー行あり</div>
+          <div>• サンプリング: ~100 Hz</div>
+          <div>• 単位: m/s²</div>
+          <div>• 文字コード: UTF-8</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <div class="sftr">
+    <span>歩行年齢テスト診断システム v6 — 使用マニュアル</span>
+    <span>6 / 16</span>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════════════
+     SLIDE 7 — 診断システムの起動
+═══════════════════════════════════════════════════════════════ -->
+<div class="slide">
+  <div class="chbar ch-sys"></div>
+  <div class="shdr">
+    <div style="display:flex;align-items:center;gap:12px;">
+      <span class="cpill cp-sys">STEP 4</span>
+      <h2>診断システムの起動方法</h2>
+    </div>
+    <p class="sub">3 つの起動方法から環境に合わせて選択してください</p>
+  </div>
+  <div class="sbody" style="display:flex;flex-direction:row;gap:20px;align-items:stretch;">
+
+    <!-- Method 1: Bookmark/Direct URL -->
+    <div style="flex:1;background:var(--blue-050);border-radius:12px;padding:20px 18px;display:flex;flex-direction:column;gap:10px;border-top:4px solid var(--blue-700);">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <div style="font-size:24px;">🔖</div>
+        <div>
+          <div style="font-weight:700;font-size:13px;color:var(--blue-900);">ブラウザブックマーク</div>
+          <div style="font-size:10px;color:var(--blue-500);font-weight:600;letter-spacing:.06em;">最も簡単</div>
+        </div>
+      </div>
+      <div style="font-size:11px;color:var(--blue-700);line-height:1.75;flex:1;">
+        <p style="margin:0 0 8px;">GAS でデプロイした URL をブラウザにブックマーク登録しておく方法です。</p>
+        <div style="background:#fff;border-radius:6px;border:1px solid var(--blue-200);padding:8px 10px;font-family:monospace;font-size:10px;color:var(--blue-600);word-break:break-all;">
+          https://script.google.com/macros/s/<br>
+          <span style="color:var(--blue-400);">AKfy···長いID···/exec</span>
+        </div>
+      </div>
+      <div style="border-top:1px solid var(--blue-200);padding-top:10px;">
+        <div style="font-size:10px;font-weight:700;color:var(--blue-700);margin-bottom:6px;">手順</div>
+        <ol style="margin:0;padding-left:16px;font-size:10.5px;color:var(--blue-700);line-height:1.7;">
+          <li>GAS エディタ → デプロイ → URL をコピー</li>
+          <li>Chrome/Safari でURL を開く</li>
+          <li>ブックマークに追加（⌘D）</li>
+        </ol>
+      </div>
+    </div>
+
+    <!-- Method 2: GAS Deploy -->
+    <div style="flex:1;background:var(--blue-900);border-radius:12px;padding:20px 18px;display:flex;flex-direction:column;gap:10px;border-top:4px solid #4fc3f7;">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <div style="font-size:24px;">⚙️</div>
+        <div>
+          <div style="font-weight:700;font-size:13px;color:#fff;">GAS 再デプロイ</div>
+          <div style="font-size:10px;color:#4fc3f7;font-weight:600;letter-spacing:.06em;">更新時に使用</div>
+        </div>
+      </div>
+      <!-- Mini GAS editor mockup -->
+      <div style="background:#1e1e1e;border-radius:8px;padding:10px;font-family:monospace;font-size:9.5px;line-height:1.6;flex:1;">
+        <div style="color:#858585;margin-bottom:4px;">// doGet(e) — メインエントリ</div>
+        <div><span style="color:#569cd6;">function</span> <span style="color:#dcdcaa;">doGet</span><span style="color:#fff;">(e) &#123;</span></div>
+        <div style="padding-left:12px;"><span style="color:#569cd6;">return</span> <span style="color:#dcdcaa;">HtmlService</span></div>
+        <div style="padding-left:20px;"><span style="color:#fff;">.</span><span style="color:#dcdcaa;">createHtmlOutputFromFile</span></div>
+        <div style="padding-left:20px;"><span style="color:#fff;">(</span><span style="color:#ce9178;">'index'</span><span style="color:#fff;">);</span></div>
+        <div><span style="color:#fff;">&#125;</span></div>
+      </div>
+      <div style="border-top:1px solid var(--blue-700);padding-top:10px;">
+        <ol style="margin:0;padding-left:16px;font-size:10.5px;color:#a0c8e8;line-height:1.7;">
+          <li>GAS エディタを開く</li>
+          <li>「デプロイ」→「デプロイを管理」</li>
+          <li>編集アイコン → 「新しいバージョン」</li>
+          <li>「デプロイ」をクリック</li>
+        </ol>
+      </div>
+    </div>
+
+    <!-- Method 3: Local file -->
+    <div style="flex:1;background:var(--blue-050);border-radius:12px;padding:20px 18px;display:flex;flex-direction:column;gap:10px;border-top:4px solid var(--c-meas);">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <div style="font-size:24px;">📁</div>
+        <div>
+          <div style="font-weight:700;font-size:13px;color:var(--blue-900);">ローカルファイルを直接開く</div>
+          <div style="font-size:10px;color:var(--c-meas);font-weight:600;letter-spacing:.06em;">オフライン環境向け</div>
+        </div>
+      </div>
+      <div style="font-size:11px;color:var(--blue-700);line-height:1.75;flex:1;">
+        <p style="margin:0 0 8px;">index.html をブラウザで直接開く方法です。一部機能（GAS連携）は動作しません。</p>
+        <div style="background:#fff;border-radius:6px;border:1px solid var(--blue-200);padding:8px 10px;font-family:monospace;font-size:10px;color:var(--blue-700);">
+          $ open index.html<br>
+          <span style="color:var(--blue-400);"># または</span><br>
+          $ python3 -m http.server 8080
+        </div>
+      </div>
+      <div style="border-top:1px solid var(--blue-200);padding-top:10px;">
+        <div style="background:var(--blue-100);border-radius:6px;padding:8px 10px;font-size:10px;color:var(--blue-700);">
+          <strong>⚠ 注意：</strong>ローカル起動では CSV 読み込みは可能ですが、GAS への送信・レポート生成は行えません。
+        </div>
+      </div>
+    </div>
+
+    <!-- Summary comparison -->
+    <div style="width:200px;display:flex;flex-direction:column;justify-content:center;gap:8px;">
+      <div style="font-size:10px;font-weight:700;color:var(--blue-700);letter-spacing:.06em;margin-bottom:4px;">比較サマリー</div>
+      <table style="width:100%;border-collapse:collapse;font-size:10px;">
+        <thead>
+          <tr style="background:var(--blue-100);">
+            <th style="padding:5px 8px;text-align:left;color:var(--blue-700);font-weight:700;border-radius:6px 0 0 0;"></th>
+            <th style="padding:5px 6px;text-align:center;color:var(--blue-700);">A</th>
+            <th style="padding:5px 6px;text-align:center;color:var(--blue-700);">B</th>
+            <th style="padding:5px 6px;text-align:center;color:var(--blue-700);border-radius:0 6px 0 0;">C</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr style="border-bottom:1px solid var(--blue-100);">
+            <td style="padding:5px 8px;color:var(--blue-700);">簡単さ</td>
+            <td style="text-align:center;color:var(--c-setup);">◎</td>
+            <td style="text-align:center;color:var(--blue-500);">○</td>
+            <td style="text-align:center;color:var(--blue-500);">○</td>
+          </tr>
+          <tr style="border-bottom:1px solid var(--blue-100);">
+            <td style="padding:5px 8px;color:var(--blue-700);">GAS連携</td>
+            <td style="text-align:center;color:var(--c-setup);">✓</td>
+            <td style="text-align:center;color:var(--c-setup);">✓</td>
+            <td style="text-align:center;color:var(--blue-400);">✗</td>
+          </tr>
+          <tr style="border-bottom:1px solid var(--blue-100);">
+            <td style="padding:5px 8px;color:var(--blue-700);">オフライン</td>
+            <td style="text-align:center;color:var(--blue-400);">✗</td>
+            <td style="text-align:center;color:var(--blue-400);">✗</td>
+            <td style="text-align:center;color:var(--c-setup);">✓</td>
+          </tr>
+          <tr>
+            <td style="padding:5px 8px;color:var(--blue-700);">更新</td>
+            <td style="text-align:center;color:var(--blue-400);">手動</td>
+            <td style="text-align:center;color:var(--c-setup);">自動</td>
+            <td style="text-align:center;color:var(--blue-400);">手動</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+  <div class="sftr">
+    <span>歩行年齢テスト診断システム v6 — 使用マニュアル</span>
+    <span>7 / 16</span>
+  </div>
+</div>
+
+
+<!-- ═══════════════ SLIDES 8〜16 は次ステップで追加 ═══════════════ -->
+  </div><!-- /slides -->
+
+
+  <!-- ═══ SCRIPT ═══ -->
+  <script>
+    (function () {
+      const wrap = document.getElementById('slides');
+      const ctr = document.getElementById('counter');
+      let cur = 0;
+      const ss = () => [...wrap.querySelectorAll(':scope>.slide')];
+      const upd = () => ctr.textContent = (cur + 1) + ' / ' + ss().length;
+      window.go = d => {
+        const a = ss();
+        cur = Math.max(0, Math.min(a.length - 1, cur + d));
+        a[cur].scrollIntoView({ behavior: 'smooth', block: 'center' });
+        upd();
+      };
+      document.addEventListener('keydown', e => {
+        if (e.key === 'ArrowRight' || e.key === 'ArrowDown') go(1);
+        if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') go(-1);
+      });
+      const obs = new IntersectionObserver(es => es.forEach(e => {
+        if (e.isIntersecting) { cur = ss().indexOf(e.target); upd(); }
+      }), { threshold: .5 });
+      ss().forEach(s => obs.observe(s));
+      upd();
+    })();
+  </script>
+
+</body>
+
+</html>

@@ -27,6 +27,22 @@ exports.handler = async (event) => {
     return { statusCode: 400, headers, body: JSON.stringify({ error: 'invalid url scheme' }) };
   }
 
+  // 許可ドメインのみプロキシ（SSRF・オープンプロキシ対策）
+  const ALLOWED_DOMAINS = [
+    'api.qrserver.com',       // QRコード生成
+    'walking.asics.com',      // ASICSウォーキング商品画像
+    'images.asics.com',       // ASICS画像CDN
+    'www.asics.com',
+    'shop.asics.com',
+  ];
+  let reqHost;
+  try { reqHost = new URL(url).hostname; } catch(e) {
+    return { statusCode: 400, headers, body: JSON.stringify({ error: 'invalid url' }) };
+  }
+  if (!ALLOWED_DOMAINS.some(d => reqHost === d || reqHost.endsWith('.' + d))) {
+    return { statusCode: 403, headers, body: JSON.stringify({ error: 'domain not allowed' }) };
+  }
+
   try {
     const fetchHeaders = {
       'User-Agent': 'Mozilla/5.0 (compatible; WalkingAgeTestBot/1.0)',

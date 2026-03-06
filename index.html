@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
@@ -58,6 +58,14 @@ body{font-family:'Noto Sans JP',sans-serif;overflow:hidden;background:#f1f5f9;ma
   .score-text{background:none!important;-webkit-text-fill-color:#d97706!important;color:#d97706!important;}
   svg text{fill:#334155!important;font-weight:700!important;}
 }
+/* Mobile: 左パネルをドロワー式に */
+@media screen and (max-width:767px){
+  #left-pane{position:fixed;left:0;top:54px;bottom:0;z-index:50;width:320px!important;transform:translateX(-100%);transition:transform .3s cubic-bezier(.4,0,.2,1);box-shadow:4px 0 24px rgba(0,0,0,.18);}
+  #left-pane.mobile-open{transform:translateX(0);}
+  #mobile-backdrop{display:none;position:fixed;inset:0;top:54px;background:rgba(0,0,0,.4);backdrop-filter:blur(2px);z-index:45;}
+  #mobile-backdrop.active{display:block;}
+  #btn-menu{display:flex!important;}
+}
 /* drag overlay */
 #drag-overlay{position:fixed;inset:0;z-index:500;display:none;place-items:center;background:rgba(37,99,235,.18);backdrop-filter:blur(3px);pointer-events:none;}
 #drag-overlay.active{display:grid;}
@@ -82,6 +90,7 @@ body{font-family:'Noto Sans JP',sans-serif;overflow:hidden;background:#f1f5f9;ma
 </head>
 <body class="h-screen flex flex-col">
 
+
 <!-- Drag overlay -->
 <div id="drag-overlay">
   <div id="drag-overlay-inner">
@@ -91,15 +100,25 @@ body{font-family:'Noto Sans JP',sans-serif;overflow:hidden;background:#f1f5f9;ma
   </div>
 </div>
 
+
+<!-- Mobile backdrop -->
+<div id="mobile-backdrop"></div>
+
+
 <!-- Notification -->
 <div id="notif">
   <svg id="notif-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
   <span id="notif-msg">完了</span>
 </div>
 
+
 <!-- Header -->
 <header class="app-hdr glass min-h-[54px] flex flex-wrap items-center justify-between px-4 md:px-6 gap-2 z-30 shrink-0">
   <div class="flex items-center gap-2 text-blue-700 font-black text-base tracking-tight">
+    <!-- ハンバーガー（モバイルのみ表示） -->
+    <button id="btn-menu" class="hidden p-1.5 rounded-lg border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 shadow-sm" title="メニュー">
+      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="18" y2="18"/></svg>
+    </button>
     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 16v-2.38C4 11.5 2.97 10.5 3 8c.03-2.72 1.49-6 4.5-6C9.37 2 10 3.8 10 5.5c0 3.11-2 5.66-2 8.68V16a2 2 0 1 1-4 0Z"/><path d="M20 20v-2.38c0-2.12 1.03-3.12 1-5.62-.03-2.72-1.49-6-4.5-6C14.63 6 14 7.8 14 9.5c0 3.11 2 5.66 2 8.68V20a2 2 0 1 0 4 0Z"/><path d="M16 17h4"/><path d="M4 13h4"/></svg>
     歩行年齢テスト<span class="text-slate-400 text-xs font-normal ml-2 hidden sm:inline">診断システム v6</span>
   </div>
@@ -124,12 +143,15 @@ body{font-family:'Noto Sans JP',sans-serif;overflow:hidden;background:#f1f5f9;ma
   </div>
 </header>
 
+
 <!-- Main -->
 <div id="main-shell" class="flex flex-row flex-1 overflow-hidden">
+
 
   <!-- Left pane -->
   <aside id="left-pane" class="w-[400px] h-full bg-white overflow-y-auto border-r border-slate-200 z-20 scrollbar-c flex flex-col shrink-0">
     <div class="p-6 space-y-7 flex-1">
+
 
       <!-- 対象者情報 -->
       <section>
@@ -172,6 +194,7 @@ body{font-family:'Noto Sans JP',sans-serif;overflow:hidden;background:#f1f5f9;ma
         </div>
       </section>
 
+
       <!-- CSV読み込み -->
       <section class="bg-slate-50 p-4 rounded-xl border border-slate-100">
         <div class="flex items-center gap-2 mb-2 pb-2 border-b border-slate-200">
@@ -212,6 +235,7 @@ body{font-family:'Noto Sans JP',sans-serif;overflow:hidden;background:#f1f5f9;ma
         </div>
       </section>
 
+
       <!-- 測定値調整 -->
       <section>
         <h3 class="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2 mb-3">
@@ -235,7 +259,9 @@ body{font-family:'Noto Sans JP',sans-serif;overflow:hidden;background:#f1f5f9;ma
         <p class="text-[10px] text-slate-400 mt-2 leading-relaxed">※ストップウォッチで計測した歩行速度があれば入力することで精度が向上します。</p>
       </section>
 
+
       <hr class="border-slate-100">
+
 
       <!-- コメント -->
       <section class="pb-8">
@@ -251,30 +277,53 @@ body{font-family:'Noto Sans JP',sans-serif;overflow:hidden;background:#f1f5f9;ma
         </div>
       </section>
 
+
       <!-- ★ 靴URL入力セクション (初期非表示) -->
       <section id="shoe-url-section" class="pb-6 border-t border-slate-100 pt-4 hidden">
         <h3 class="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2 mb-3">
           <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><polyline points="13 2 13 9 20 9"/></svg>
-          おすすめ靴 URL
+          おすすめ靴 データベース
         </h3>
-        <p class="text-[10px] text-slate-400 mb-2">商品ページURLを貼付（最大10件）→ 3ページ目にレコメンド表示</p>
-        <div id="shoe-url-list" class="flex flex-col gap-1.5"></div>
-        <button id="btn-add-shoe-url" class="mt-2 text-[10px] text-blue-500 hover:text-blue-700 flex items-center gap-1">
-          <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" x2="12" y1="5" y2="19"/><line x1="5" x2="19" y1="12" y2="12"/></svg>
-          URLを追加
-        </button>
-        <button id="btn-fetch-shoes" class="mt-3 w-full py-1.5 rounded-lg text-[11px] font-bold bg-blue-600 hover:bg-blue-700 text-white transition-colors flex items-center justify-center gap-1.5">
-          <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-.68-4.3"/></svg>
-          靴情報を取得・レコメンド生成
-        </button>
+        <p class="text-[10px] text-slate-400 mb-2">Googleスプレッドシートの公開CSV URLを入力してください</p>
+
+
+        <!-- スプレッドシートURL入力 -->
+        <div class="flex gap-1.5">
+          <input type="url" id="shoe-sheet-url" class="finput flex-1 text-[10px]"
+            placeholder="https://docs.google.com/spreadsheets/d/…/pub?output=csv">
+          <button id="btn-load-sheet" class="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-[11px] font-bold shrink-0 transition-colors flex items-center gap-1">
+            <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-.68-4.3"/></svg>
+            読込
+          </button>
+        </div>
+
+
+        <!-- 設定手順 -->
+        <div class="mt-2.5 bg-blue-50 rounded-xl border border-blue-100 p-3">
+          <p class="text-[9px] font-black text-blue-700 mb-1.5">スプレッドシート公開手順</p>
+          <ol class="text-[9px] text-blue-600 leading-relaxed space-y-0.5 list-decimal ml-3.5">
+            <li>スプレッドシートを開く → <strong>ファイル → 共有 → ウェブに公開</strong></li>
+            <li>「カンマ区切り（.csv）」を選択して「<strong>公開</strong>」</li>
+            <li>表示されたURLをコピーして上の欄に貼付</li>
+          </ol>
+          <div class="mt-2 pt-2 border-t border-blue-200">
+            <p class="text-[8.5px] font-bold text-blue-600 mb-0.5">スプレッドシートの列（1行目がヘッダー）</p>
+            <p class="text-[8px] text-blue-400 font-mono leading-relaxed">name / url / image_url / price / features / description</p>
+            <p class="text-[8px] text-blue-400 mt-0.5">features例: <span class="font-mono">幅広|3E幅|クッション|安定性</span></p>
+          </div>
+        </div>
+
+
         <p id="shoe-fetch-status" class="text-[10px] text-slate-400 mt-1.5 hidden"></p>
       </section>
     </div>
   </aside>
 
+
   <!-- Right pane: Preview -->
   <main id="right-pane" class="flex-1 flex flex-col overflow-hidden bg-slate-200/60 relative">
     <div id="preview-container" class="flex-1 overflow-auto scrollbar-c" style="background-image:url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMiIgY3k9IjIiIHI9IjEiIGZpbGw9IiNjYmQ1ZTEiLz48L3N2Zz4=');">
+
 
       <!-- PDF overlay -->
       <div id="pdf-overlay" class="pdf-overlay">
@@ -284,14 +333,17 @@ body{font-family:'Noto Sans JP',sans-serif;overflow:hidden;background:#f1f5f9;ma
         </div>
       </div>
 
+
       <div class="preview-wrapper">
         <div class="capture-area flex flex-col gap-10 mx-auto">
+
 
           <!-- ★ Page 1: 受診者向け -->
           <div class="pdf-page" data-page="0">
             <div class="flex flex-col h-full relative">
               <!-- 背景装飾 -->
               <div class="absolute top-0 right-0 w-72 h-72 bg-blue-50 rounded-bl-full opacity-50 pointer-events-none"></div>
+
 
               <!-- Header -->
               <div class="hdr-bg px-8 pt-8 pb-6 rounded-b-[28px] shadow-lg shrink-0">
@@ -307,8 +359,10 @@ body{font-family:'Noto Sans JP',sans-serif;overflow:hidden;background:#f1f5f9;ma
                 </div>
               </div>
 
+
               <!-- Content -->
               <div class="flex-1 flex flex-col px-9 pb-12 gap-5 z-10 overflow-hidden">
+
 
                 <!-- ユーザー情報 -->
                 <div class="bg-white rounded-2xl p-4 border shadow-sm flex items-center shrink-0 mt-1">
@@ -325,6 +379,7 @@ body{font-family:'Noto Sans JP',sans-serif;overflow:hidden;background:#f1f5f9;ma
                     <div><div class="text-[10px] font-bold text-slate-400 mb-1">身長</div><div class="font-black text-slate-800 text-base font-mono"><span data-v="height"></span><span class="text-xs font-bold ml-0.5">cm</span></div></div>
                   </div>
                 </div>
+
 
                 <!-- 歩行年齢 + スコア -->
                 <div class="grid grid-cols-[1.3fr_1fr] gap-4 shrink-0">
@@ -352,6 +407,7 @@ body{font-family:'Noto Sans JP',sans-serif;overflow:hidden;background:#f1f5f9;ma
                   </div>
                 </div>
 
+
                 <!-- レーダーチャート + 指標リスト -->
                 <div class="flex gap-5 shrink-0 items-stretch">
                   <div class="w-[260px] shrink-0 bg-white rounded-3xl p-4 flex flex-col items-center border shadow-sm">
@@ -366,6 +422,7 @@ body{font-family:'Noto Sans JP',sans-serif;overflow:hidden;background:#f1f5f9;ma
                   </div>
                 </div>
 
+
                 <!-- コメント -->
                 <div class="bg-blue-50 rounded-2xl p-5 border border-blue-100 relative mt-1 shrink-0">
                   <div class="absolute top-0 left-5 -translate-y-1/2 bg-white px-3 py-0.5 rounded-full border border-blue-100 text-blue-600 font-bold text-xs flex items-center gap-1 shadow-sm">
@@ -376,6 +433,7 @@ body{font-family:'Noto Sans JP',sans-serif;overflow:hidden;background:#f1f5f9;ma
                 </div>
               </div>
 
+
               <!-- Footer -->
               <div class="absolute bottom-5 left-9 right-9 flex justify-between items-center border-t border-slate-100 pt-3 text-[10px] font-bold text-slate-400">
                 <div>Walking Age Test Report v6.0 — Page 1</div>
@@ -384,14 +442,17 @@ body{font-family:'Noto Sans JP',sans-serif;overflow:hidden;background:#f1f5f9;ma
             </div>
           </div>
 
+
           <!-- ★ Page 2: 専門家向け -->
           <div class="pdf-page" data-page="1">
             <div class="flex flex-col h-full p-9 relative">
+
 
               <div class="border-b-2 border-slate-800 pb-3 mb-5">
                 <h2 class="text-xl font-serif font-bold text-slate-800 tracking-wider">歩行分析 詳細データ（専門家向け）</h2>
                 <p class="text-xs text-slate-500 font-mono mt-0.5">Clinical Gait Analysis — Page 2 / <span data-v="userName"></span> / <span data-v="reportDate"></span></p>
               </div>
+
 
               <!-- Section 1: 臨床リスクスクリーニング -->
               <div class="mb-4 shrink-0">
@@ -399,11 +460,13 @@ body{font-family:'Noto Sans JP',sans-serif;overflow:hidden;background:#f1f5f9;ma
                 <div id="p2-clinical" class="grid grid-cols-2 gap-3"></div>
               </div>
 
+
               <!-- Section 2: Biomechanics (4列 compact) -->
               <div class="mb-3 shrink-0">
                 <h3 class="text-xs font-black text-slate-700 border-l-4 border-indigo-500 pl-2 mb-2 tracking-wide">2. 歩行の質的評価 (Biomechanics)</h3>
                 <div id="p2-biomech" class="grid grid-cols-4 gap-2"></div>
               </div>
+
 
               <!-- Section 3: Z-Score Table -->
               <div class="mb-4 shrink-0">
@@ -424,6 +487,7 @@ body{font-family:'Noto Sans JP',sans-serif;overflow:hidden;background:#f1f5f9;ma
                 </div>
               </div>
 
+
               <!-- Section 4: 波形 + アルゴリズム注（同一 flex-1 コンテナで重複防止） -->
               <div class="flex-1 flex flex-col min-h-0 gap-1.5">
                 <h3 class="text-xs font-black text-slate-700 border-l-4 border-slate-400 pl-2 tracking-wide shrink-0">4. 歩行周期波形 (Gait Cycle Acceleration Profile)</h3>
@@ -443,6 +507,7 @@ body{font-family:'Noto Sans JP',sans-serif;overflow:hidden;background:#f1f5f9;ma
                 </div>
               </div>
 
+
               <!-- Footer p2 -->
               <div class="absolute bottom-5 left-9 right-9 flex justify-between border-t border-slate-100 pt-3 text-[10px] font-bold text-slate-400">
                 <div>Walking Age Test Report v6.0 — Page 2</div>
@@ -451,18 +516,22 @@ body{font-family:'Noto Sans JP',sans-serif;overflow:hidden;background:#f1f5f9;ma
             </div>
           </div>
 
+
           <!-- ★ Page 3: 靴レコメンド (初期非表示) -->
           <div class="pdf-page hidden" data-page="2" id="page3-shoes">
             <div class="flex flex-col h-full p-9 relative">
+
 
               <div class="border-b-2 border-slate-800 pb-3 mb-5 shrink-0">
                 <h2 class="text-xl font-serif font-bold text-slate-800 tracking-wider">おすすめシューズ レコメンド</h2>
                 <p class="text-xs text-slate-500 font-mono mt-0.5">Shoe Recommendation — Page 3 / <span data-v="userName"></span> / <span data-v="reportDate"></span></p>
               </div>
 
+
               <div id="p3-recommendations" class="flex-1 overflow-hidden">
                 <p class="text-sm text-slate-400 text-center mt-16">左パネルに商品URLを入力して「靴情報を取得・レコメンド生成」を押してください</p>
               </div>
+
 
               <!-- Footer p3 -->
               <div class="absolute bottom-5 left-9 right-9 flex justify-between border-t border-slate-100 pt-3 text-[10px] font-bold text-slate-400">
@@ -472,9 +541,11 @@ body{font-family:'Noto Sans JP',sans-serif;overflow:hidden;background:#f1f5f9;ma
             </div>
           </div>
 
+
         </div><!-- /capture-area -->
       </div><!-- /preview-wrapper -->
     </div><!-- /preview-container -->
+
 
     <!-- Zoom controls -->
     <div class="floating-zoom flex items-center bg-slate-900/80 backdrop-blur text-white rounded-full p-1.5 gap-1 border border-white/10 shadow-xl">
@@ -492,9 +563,11 @@ body{font-family:'Noto Sans JP',sans-serif;overflow:hidden;background:#f1f5f9;ma
   </main>
 </div><!-- /main-shell -->
 
+
 <script>
 (function() {
 "use strict";
+
 
 // ============================================================
 //  NORMATIVE DATA — Mobbs et al. Sensors 2025 (approximate)
@@ -522,7 +595,9 @@ const NORM = {
   }
 };
 
+
 const NORM_AGES = Object.keys(NORM.male).map(Number);
+
 
 // ============================================================
 //  STATE
@@ -559,9 +634,11 @@ let S = {
   exportRows: null,
 };
 
+
 // ============================================================
 //  SIGNAL PROCESSING
 // ============================================================
+
 
 /** Design 2nd-order Butterworth lowpass IIR (bilinear transform) */
 function butter2LP(fc, fs) {
@@ -570,12 +647,14 @@ function butter2LP(fc, fs) {
   return { b:[K2/d, 2*K2/d, K2/d], a:[1, 2*(K2-1)/d, (1-s2K+K2)/d] };
 }
 
+
 /** Design 2nd-order Butterworth highpass IIR */
 function butter2HP(fc, fs) {
   const K = Math.tan(Math.PI * fc / fs);
   const K2 = K * K, s2K = Math.SQRT2 * K, d = 1 + s2K + K2;
   return { b:[1/d, -2/d, 1/d], a:[1, 2*(K2-1)/d, (1-s2K+K2)/d] };
 }
+
 
 /** Direct-form II transposed IIR filter */
 function iirFilter(x, b, a) {
@@ -591,6 +670,7 @@ function iirFilter(x, b, a) {
   return y;
 }
 
+
 /** Zero-phase filtering (filtfilt equivalent) */
 function filtfilt(x, flt) {
   let y = iirFilter(x, flt.b, flt.a);
@@ -602,6 +682,7 @@ function filtfilt(x, flt) {
   return out;
 }
 
+
 /** Bandpass filter: 0.7–6.0 Hz zero-phase Butterworth */
 function bandpassFilter(data, fs, lo=0.7, hi=6.0) {
   const lpFlt = butter2LP(hi, fs);
@@ -610,6 +691,7 @@ function bandpassFilter(data, fs, lo=0.7, hi=6.0) {
   y = filtfilt(y, hpFlt);
   return y;
 }
+
 
 /** PCA: project 3-axis data onto first principal component */
 function pca3(xs, ys, zs) {
@@ -635,12 +717,14 @@ function pca3(xs, ys, zs) {
   return cx.map((_,i)=>cx[i]*v[0]+cy[i]*v[1]+cz[i]*v[2]);
 }
 
+
 /** Peak detection with minimum distance and dynamic threshold */
 function detectPeaks(signal, fs) {
   const minDist = Math.round(fs * 0.3); // ≥300ms between peaks
   // Dynamic threshold: 40th percentile of absolute values
   const abs = Array.from(signal).map(Math.abs).sort((a,b)=>a-b);
   const threshold = abs[Math.floor(abs.length * 0.40)];
+
 
   const peaks = [];
   for (let i=1; i<signal.length-1; i++) {
@@ -655,6 +739,7 @@ function detectPeaks(signal, fs) {
   return peaks;
 }
 
+
 /** Trim 20% from each end (min 2 peaks per side) — steady-state extraction */
 function extractSteadyPeaks(peaks) {
   const n = peaks.length;
@@ -662,6 +747,7 @@ function extractSteadyPeaks(peaks) {
   if (n - 2*trim < 3) return peaks.slice(1, n-1); // fallback
   return peaks.slice(trim, n-trim);
 }
+
 
 /** Step-time based biomechanics metrics from steady-state peaks */
 function calcBioMetrics(peaks, fs, signal) {
@@ -690,9 +776,11 @@ function calcBioMetrics(peaks, fs, signal) {
   return { cv, si, cadence, rms, mean };
 }
 
+
 // ============================================================
 //  SCORING
 // ============================================================
+
 
 function getNormRow(age, gender) {
   const tbl = NORM[gender] || NORM.male;
@@ -702,10 +790,13 @@ function getNormRow(age, gender) {
   return { speed:{mu:r[0],sig:r[1]}, stride:{mu:r[2],sig:r[3]}, cadence:{mu:r[4],sig:r[5]} };
 }
 
+
 function zScore(val, mu, sig) { return (val-mu)/sig; }
+
 
 /** Z to 0-100 (z=0 → 50, z=+2 → 90, z=-2 → 10) */
 function zToScore(z) { return Math.max(0, Math.min(100, Math.round(50 + 20*z))); }
+
 
 function zToLabel(z) {
   if (z >= 1.5)  return { text:'優秀', cls:'badge-ex' };
@@ -714,6 +805,7 @@ function zToLabel(z) {
   if (z >= -1.5) return { text:'やや低下', cls:'badge-wd' };
   return           { text:'低下', cls:'badge-lw' };
 }
+
 
 function estimateWalkingAge(speed, stride, cadence, gender) {
   const tbl = NORM[gender] || NORM.male;
@@ -728,6 +820,7 @@ function estimateWalkingAge(speed, stride, cadence, gender) {
   }
   return bestAge;
 }
+
 
 function calcAllScores() {
   const norm = getNormRow(S.age, S.gender);
@@ -745,13 +838,16 @@ function calcAllScores() {
   if (!S.isCommentEdited) S.comment = generateComment();
 }
 
+
 // ============================================================
 //  CSV PARSING
 // ============================================================
 
+
 function parsePhyphoxCSV(text) {
   const lines = text.trim().split('\n');
   if (lines.length < 10) throw new Error('データ行が少なすぎます（10行未満）');
+
 
   // Find header row
   let headerIdx = 0;
@@ -760,14 +856,17 @@ function parsePhyphoxCSV(text) {
   }
   const headers = lines[headerIdx].split(',').map(h=>h.trim().replace(/"/g,'').toLowerCase());
 
+
   const tIdx = headers.findIndex(h=>/time/i.test(h));
   const xIdx = headers.findIndex(h=>/accel.*x|x.*accel|linear.*x|x$/i.test(h));
   const yIdx = headers.findIndex(h=>/accel.*y|y.*accel|linear.*y|y$/i.test(h));
   const zIdx = headers.findIndex(h=>/accel.*z|z.*accel|linear.*z|z$/i.test(h));
 
+
   if (tIdx<0 || xIdx<0 || yIdx<0 || zIdx<0) {
     throw new Error(`必要な列が見つかりません。\nヘッダー: ${headers.join(', ')}\n必要列: Time, X, Y, Z 加速度`);
   }
+
 
   const t=[],xs=[],ys=[],zs=[];
   for (let i=headerIdx+1; i<lines.length; i++) {
@@ -782,9 +881,11 @@ function parsePhyphoxCSV(text) {
   return { t, xs, ys, zs };
 }
 
+
 function processCSV(text) {
   const raw = parsePhyphoxCSV(text);
   const n = raw.t.length;
+
 
   // Estimate fs
   const dt = raw.t.slice(1).map((v,i)=>v-raw.t[i]);
@@ -792,22 +893,28 @@ function processCSV(text) {
   const fs = Math.round(1/medDt);
   S.fs = Math.max(10, Math.min(1000, fs));
 
+
   // PCA projection
   const proj = pca3(raw.xs, raw.ys, raw.zs);
 
+
   // Bandpass filter
   const filtered = bandpassFilter(proj, S.fs);
+
 
   // Ensure filtered is same-sign as raw (dominant component)
   const maxIdx = Array.from(filtered).reduce((a,b,i)=>Math.abs(b)>Math.abs(filtered[a])?i:a,0);
   const flipSign = filtered[maxIdx] < 0 ? -1 : 1;
   const signal = Array.from(filtered).map(v=>v*flipSign);
 
+
   S.plotData = raw.t.map((t,i)=>({ t, y: signal[i] }));
+
 
   // Peak detection
   S.peaks = detectPeaks(signal, S.fs);
   S.steadyPeaks = extractSteadyPeaks(S.peaks);
+
 
   // Biomechanics (pass signal values for RMS)
   const bio = calcBioMetrics(S.steadyPeaks, S.fs, signal);
@@ -816,11 +923,13 @@ function processCSV(text) {
   S.bioRMS = bio.rms;
   S.bioMeanStepTime = bio.mean;
 
+
   // Speed: estimate from total time of all peaks
   const allPeakTime = S.peaks.length > 1
     ? (raw.t[S.peaks[S.peaks.length-1]] - raw.t[S.peaks[0]])
     : null;
   const autoSpeed = allPeakTime && allPeakTime > 0 ? 10 / allPeakTime : null;
+
 
   // Cadence from steady peaks
   if (bio.cadence && bio.cadence > 50 && bio.cadence < 200) {
@@ -834,6 +943,7 @@ function processCSV(text) {
     S.strideVal = Math.round((S.speedVal / (S.cadenceVal/60))*100)/100;
   }
 
+
   // Export data
   S.exportRows = S.steadyPeaks.map((pi,i) => {
     const t = raw.t[pi], y = signal[pi];
@@ -841,6 +951,7 @@ function processCSV(text) {
     return [i+1, t.toFixed(4), y.toFixed(4), dt_s ? dt_s.toFixed(4) : ''];
   });
 }
+
 
 function generateDemoData() {
   // Synthetic walking signal at 100Hz, 18 seconds
@@ -868,6 +979,7 @@ function generateDemoData() {
   // bioRMS/bioMeanStepTime are set by processCSV via calcBioMetrics
 }
 
+
 // ============================================================
 //  COMMENT GENERATION（一般向け — 専門用語なし）
 // ============================================================
@@ -877,15 +989,18 @@ function hashCode(str) {
   return Math.abs(h);
 }
 
+
 function generateComment() {
   const h = hashCode(S.userId || 'default');
   const pick = (arr, offset) => arr[(h + (offset||0)) % arr.length];
+
 
   const ageDiff = S.age - S.walkingAge;
   const walkingAgeStr =
     ageDiff >= 5 ? `実年齢（${S.age}歳）より ${ageDiff} 歳若い` :
     ageDiff <= -5 ? `実年齢（${S.age}歳）より ${-ageDiff} 歳高め` :
     `実年齢（${S.age}歳）とほぼ同じ`;
+
 
   // ── 歩行速度 ──
   const speedTexts = {
@@ -909,6 +1024,7 @@ function generateComment() {
   const speedKey = S.speedVal < 0.8 ? 'slow' : S.speedVal < 1.0 ? 'moderate' : S.speedVal < 1.2 ? 'good' : 'great';
   const speedSentence = pick(speedTexts[speedKey], 0);
 
+
   // ── 歩行年齢 ──
   const ageTexts = ageDiff >= 5 ? [
     `歩き方から推定した「歩行年齢」は ${S.walkingAge} 歳（${walkingAgeStr}）でした。若々しい歩き方ができています。`,
@@ -921,6 +1037,7 @@ function generateComment() {
     `「歩行年齢」は ${S.walkingAge} 歳（${walkingAgeStr}）という結果でした。現在の歩行能力を大切に維持していきましょう。`,
   ];
   const ageSentence = pick(ageTexts, 1);
+
 
   // ── リズム・対称性（CSV解析時のみ） ──
   let rhythmSentence = '';
@@ -936,6 +1053,7 @@ function generateComment() {
     ], 3);
   }
 
+
   // ── 締めのひとこと ──
   const encourageSentence = S.totalScore >= 70 ? pick([
     `引き続き積極的に身体を動かし、今の状態を長く保つことを目指しましょう。`,
@@ -945,11 +1063,13 @@ function generateComment() {
     `日常の中でできる運動を少しずつ取り入れることが大切です。担当スタッフとともに頑張りましょう。`,
   ], 4);
 
+
   const parts = [speedSentence, ageSentence];
   if (rhythmSentence) parts.push(rhythmSentence);
   parts.push(encourageSentence);
   return parts.join('\n\n');
 }
+
 
 // ============================================================
 //  RADAR CHART (SVG)
@@ -958,7 +1078,7 @@ function renderRadar() {
   const el = document.getElementById('radar-container');
   if (!el) return;
   // Expanded viewBox to prevent label clipping at edges
-  const W=295, H=250, cx=W/2, cy=H/2, R=82;
+  const W=310, H=260, cx=W/2, cy=H/2, R=74;
   const axes = [
     { label:'スピード',   val: S.speedScore/100 },
     { label:'歩幅',       val: S.strideScore/100 },
@@ -973,6 +1093,7 @@ function renderRadar() {
     y: cy + r * Math.sin(angle(i))
   });
 
+
   // Grid polygons
   let gridSVG = '';
   for (const frac of [0.25, 0.5, 0.75, 1.0]) {
@@ -985,20 +1106,23 @@ function renderRadar() {
     return `<line x1="${cx}" y1="${cy}" x2="${p.x}" y2="${p.y}" stroke="#e2e8f0" stroke-width="1"/>`;
   }).join('');
 
+
   // Data polygon
   const dataPts = axes.map((a,i)=>pt(R*Math.max(0.05,a.val),i));
   const polyPts = dataPts.map(p=>`${p.x},${p.y}`).join(' ');
 
-  // Labels — offset R+26 from center for clearance
+
+  // Labels — offset R+27 from center for clearance
   let labelSVG = '';
   axes.forEach((a,i)=>{
-    const lp = pt(R+26, i);
+    const lp = pt(R+27, i);
     const anchor = lp.x < cx-5 ? 'end' : lp.x > cx+5 ? 'start' : 'middle';
-    labelSVG += `<text x="${lp.x}" y="${lp.y+4}" text-anchor="${anchor}" font-size="9.5" fill="#475569" font-family="'Noto Sans JP',sans-serif" font-weight="700">${a.label}</text>`;
+    labelSVG += `<text x="${lp.x}" y="${lp.y+4}" text-anchor="${anchor}" font-size="11" fill="#475569" font-family="'Noto Sans JP',sans-serif" font-weight="700">${a.label}</text>`;
     // Score dot
     const dp = dataPts[i];
     labelSVG += `<circle cx="${dp.x}" cy="${dp.y}" r="3.5" fill="#3b82f6"/>`;
   });
+
 
   el.innerHTML = `<svg width="100%" height="auto" style="display:block" viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg">
     <defs>
@@ -1012,6 +1136,7 @@ function renderRadar() {
     ${labelSVG}
   </svg>`;
 }
+
 
 // ============================================================
 //  WAVEFORM CHART (SVG) — Page 2
@@ -1027,6 +1152,7 @@ function renderWaveform() {
   const pad = {l:36,r:10,t:12,b:28};
   const iW = W-pad.l-pad.r, iH = H-pad.t-pad.b;
 
+
   // Downsample for rendering
   const maxPts = 1500;
   const stride = Math.max(1, Math.floor(S.plotData.length/maxPts));
@@ -1035,8 +1161,10 @@ function renderWaveform() {
   const yVals = pts.map(p=>p.y);
   const yMax = Math.max(...yVals.map(Math.abs)) * 1.1 || 1;
 
+
   const tx = t => pad.l + (t-tMin)/(tMax-tMin)*iW;
   const ty = y => pad.t + (1 - (y+yMax)/(2*yMax))*iH;
+
 
   // Steady state region
   let steadySVG = '';
@@ -1049,8 +1177,10 @@ function renderWaveform() {
     }
   }
 
+
   // Signal line
   const pathD = pts.map((p,i)=>`${i===0?'M':'L'}${tx(p.t).toFixed(1)},${ty(p.y).toFixed(1)}`).join(' ');
+
 
   // Peaks
   let peaksSVG = '';
@@ -1062,12 +1192,14 @@ function renderWaveform() {
     peaksSVG += `<circle cx="${tx(p.t).toFixed(1)}" cy="${ty(p.y).toFixed(1)}" r="${isSteady?4:2.5}" fill="${isSteady?'#3b82f6':'#94a3b8'}" opacity="${isSteady?0.9:0.5}"/>`;
   }
 
+
   // Grid lines
   const yStep = yMax; // just zero line + max lines
   const gridLines = [
     `<line x1="${pad.l}" y1="${ty(0)}" x2="${pad.l+iW}" y2="${ty(0)}" stroke="#475569" stroke-width="1.2" stroke-dasharray="4,3" opacity="0.5"/>`,
     `<line x1="${pad.l}" y1="${pad.t}" x2="${pad.l+iW}" y2="${pad.t}" stroke="#e2e8f0" stroke-width="1"/>`,
   ].join('');
+
 
   // X-axis ticks
   let ticks = '';
@@ -1079,6 +1211,7 @@ function renderWaveform() {
   }
   // Y axis label
   const yAxisLabel = `<text x="10" y="${ty(0)}" text-anchor="middle" font-size="8" fill="#64748b" transform="rotate(-90,10,${ty(0)})">加速度(m/s²)</text>`;
+
 
   el.innerHTML = `<svg width="100%" height="100%" viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg">
     ${steadySVG}
@@ -1092,6 +1225,7 @@ function renderWaveform() {
   </svg>`;
 }
 
+
 // ============================================================
 //  METRICS TABLE (Page 1)
 // ============================================================
@@ -1103,23 +1237,31 @@ function renderMetricsList() {
     { key:'stride',  label:'歩幅の広さ',   val:`${S.strideVal.toFixed(2)} m`,    score:S.strideScore,  z:S.strideZ },
     { key:'cadence', label:'歩くテンポ',   val:`${Math.round(S.cadenceVal)} 歩/分`, score:S.cadenceScore, z:S.cadenceZ },
   ];
-  el.innerHTML = items.map(item=>{
+  const header = `<div class="grid grid-cols-[2fr_1.2fr_1.4fr_1fr] items-center px-3 pb-1.5 border-b border-slate-100 mb-1">
+    <div class="text-[9px] font-bold text-slate-400 uppercase tracking-wide">項目</div>
+    <div class="text-[9px] font-bold text-slate-400 uppercase tracking-wide text-center">測定値</div>
+    <div class="text-[9px] font-bold text-slate-400 uppercase tracking-wide text-center">スコア</div>
+    <div class="text-[9px] font-bold text-slate-400 uppercase tracking-wide text-center">判定</div>
+  </div>`;
+  const rows = items.map(item=>{
     const lv = zToLabel(item.z);
     const barW = Math.min(100, Math.max(0, item.score));
     const barColor = item.score >= 60 ? '#22c55e' : item.score >= 40 ? '#f59e0b' : '#ef4444';
-    return `<div class="grid grid-cols-[2fr_1.5fr_1fr_1.2fr] items-center px-3 py-2.5 hover:bg-slate-50 transition-colors rounded-lg">
+    return `<div class="grid grid-cols-[2fr_1.2fr_1.4fr_1fr] items-center px-3 py-2 hover:bg-slate-50 transition-colors rounded-lg">
       <div class="text-xs font-bold text-slate-700">${item.label}</div>
-      <div class="text-right font-mono font-black text-slate-800 text-sm">${item.val}</div>
-      <div class="text-right">
-        <div class="relative h-1.5 bg-slate-100 rounded-full overflow-hidden mt-1">
+      <div class="text-center font-mono font-black text-slate-800 text-sm leading-none">${item.val}</div>
+      <div class="text-center px-1">
+        <div class="relative h-1.5 bg-slate-100 rounded-full overflow-hidden mx-auto" style="max-width:72px">
           <div class="absolute inset-y-0 left-0 rounded-full" style="width:${barW}%;background:${barColor};"></div>
         </div>
-        <div class="text-[10px] font-bold text-slate-500 mt-0.5 text-right">${item.score}</div>
+        <div class="text-[10px] font-bold text-slate-500 mt-0.5 text-center">${item.score}点</div>
       </div>
       <div class="text-center"><span class="badge ${lv.cls}">${lv.text}</span></div>
     </div>`;
   }).join('');
+  el.innerHTML = header + rows;
 }
+
 
 // ============================================================
 //  PAGE 2 RENDERING
@@ -1131,9 +1273,11 @@ function renderPage2() {
   renderWaveform();
 }
 
+
 // ============================================================
 //  PAGE 3 — ENHANCED SHOE RECOMMENDATIONS
 // ============================================================
+
 
 // 歩行プロファイルの構造化評価（全指標を参照）
 function assessWalkingProfile() {
@@ -1153,10 +1297,12 @@ function assessWalkingProfile() {
   };
 }
 
+
 // 歩行データから靴の必要特性要件を生成（証拠ベース・多次元）
 function getShoeRequirements() {
   const p = assessWalkingProfile();
   const reqs = [];
+
 
   // ── 1. 歩行速度（臨床的リスク分類に基づく）──────────────────
   if (p.sp > 0 && p.sp < 0.8) {
@@ -1201,6 +1347,7 @@ function getShoeRequirements() {
     });
   }
 
+
   // ── 2. 歩幅（年齢規準化 Z スコア）─────────────────────────
   if (p.stZ !== null && p.stZ < -1.5) {
     reqs.push({
@@ -1225,6 +1372,7 @@ function getShoeRequirements() {
     });
   }
 
+
   // ── 3. リズム安定性（ステップ時間 CV）──────────────────────
   if (p.cv !== null) {
     if (p.cv > 8.0) {
@@ -1244,6 +1392,7 @@ function getShoeRequirements() {
     }
   }
 
+
   // ── 4. 左右対称性（SI）──────────────────────────────────
   if (p.si !== null) {
     if (p.si > 10.0) {
@@ -1262,6 +1411,7 @@ function getShoeRequirements() {
       });
     }
   }
+
 
   // ── 5. 歩行比（Walk Ratio = 歩幅 / ケイデンス[Hz]）─────────
   if (p.wr !== null) {
@@ -1289,6 +1439,7 @@ function getShoeRequirements() {
     }
   }
 
+
   // ── 6. 体幹動揺強度（RMS 加速度）───────────────────────────
   if (p.rms !== null) {
     if (p.rms > 1.5) {
@@ -1308,6 +1459,7 @@ function getShoeRequirements() {
     }
   }
 
+
   // ── 7. 年齢対応（高齢者特有ニーズ）────────────────────────
   if (p.age >= 75) {
     reqs.push({
@@ -1325,6 +1477,7 @@ function getShoeRequirements() {
     });
   }
 
+
   // ── 8. 歩行年齢ギャップ──────────────────────────────────
   if (p.walkingAge !== null && p.age > 0 && p.walkingAge - p.age > 10) {
     reqs.push({
@@ -1335,8 +1488,10 @@ function getShoeRequirements() {
     });
   }
 
+
   return reqs;
 }
+
 
 // 多次元加重スコアリング（テキスト + 構造化 features 配列をダブルチェック）
 function scoreShoeAdvanced(shoe, requirements) {
@@ -1345,6 +1500,7 @@ function scoreShoeAdvanced(shoe, requirements) {
   const totalWeight = requirements.reduce((s, r) => s + r.weight, 0) || 1;
   let score = 0;
   const reasons = [];
+
 
   requirements.forEach(req => {
     const hitKw   = req.keywords.find(kw => searchText.includes(kw.toLowerCase()));
@@ -1355,13 +1511,16 @@ function scoreShoeAdvanced(shoe, requirements) {
     }
   });
 
+
   return { score, totalWeight, pct: Math.round(score / totalWeight * 100), reasons };
 }
+
 
 // Page 3 描画（プロファイルサマリー + レコメンドカード）
 function renderPage3() {
   const el = document.getElementById('p3-recommendations');
   if (!el) return;
+
 
   const shoes = window._shoeData || [];
   if (!shoes.length) {
@@ -1369,11 +1528,13 @@ function renderPage3() {
     return;
   }
 
+
   const requirements = getShoeRequirements();
   const scored = shoes.map(shoe => {
     const { score, totalWeight, pct, reasons } = scoreShoeAdvanced(shoe, requirements);
     return { ...shoe, score, totalWeight, pct, reasons };
   }).sort((a, b) => b.pct - a.pct);
+
 
   // ── 歩行プロファイルサマリー ─────────────────────────────
   const p = assessWalkingProfile();
@@ -1384,11 +1545,13 @@ function renderPage3() {
       <span class="text-[6.5px] font-bold mt-0.5 ${color.replace('border-','text-').replace('-300','-600').replace('-200','-500')}">${grade}</span>
     </div>`;
 
+
   const G = (v, thresholds, grades) => {
     for (let i = 0; i < thresholds.length; i++) if (v < thresholds[i]) return grades[i];
     return grades[grades.length - 1];
   };
   const C = (g, map) => map[g] || 'border-slate-200';
+
 
   const spGrade = p.sp ? G(p.sp,[0.8,1.0,1.2],['要注意','注意','良好','優良']) : '—';
   const spColor = C(spGrade,{'要注意':'border-rose-300','注意':'border-amber-300','良好':'border-emerald-200','優良':'border-emerald-300'});
@@ -1402,89 +1565,122 @@ function renderPage3() {
   const rmsGrade = p.rms !== null ? G(p.rms,[0.5,0.8,1.5],['低衝撃','正常','注意','高衝撃']) : '—';
   const rmsColor = C(rmsGrade,{'低衝撃':'border-blue-200','正常':'border-emerald-200','注意':'border-amber-300','高衝撃':'border-rose-300'});
 
+
   const profileHtml = `
-    <div class="bg-slate-50 rounded-xl border border-slate-200 p-2.5 mb-2.5 shrink-0">
-      <div class="flex items-baseline gap-2 mb-1.5">
+    <div class="bg-slate-50 rounded-xl border border-slate-200 px-3 py-2 shrink-0">
+      <div class="flex items-center gap-2 mb-1.5">
         <span class="text-[9px] font-black text-slate-700 uppercase tracking-wide">歩行プロファイル</span>
-        ${S.totalScore ? `<span class="text-[8px] text-slate-400">総合 ${S.totalScore}点 / 歩行年齢 ${S.walkingAge || '--'}歳 / 実年齢 ${p.age}歳</span>` : ''}
+        ${S.totalScore ? `<span class="text-[8px] text-slate-400">総合 ${S.totalScore}点 ／ 歩行年齢 ${S.walkingAge || '--'}歳 ／ 実年齢 ${p.age}歳</span>` : ''}
       </div>
-      <div class="flex gap-1 flex-wrap">
+      <div class="flex gap-1 flex-wrap mb-1.5">
         ${p.sp  ? mBadge('歩行速度', p.sp.toFixed(2),  'm/s',    spGrade,  spColor)  : ''}
-        ${p.st  ? mBadge('歩　幅',   p.st.toFixed(2),  'm',      stGrade,  'border-slate-200') : ''}
+        ${p.st  ? mBadge('歩 幅',   p.st.toFixed(2),  'm',      stGrade,  'border-slate-200') : ''}
         ${p.ca  ? mBadge('テンポ',   p.ca.toFixed(0),  '/min',   p.caZ!==null?(p.caZ>=0?'良好':'注意'):'—', 'border-slate-200') : ''}
         ${p.cv  !== null ? mBadge('リズム', p.cv.toFixed(1),  '%CV',    cvGrade,  cvColor)  : ''}
         ${p.si  !== null ? mBadge('対称性', p.si.toFixed(1),  '%SI',    siGrade,  siColor)  : ''}
         ${p.wr  !== null ? mBadge('歩行比', p.wr.toFixed(3),  'm/Hz',   wrGrade,  wrColor)  : ''}
         ${p.rms !== null ? mBadge('体幹RMS',p.rms.toFixed(2), 'm/s²',   rmsGrade, rmsColor) : ''}
       </div>
-      <div class="mt-1.5 pt-1.5 border-t border-slate-200 flex flex-wrap gap-1 items-center">
-        <span class="text-[7.5px] font-bold text-slate-400">推奨特性:</span>
+      <div class="pt-1.5 border-t border-slate-200 flex flex-wrap gap-1 items-center">
+        <span class="text-[7.5px] font-bold text-slate-400 shrink-0">推奨特性:</span>
         ${requirements.length ? requirements.map(r =>
-          `<span class="inline-block px-1.5 py-0.5 rounded-full text-[7px] font-bold ${r.weight >= 4 ? 'bg-rose-100 text-rose-700' : r.weight >= 3 ? 'bg-amber-100 text-amber-700' : r.weight >= 2 ? 'bg-blue-100 text-blue-700' : 'bg-slate-100 text-slate-500'}">${r.label}</span>`
+          `<span class="inline-block px-1.5 py-0.5 rounded-full text-[7.5px] font-bold ${r.weight >= 4 ? 'bg-rose-100 text-rose-700' : r.weight >= 3 ? 'bg-amber-100 text-amber-700' : r.weight >= 2 ? 'bg-blue-100 text-blue-700' : 'bg-slate-100 text-slate-500'}">${r.label}</span>`
         ).join('') : '<span class="text-[8px] text-slate-400">データ未入力（CSVを読み込んでください）</span>'}
       </div>
     </div>`;
 
-  // ── レコメンドカード ─────────────────────────────────────
-  const cardsHtml = scored.map((shoe, i) => {
-    const rank = i + 1;
-    const rankBg = rank===1?'bg-amber-400':rank===2?'bg-slate-400':rank===3?'bg-orange-400':'bg-slate-200';
-    const rankTx = rank<=3?'text-white':'text-slate-600';
-    const cardBg = rank===1?'border-amber-300 bg-amber-50/60':'border-slate-200 bg-white';
-    const barBg  = shoe.pct>=70?'bg-emerald-400':shoe.pct>=40?'bg-amber-400':'bg-slate-300';
-    const pctTx  = shoe.pct>=70?'text-emerald-600':shoe.pct>=40?'text-amber-600':'text-slate-400';
 
-    const imgSrc = shoe.image || shoe.imageDataUrl || '';
+  // ── レコメンドカード（全URL中スコア上位3件・縦1列均等分割） ──
+  const top3 = scored.slice(0, 3);
+  const cardsHtml = top3.map((shoe, i) => {
+    const rank   = i + 1;
+    const rankBg = rank===1 ? 'bg-amber-400' : rank===2 ? 'bg-slate-400' : 'bg-orange-400';
+    const rankLabel = rank===1 ? '1st' : rank===2 ? '2nd' : '3rd';
+    const cardBorder = rank===1 ? 'border-amber-300' : rank===2 ? 'border-slate-300' : 'border-orange-200';
+    const cardBg     = rank===1 ? 'bg-amber-50/50' : 'bg-white';
+    const barBg  = shoe.pct>=70 ? 'bg-emerald-400' : shoe.pct>=40 ? 'bg-amber-400' : 'bg-slate-300';
+    const pctTx  = shoe.pct>=70 ? 'text-emerald-600' : shoe.pct>=40 ? 'text-amber-600' : 'text-slate-400';
+
+
+    const imgSrc = shoe.image || shoe.imageDataUrl || shoe.imageUrl || '';
     const imgHtml = imgSrc
-      ? `<img src="${imgSrc}" alt="" class="w-[68px] h-[68px] object-contain rounded-lg border border-slate-100 bg-white shrink-0" onerror="this.style.display='none'">`
-      : `<div class="w-[68px] h-[68px] bg-slate-100 rounded-lg border border-slate-200 shrink-0 flex items-center justify-center text-slate-300"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="m3 9 4-4 4 4 4-4 4 4"/><path d="m3 15 4 4 4-4 4 4 4-4"/></svg></div>`;
+      ? `<img src="${imgSrc}" alt="" class="w-[104px] h-[104px] object-contain rounded-xl border border-slate-100 bg-white" onerror="this.style.display='none'">`
+      : `<div class="w-[104px] h-[104px] bg-slate-100 rounded-xl border border-slate-200 flex items-center justify-center text-slate-300">
+           <svg xmlns="http://www.w3.org/2000/svg" width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="m3 9 4-4 4 4 4-4 4 4"/><path d="m3 15 4 4 4-4 4 4 4-4"/></svg>
+         </div>`;
 
-    const featTags = (shoe.features || []).slice(0, 6).map(f =>
-      `<span class="inline-block px-1 py-0.5 bg-slate-100 text-slate-500 text-[6.5px] rounded">${f}</span>`
+
+    const featTags = (shoe.features || []).slice(0, 7).map(f =>
+      `<span class="inline-block px-2 py-0.5 bg-slate-100 text-slate-600 text-[9px] rounded-full font-semibold">${f}</span>`
     ).join('');
 
+
     const reasonsHtml = shoe.reasons.length
-      ? shoe.reasons.slice(0, 3).map(r =>
-          `<li class="flex gap-1 items-baseline leading-tight">
-            <span class="text-emerald-500 font-black text-[8px] shrink-0">✓</span>
-            <span class="text-[7.5px] text-slate-600"><strong class="text-slate-700">${r.label}</strong> — ${r.reason}</span>
+      ? shoe.reasons.slice(0, 4).map(r =>
+          `<li class="flex gap-2 items-start leading-snug">
+            <span class="text-emerald-500 font-black text-[11px] shrink-0 leading-none mt-0.5">✓</span>
+            <span class="text-[9.5px] text-slate-600 leading-snug"><strong class="text-slate-800 font-bold">${r.label}</strong> — ${r.reason}</span>
           </li>`
         ).join('')
-      : '<li class="text-[7.5px] text-slate-400 italic">汎用ウォーキングモデル（特定条件との直接マッチなし）</li>';
+      : `<li class="text-[9.5px] text-slate-400 italic">汎用ウォーキングモデル（特定条件との直接マッチなし）</li>`;
 
-    const qrSrc = shoe.qrDataUrl || shoe.qrApiUrl || `https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=${encodeURIComponent(shoe.url)}&format=png&margin=1`;
-    const domain = (() => { try { return new URL(shoe.url).hostname; } catch(e) { return ''; } })();
 
-    return `<div class="flex flex-col gap-1.5 p-2.5 rounded-xl border ${cardBg}">
-      <div class="flex gap-2 items-start">
-        <div class="flex flex-col items-center gap-1 shrink-0">
-          <span class="w-5 h-5 rounded-full ${rankBg} ${rankTx} flex items-center justify-center text-[9px] font-black">${rank}</span>
-          ${imgHtml}
-        </div>
-        <div class="flex-1 min-w-0">
-          <p class="text-[9.5px] font-black text-slate-800 leading-tight line-clamp-2">${shoe.name || '商品名不明'}</p>
-          ${shoe.price ? `<p class="text-[10px] font-black text-rose-600 mt-0.5">${shoe.price}</p>` : ''}
-          ${featTags ? `<div class="flex flex-wrap gap-0.5 mt-1">${featTags}</div>` : ''}
-          <div class="mt-1.5 flex items-center gap-1.5">
-            <div class="flex-1 h-1.5 bg-slate-100 rounded-full overflow-hidden">
-              <div class="h-full ${barBg} rounded-full" style="width:${shoe.pct}%"></div>
-            </div>
-            <span class="text-[8px] font-bold ${pctTx} shrink-0">適合度 ${shoe.pct}%</span>
+    const qrSrc = shoe.qrDataUrl || shoe.qrApiUrl || `https://api.qrserver.com/v1/create-qr-code/?size=140x140&data=${encodeURIComponent(shoe.url)}&format=png&margin=1`;
+    const domain = (() => { try { return new URL(shoe.url).hostname.replace('www.',''); } catch(e) { return ''; } })();
+    const desc = (shoe.description || '').replace(/<[^>]+>/g,'').slice(0, 100);
+
+
+    return `
+    <div class="flex gap-4 p-4 rounded-2xl border-2 ${cardBorder} ${cardBg} flex-1 min-h-0">
+
+
+      <!-- ① 左: ランクバッジ + 商品画像 -->
+      <div class="flex flex-col items-center gap-2 shrink-0" style="width:112px">
+        <span class="px-2.5 py-0.5 rounded-full ${rankBg} text-white text-[10px] font-black tracking-wide">${rankLabel}</span>
+        ${imgHtml}
+      </div>
+
+
+      <!-- ② 中央: 商品情報 + マッチ理由 -->
+      <div class="flex-1 flex flex-col gap-2 min-w-0 min-h-0">
+        <!-- 商品名 -->
+        <p class="text-[13.5px] font-black text-slate-800 leading-snug line-clamp-2">${shoe.name || '商品名不明'}</p>
+        <!-- 価格 -->
+        ${shoe.price ? `<p class="text-[13px] font-black text-rose-600 leading-none">${shoe.price}</p>` : ''}
+        <!-- 特徴タグ -->
+        ${featTags ? `<div class="flex flex-wrap gap-1">${featTags}</div>` : ''}
+        <!-- 適合度バー -->
+        <div class="flex items-center gap-2">
+          <div class="flex-1 h-2.5 bg-slate-100 rounded-full overflow-hidden">
+            <div class="h-full ${barBg} rounded-full" style="width:${shoe.pct}%"></div>
           </div>
+          <span class="text-[10.5px] font-black ${pctTx} shrink-0">適合度 ${shoe.pct}%</span>
         </div>
-        <div class="flex flex-col items-center gap-0.5 shrink-0">
-          <img src="${qrSrc}" alt="QR" class="w-[46px] h-[46px] rounded border border-slate-200 bg-white">
-          <span class="text-[6px] text-slate-400 max-w-[46px] truncate">${domain}</span>
-        </div>
+        <!-- マッチ理由 -->
+        <ul class="flex flex-col gap-1.5 flex-1 min-h-0">${reasonsHtml}</ul>
+        <!-- 説明文スニペット -->
+        ${desc ? `<p class="text-[8.5px] text-slate-400 leading-snug line-clamp-2 border-t border-slate-200 pt-1.5 mt-auto">${desc}</p>` : ''}
       </div>
-      <div class="border-t border-slate-100 pt-1">
-        <ul class="space-y-0.5">${reasonsHtml}</ul>
+
+
+      <!-- ③ 右: QR + ドメイン -->
+      <div class="flex flex-col items-center gap-1.5 shrink-0" style="width:76px">
+        <img src="${qrSrc}" alt="QR" class="w-[68px] h-[68px] rounded-lg border border-slate-200 bg-white" onerror="this.style.display='none'">
+        <span class="text-[7px] text-slate-400 w-full truncate text-center leading-tight">${domain}</span>
       </div>
+
+
     </div>`;
   }).join('');
 
-  el.innerHTML = profileHtml + `<div class="grid grid-cols-2 gap-2">${cardsHtml}</div>`;
+
+  el.innerHTML = `
+  <div class="flex flex-col h-full gap-2">
+    ${profileHtml}
+    <div class="flex flex-col gap-2 flex-1 min-h-0">${cardsHtml}</div>
+  </div>`;
 }
+
 
 function renderClinicalRisk() {
   const el = document.getElementById('p2-clinical');
@@ -1540,6 +1736,7 @@ function renderClinicalRisk() {
     </div>`).join('');
 }
 
+
 function renderBiomechanics() {
   const el = document.getElementById('p2-biomech');
   if (!el) return;
@@ -1549,6 +1746,7 @@ function renderBiomechanics() {
   const rms = S.bioRMS;
   const meanST = S.bioMeanStepTime; // seconds
 
+
   const wrOk   = wr  != null && wr  >= 0.38 && wr  <= 0.42;
   const cvOk   = cv  != null && cv  <  4.0;
   const siOk   = si  != null && si  <  5.0;
@@ -1556,6 +1754,7 @@ function renderBiomechanics() {
   const rmsLow  = rms != null && rms < 0.50;
   const rmsHigh = rms != null && rms > 2.50;
   const rmsOk   = rms != null && !rmsLow && !rmsHigh;
+
 
   // 4-grade badge helper
   function grade4(val, thresholds, labels) {
@@ -1580,6 +1779,7 @@ function renderBiomechanics() {
   const rmsGrade = rms==null ? {label:'N/A',cls:'bg-slate-200 text-slate-500'}
     : rmsOk ? {label:'正常',cls:'bg-emerald-500 text-white'}
     : {label:'注意',cls:'bg-amber-400 text-white'};
+
 
   const items = [
     {
@@ -1628,6 +1828,7 @@ function renderBiomechanics() {
     },
   ];
 
+
   el.innerHTML = items.map(it=>{
     const bg   = it.ok===null ? 'bg-white border-slate-200' : it.ok ? 'bg-emerald-50 border-emerald-200' : 'bg-rose-50 border-rose-200';
     const valC = it.ok===null ? 'text-slate-600' : it.ok ? 'text-emerald-700' : 'text-rose-600';
@@ -1648,6 +1849,7 @@ function renderBiomechanics() {
     </div>`;
   }).join('');
 }
+
 
 function renderZTable() {
   const el = document.getElementById('p2-ztable');
@@ -1671,6 +1873,7 @@ function renderZTable() {
   }).join('');
 }
 
+
 // ============================================================
 //  VIEW UPDATE (data-v bindings)
 // ============================================================
@@ -1679,6 +1882,7 @@ function setView(key, val) {
     el.textContent = val ?? '';
   });
 }
+
 
 function updateAllViews() {
   setView('userName', S.userName);
@@ -1693,9 +1897,11 @@ function updateAllViews() {
   setView('walkingAge', S.walkingAge);
   setView('totalScore', S.totalScore);
 
+
   // Score bar
   const bar = document.getElementById('score-bar');
   if (bar) setTimeout(()=>{ bar.style.width = (S.totalScore || 0) + '%'; }, 50);
+
 
   // Score level badge
   const bel = document.getElementById('score-level-badge');
@@ -1705,6 +1911,7 @@ function updateAllViews() {
     bel.innerHTML = `<span class="badge ${lv.cls} text-xs">${lv.text}</span>`;
   }
 
+
   // Age comparison
   const ageComp = document.getElementById('age-comparison');
   if (ageComp && typeof S.walkingAge === 'number') {
@@ -1712,11 +1919,13 @@ function updateAllViews() {
     ageComp.textContent = diff > 0 ? `実年齢より ${diff} 歳 若い` : diff < 0 ? `実年齢より ${-diff} 歳 高い` : '実年齢と同等';
   }
 
+
   renderRadar();
   renderMetricsList();
   renderPage2();
   renderPage3();
 }
+
 
 // ============================================================
 //  INPUT BINDINGS
@@ -1726,10 +1935,12 @@ function bindInputs() {
     const field = el.dataset.field;
     const isCalc = 'calc' in el.dataset;
 
+
     el.addEventListener(el.tagName === 'SELECT' ? 'change' : 'input', () => {
       let val = el.type === 'number' ? (parseFloat(el.value) || 0) : el.value;
       S[field] = val;
       if (field === 'comment') S.isCommentEdited = true;
+
 
       if (isCalc) {
         calcAllScores();
@@ -1754,11 +1965,13 @@ function bindInputs() {
   });
 }
 
+
 function syncInputs() {
   document.querySelectorAll('[data-field="speedVal"]').forEach(el => el.value = S.speedVal);
   document.querySelectorAll('[data-field="strideVal"]').forEach(el => el.value = S.strideVal);
   document.querySelectorAll('[data-field="cadenceVal"]').forEach(el => el.value = S.cadenceVal);
 }
+
 
 function populateInputs() {
   document.querySelectorAll('[data-field]').forEach(el => {
@@ -1767,10 +1980,12 @@ function populateInputs() {
   });
 }
 
+
 // ============================================================
 //  ZOOM
 // ============================================================
 let currentScale = 1.0;
+
 
 function applyScale(s) {
   currentScale = Math.max(0.3, Math.min(2.5, s));
@@ -1778,6 +1993,7 @@ function applyScale(s) {
   document.querySelector('.capture-area').style.transformOrigin = 'top center';
   document.getElementById('zoom-txt').textContent = Math.round(currentScale*100) + '%';
 }
+
 
 function fitToScreen() {
   const pane = document.getElementById('right-pane');
@@ -1787,28 +2003,38 @@ function fitToScreen() {
   applyScale(Math.min(1, avail / pageW));
 }
 
+
 // ============================================================
 //  PDF GENERATION
 // ============================================================
+async function buildPDFBlob() {
+  const { jsPDF } = window.jspdf;
+  const pdf = new jsPDF({ format:'a4', unit:'mm', orientation:'portrait' });
+  const pages = document.querySelectorAll('.pdf-page');
+  const scale = 2;
+  for (let i=0; i<pages.length; i++) {
+    if (i > 0) pdf.addPage();
+    const dataUrl = await htmlToImage.toJpeg(pages[i], {
+      quality: 0.95, pixelRatio: scale,
+      backgroundColor: '#ffffff',
+      skipFonts: false,
+    });
+    pdf.addImage(dataUrl, 'JPEG', 0, 0, 210, 297);
+  }
+  const fname = `歩行年齢テスト_${S.userName || '結果'}_${S.reportDate}.pdf`;
+  return { blob: pdf.output('blob'), fname };
+}
+
+
 async function generatePDF() {
   const overlay = document.getElementById('pdf-overlay');
   overlay.classList.add('active');
   try {
-    const { jsPDF } = window.jspdf;
-    const pdf = new jsPDF({ format:'a4', unit:'mm', orientation:'portrait' });
-    const pages = document.querySelectorAll('.pdf-page');
-    const scale = 2;
-    for (let i=0; i<pages.length; i++) {
-      if (i > 0) pdf.addPage();
-      const dataUrl = await htmlToImage.toJpeg(pages[i], {
-        quality: 0.95, pixelRatio: scale,
-        backgroundColor: '#ffffff',
-        skipFonts: false,
-      });
-      pdf.addImage(dataUrl, 'JPEG', 0, 0, 210, 297);
-    }
-    const fname = `歩行年齢テスト_${S.userName || '結果'}_${S.reportDate}.pdf`;
-    pdf.save(fname);
+    const { blob, fname } = await buildPDFBlob();
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = fname;
+    a.click(); URL.revokeObjectURL(url);
     showNotif('PDFを保存しました');
   } catch(e) {
     showNotif('PDF生成失敗: ' + e.message, true);
@@ -1817,6 +2043,7 @@ async function generatePDF() {
     overlay.classList.remove('active');
   }
 }
+
 
 // ============================================================
 //  EXPORT CSV
@@ -1833,6 +2060,7 @@ function exportCSV() {
   showNotif('CSVをエクスポートしました');
 }
 
+
 // ============================================================
 //  NOTIFICATION
 // ============================================================
@@ -1848,6 +2076,7 @@ function showNotif(msg, isError=false) {
   setTimeout(()=> el.classList.remove('show'), 3000);
 }
 
+
 // ============================================================
 //  INIT
 // ============================================================
@@ -1855,6 +2084,7 @@ function init() {
   // Populate form fields
   populateInputs();
   bindInputs();
+
 
   // ---- CSV helpers ----
   function csvLoaded(label) {
@@ -1869,6 +2099,7 @@ function init() {
     expBtn.classList.remove('opacity-50','cursor-not-allowed');
   }
 
+
   function handleCSVText(text, source) {
     const statusEl = document.getElementById('csv-status');
     statusEl.textContent = '解析中...'; statusEl.classList.remove('hidden');
@@ -1882,12 +2113,14 @@ function init() {
     }
   }
 
+
   async function handleCSVFile(file) {
     if (!file || !file.name.toLowerCase().endsWith('.csv')) return false;
     const text = await file.text();
     handleCSVText(text, file.name);
     return true;
   }
+
 
   // CSV upload (click)
   const csvInput = document.getElementById('csvInput');
@@ -1897,6 +2130,7 @@ function init() {
     if (file) await handleCSVFile(file);
     csvInput.value = '';
   });
+
 
   // Global drag & drop
   const overlay = document.getElementById('drag-overlay');
@@ -1918,6 +2152,7 @@ function init() {
     if (file) await handleCSVFile(file);
   });
 
+
   // Clipboard paste (Cmd/Ctrl+V anywhere)
   document.addEventListener('paste', async (e) => {
     // If user is typing in an input, skip
@@ -1931,6 +2166,7 @@ function init() {
       if (file) await handleCSVFile(file);
     }
   });
+
 
   // phyphox WiFi remote fetch (Netlify Functions proxy で HTTPS 環境にも対応)
   async function fetchPhyphoxRemote(ip) {
@@ -1959,27 +2195,185 @@ function init() {
     }
   }
 
+
   document.getElementById('btn-phyphox-fetch').addEventListener('click', () => {
     const ip = document.getElementById('phyphox-ip').value.trim();
     if (!ip) { showNotif('IPアドレスを入力してください', true); return; }
     fetchPhyphoxRemote(ip);
   });
 
-  // ---- 靴URL管理 ----
-  window._shoeData = [];
 
-  function renderShoeUrlList() {
-    const list = document.getElementById('shoe-url-list');
-    const urls = window._shoeUrls || [];
-    list.innerHTML = urls.map((url, i) => `
-      <div class="flex gap-1 items-center">
-        <input type="url" class="finput flex-1 text-[10px]" placeholder="https://..." value="${url}"
-          oninput="window._shoeUrls[${i}]=this.value" autocomplete="off">
-        <button onclick="window._shoeUrls.splice(${i},1);renderShoeUrlList()" class="text-slate-400 hover:text-red-500 shrink-0 p-0.5">
-          <svg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><line x1='18' x2='6' y1='6' y2='18'/><line x1='6' x2='18' y1='6' y2='18'/></svg>
-        </button>
-      </div>`).join('');
+  // ---- 靴データベース（Googleスプレッドシート方式） ----
+  window._shoeData = [];
+  const SHOE_SHEET_KEY = 'walkingAgeShoeSheetUrl';
+
+
+  // 実行環境の検出
+  const IS_GAS     = typeof google !== 'undefined' && !!google.script;
+  const IS_NETLIFY = !IS_GAS && location.protocol === 'https:' && location.hostname !== '';
+
+
+  function gasRun(fnName, arg) {
+    return new Promise((resolve, reject) => {
+      google.script.run
+        .withSuccessHandler(resolve)
+        .withFailureHandler(e => reject(new Error(e.message || '処理に失敗しました')))
+        [fnName](arg);
+    });
   }
+
+
+  // CSV行を正確にパース（引用符・ダブルクォートエスケープ対応）
+  function splitCSVRow(line) {
+    const result = [];
+    let current = '';
+    let inQuotes = false;
+    for (let i = 0; i < line.length; i++) {
+      const ch = line[i];
+      if (ch === '"') {
+        if (inQuotes && line[i + 1] === '"') { current += '"'; i++; }
+        else inQuotes = !inQuotes;
+      } else if (ch === ',' && !inQuotes) {
+        result.push(current); current = '';
+      } else {
+        current += ch;
+      }
+    }
+    result.push(current);
+    return result;
+  }
+
+
+  // スプレッドシートCSVをパース → shoeオブジェクト配列（CSV・TSV・BOM対応）
+  function parseSheetCSV(text) {
+    // UTF-8 BOM除去
+    if (text.charCodeAt(0) === 0xFEFF) text = text.slice(1);
+    const lines = text.trim().split(/\r?\n/);
+    if (lines.length < 2) throw new Error('データが1行以下です');
+    // 区切り文字を自動判定（タブ優先）
+    const delim = lines[0].includes('\t') ? '\t' : ',';
+    const splitRow = delim === '\t'
+      ? (line) => line.split('\t').map(c => c.trim())
+      : splitCSVRow;
+    const headers = splitRow(lines[0]).map(h => h.trim().toLowerCase().replace(/\s+/g, '_'));
+    const shoes = [];
+    for (let i = 1; i < lines.length; i++) {
+      const row = splitRow(lines[i]);
+      if (row.every(c => !c.trim())) continue;
+      const obj = {};
+      headers.forEach((h, j) => { obj[h] = (row[j] || '').trim(); });
+      if (!obj.name) continue;
+      shoes.push({
+        name:        obj.name || '',
+        url:         obj.url || '',
+        imageUrl:    obj.image_url || '',
+        image:       '',
+        price:       obj.price || '',
+        features:    (obj.features || '').split(/[|；;]/).map(f => f.trim()).filter(Boolean),
+        description: obj.description || '',
+      });
+    }
+    return shoes;
+  }
+
+
+  // GoogleスプレッドシートURLをCORS対応の公開CSVURLに変換
+  function toSheetCsvUrl(raw) {
+    const m = raw.match(/spreadsheets\/d\/([a-zA-Z0-9_-]+)/);
+    if (!m) return raw;
+    if (/\/pub\?/.test(raw)) return raw;
+    const id = m[1];
+    const gidM = raw.match(/[#&?]gid=(\d+)/);
+    const gid = gidM ? `&gid=${gidM[1]}` : '';
+    return `https://docs.google.com/spreadsheets/d/${id}/pub?output=csv${gid}`;
+  }
+
+
+  // スプレッドシートを読み込んでレコメンド生成
+  async function loadShoeSheet() {
+    const input = document.getElementById('shoe-sheet-url');
+    const raw = (input && input.value.trim()) || '';
+    const statusEl = document.getElementById('shoe-fetch-status');
+    statusEl.classList.remove('hidden');
+
+
+    if (!raw || !/^https?:\/\//i.test(raw)) {
+      statusEl.textContent = '⚠ 有効なURLを入力してください';
+      showNotif('スプレッドシートのURLを入力してください', true);
+      return;
+    }
+
+
+    const csvUrl = toSheetCsvUrl(raw);
+    statusEl.textContent = 'スプレッドシートを読み込み中…';
+    try {
+      // ① CSVデータ取得
+      let text;
+      if (IS_GAS) {
+        text = await gasRun('fetchCsvData', csvUrl);
+      } else {
+        const res = await fetch(csvUrl, { signal: AbortSignal.timeout(15000) }).catch(() => {
+          throw new Error('通信エラー（CORS）— スプレッドシートを「ファイル→共有→ウェブに公開→CSV」で公開してください');
+        });
+        if (!res.ok) throw new Error(`HTTP ${res.status} — スプレッドシートを「ウェブに公開」してください`);
+        text = await res.text();
+      }
+
+
+      const shoes = parseSheetCSV(text);
+      if (!shoes.length) throw new Error('有効なデータが0件です。1行目がヘッダー（name, url等）か確認してください');
+
+
+      // ② 画像・QRをbase64化（PDF埋め込み用）
+      statusEl.textContent = `画像・QRを準備中 (${shoes.length} 件)…`;
+      for (const shoe of shoes) {
+        // 商品画像
+        if (shoe.imageUrl) {
+          if (IS_GAS) {
+            shoe.image = await gasRun('fetchImageAsBase64', shoe.imageUrl).catch(() => '');
+          } else if (IS_NETLIFY) {
+            try {
+              const r = await fetch(`/.netlify/functions/proxy?url=${encodeURIComponent(shoe.imageUrl)}&type=image`, { signal: AbortSignal.timeout(8000) });
+              const d = await r.text();
+              if (d.startsWith('data:image/')) shoe.image = d;
+            } catch(e) { /* 直接URLを使用 */ }
+          }
+        }
+        // QRコード
+        if (shoe.url) {
+          const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=140x140&data=${encodeURIComponent(shoe.url)}&format=png&margin=1`;
+          if (IS_GAS) {
+            const qrData = await gasRun('fetchImageAsBase64', qrApiUrl).catch(() => '');
+            if (qrData.startsWith('data:image/')) shoe.qrDataUrl = qrData;
+            else shoe.qrApiUrl = qrApiUrl;
+          } else if (IS_NETLIFY) {
+            try {
+              const qrRes = await fetch(`/.netlify/functions/proxy?url=${encodeURIComponent(qrApiUrl)}&type=image`, { signal: AbortSignal.timeout(8000) });
+              const qrData = await qrRes.text();
+              if (qrData.startsWith('data:image/')) shoe.qrDataUrl = qrData;
+              else shoe.qrApiUrl = qrApiUrl;
+            } catch(e) { shoe.qrApiUrl = qrApiUrl; }
+          } else {
+            shoe.qrApiUrl = qrApiUrl;
+          }
+        }
+      }
+
+
+      window._shoeData = shoes;
+      try { localStorage.setItem(SHOE_SHEET_KEY, csvUrl); } catch(e) {}
+      setShoeMode(true);
+      renderPage3();
+      statusEl.textContent = `✓ ${shoes.length} 件の靴データを読み込みました`;
+      showNotif(`靴データ ${shoes.length} 件を読み込みました`);
+      const page3 = document.getElementById('page3-shoes');
+      if (page3) setTimeout(() => page3.scrollIntoView({ behavior: 'smooth', block: 'start' }), 200);
+    } catch(err) {
+      statusEl.textContent = '✗ エラー: ' + err.message;
+      showNotif(err.message, true);
+    }
+  }
+
 
   // ---- シューズモード トグル ----
   function setShoeMode(active) {
@@ -1993,7 +2387,7 @@ function init() {
       btn.classList.add('bg-blue-600', 'text-white', '!border-blue-600');
       btn.classList.remove('text-slate-600');
       badge.textContent = 'ON';
-      badge.className = 'inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-black bg-white/30 text-white leading-none';
+      badge.className = 'inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-black bg-white text-blue-600 leading-none';
       section.scrollIntoView({ behavior: 'smooth', block: 'start' });
     } else {
       section.classList.add('hidden');
@@ -2006,81 +2400,24 @@ function init() {
     window._shoeModeActive = active;
   }
 
+
   document.getElementById('btn-shoe-mode').addEventListener('click', () => {
     setShoeMode(!window._shoeModeActive);
   });
 
-  window._shoeUrls = [''];
-  renderShoeUrlList();
 
-  document.getElementById('btn-add-shoe-url').addEventListener('click', () => {
-    if ((window._shoeUrls || []).length >= 10) { showNotif('URLは最大10件です', true); return; }
-    window._shoeUrls.push('');
-    renderShoeUrlList();
-  });
+  document.getElementById('btn-load-sheet').addEventListener('click', loadShoeSheet);
 
-  document.getElementById('btn-fetch-shoes').addEventListener('click', async () => {
-    const urls = (window._shoeUrls || []).filter(u => u.trim() && /^https?:\/\//i.test(u.trim()));
-    if (!urls.length) { showNotif('有効なURLを入力してください', true); return; }
 
-    const statusEl = document.getElementById('shoe-fetch-status');
-    statusEl.classList.remove('hidden');
-    setShoeMode(true);
-
-    // shoe-info Netlify Function が使えるか確認
-    // ローカル(file://)では Functions が動かないため案内を表示
-    const isNetlify = location.protocol === 'https:' && location.hostname !== '';
-    if (!isNetlify) {
-      statusEl.textContent = '⚠ 商品情報の取得はNetlify環境でのみ動作します（netlify dev でローカルテスト可）';
-      showNotif('Netlify環境でデプロイ後にご利用ください', true);
-      return;
+  // 保存済みスプレッドシートURLを復元
+  try {
+    const savedUrl = localStorage.getItem(SHOE_SHEET_KEY) || '';
+    if (savedUrl) {
+      const inp = document.getElementById('shoe-sheet-url');
+      if (inp) inp.value = savedUrl;
     }
+  } catch(e) {}
 
-    const results = [];
-    for (let i = 0; i < urls.length; i++) {
-      const url = urls[i].trim();
-      let hostname = url;
-      try { hostname = new URL(url).hostname; } catch(e) {}
-      statusEl.textContent = `取得中 ${i + 1}/${urls.length}… ${hostname}`;
-
-      try {
-        const res = await fetch(
-          `/.netlify/functions/shoe-info?url=${encodeURIComponent(url)}`,
-          { signal: AbortSignal.timeout(25000) }
-        );
-        const data = await res.json();
-        // フォールバック: 商品名がなければドメインを表示
-        if (!data.name) data.name = hostname;
-
-        // QRコードをプロキシ経由でbase64化（PDF対応）
-        const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=${encodeURIComponent(url)}&format=png&margin=1`;
-        try {
-          const qrRes = await fetch(
-            `/.netlify/functions/proxy?url=${encodeURIComponent(qrApiUrl)}&type=image`,
-            { signal: AbortSignal.timeout(8000) }
-          );
-          const qrData = await qrRes.text();
-          if (qrData.startsWith('data:image/')) data.qrDataUrl = qrData;
-        } catch(e) {
-          // QR取得失敗時は直リンクURLを保持
-          data.qrApiUrl = qrApiUrl;
-        }
-
-        results.push(data);
-      } catch(err) {
-        results.push({ name: hostname, description: '', image: '', price: '', url, error: err.message });
-      }
-    }
-
-    window._shoeData = results;
-    renderPage3();
-    statusEl.textContent = `✓ ${results.length} 件の商品情報を取得しました`;
-    showNotif(`靴情報 ${results.length} 件を取得しました`);
-
-    // Page 3 へスクロール
-    const page3 = document.getElementById('page3-shoes');
-    if (page3) setTimeout(() => page3.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
-  });
 
   // Demo data
   document.getElementById('btn-demo').addEventListener('click', ()=> {
@@ -2094,25 +2431,66 @@ function init() {
     showNotif('サンプルデータを読み込みました');
   });
 
+
   // Export CSV
   document.getElementById('btn-export-csv').addEventListener('click', exportCSV);
+
 
   // Buttons
   document.getElementById('btn-download').addEventListener('click', generatePDF);
   document.getElementById('btn-print').addEventListener('click', ()=> window.print());
   document.getElementById('btn-share').addEventListener('click', async ()=> {
-    if (navigator.share) {
-      await navigator.share({ title:'歩行年齢テスト結果', text:`歩行年齢: ${S.walkingAge}歳 / スコア: ${S.totalScore}点` });
-    } else if (navigator.clipboard) {
-      await navigator.clipboard.writeText(`歩行年齢: ${S.walkingAge}歳 / スコア: ${S.totalScore}点 / 速度: ${S.speedVal}m/s`);
-      showNotif('クリップボードにコピーしました');
+    const overlay = document.getElementById('pdf-overlay');
+    overlay.classList.add('active');
+    try {
+      const { blob, fname } = await buildPDFBlob();
+      const file = new File([blob], fname, { type: 'application/pdf' });
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        await navigator.share({ files: [file], title: '歩行年齢テスト結果' });
+      } else {
+        // ファイル共有非対応端末はダウンロードにフォールバック
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url; a.download = fname;
+        a.click(); URL.revokeObjectURL(url);
+        showNotif('PDFをダウンロードしました');
+      }
+    } catch(e) {
+      if (e.name !== 'AbortError') showNotif('共有失敗: ' + e.message, true);
+    } finally {
+      overlay.classList.remove('active');
     }
   });
+
+
+  // Mobile drawer toggle
+  const btnMenu = document.getElementById('btn-menu');
+  const mobileBackdrop = document.getElementById('mobile-backdrop');
+  const leftPane = document.getElementById('left-pane');
+  function closeMobileMenu() {
+    leftPane.classList.remove('mobile-open');
+    mobileBackdrop.classList.remove('active');
+  }
+  if (btnMenu) {
+    btnMenu.addEventListener('click', () => {
+      leftPane.classList.toggle('mobile-open');
+      mobileBackdrop.classList.toggle('active');
+    });
+    mobileBackdrop.addEventListener('click', closeMobileMenu);
+    // リンクやボタンをタップしたら閉じる
+    leftPane.addEventListener('click', (e) => {
+      if (window.innerWidth < 768 && e.target.closest('button, a')) {
+        setTimeout(closeMobileMenu, 150);
+      }
+    });
+  }
+
 
   // Zoom
   document.getElementById('btn-zin').addEventListener('click', ()=> applyScale(currentScale + 0.1));
   document.getElementById('btn-zout').addEventListener('click', ()=> applyScale(currentScale - 0.1));
   document.getElementById('btn-zfit').addEventListener('click', fitToScreen);
+
 
   // Initial calc
   calcAllScores();
@@ -2121,7 +2499,9 @@ function init() {
   window.addEventListener('resize', ()=> setTimeout(renderWaveform, 100));
 }
 
+
 init();
+
 
 })();
 </script>
