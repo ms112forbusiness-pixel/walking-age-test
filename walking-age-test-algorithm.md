@@ -1,4 +1,4 @@
-# 歩行年齢テスト診断システム
+# 歩行年齢テスト計測システム
 ## 評価指標アルゴリズム リファレンス
 
 **対象**: `walking-age-test.html` の解析・スコアリング・判定ロジック
@@ -422,3 +422,144 @@ function pick(arr, offset) {
 | `WR_NORMAL_HI` | 0.42 m/Hz | Walk Ratio 正常上限 |
 | `RMS_LOW` | 0.50 m/s² | RMS 低値閾値 |
 | `RMS_HIGH` | 2.50 m/s² | RMS 高値閾値 |
+
+---
+
+## 9. シューズレコメンドアルゴリズム
+
+### 9.1 assessWalkingProfile() — プロファイル生成
+
+歩行計測結果と質問回答からシューズ要件プロファイルを生成する。
+
+```javascript
+function assessWalkingProfile(S) {
+  return {
+    speed:         S.speedVal,           // 歩行速度 [m/s]
+    stride:        S.strideVal,          // 歩幅 [m]
+    knee:          S.shoeQKnee  || false,// Q2: 膝関節問題あり
+    rain:          S.shoeQRain  || false,// Q3: 防水・防滑希望
+    foot:          S.shoeQFoot  || 'none',// Q1: 足幅 ('none'|'wide'|'bunion'|'higharch')
+    fasten:        S.shoeQFasten|| 'any',// Q4: 着脱方法 ('any'|'lace'|'velcro'|'zipper')
+    gender:        S.gender     || 'male',// 対象者性別 ('male'|'female')
+    activityLevel: (() => {              // 歩行速度から自動算出
+      const sp = typeof S.speedVal === 'number' ? S.speedVal : 0;
+      if (sp <= 0)   return 'unknown';
+      if (sp < 0.8)  return 'verylow';  // < 0.8 m/s
+      if (sp < 1.0)  return 'low';      // 0.8–1.0 m/s
+      if (sp < 1.2)  return 'moderate'; // 1.0–1.2 m/s
+      return 'high';                    // ≥ 1.2 m/s
+    })(),
+  };
+}
+```
+
+**activityLevel 閾値テーブル**
+
+| activityLevel | 歩行速度 | 臨床的意義 |
+|---------------|---------|-----------|
+| `verylow` | < 0.8 m/s | 転倒・入院リスク上昇域。紐靴の着脱が困難な可能性 |
+| `low` | 0.8–1.0 m/s | サルコペニア・フレイル精査推奨域 |
+| `moderate` | 1.0–1.2 m/s | 屋外自立歩行は可能。標準的な活動量 |
+| `high` | ≥ 1.2 m/s | 高機能群。高い推進力・エネルギーリターンに適応 |
+
+---
+
+### 9.2 getShoeRequirements() — 要件ルールテーブル
+
+プロファイルから重み付き要件リストを生成する。`negativeKeywords` を持つ要件はペナルティルールとして扱われる（スコアを減算し、UI バッジ表示には出力しない）。
+
+| ルール | 条件 | label | weight | 種別 |
+|--------|------|-------|--------|------|
+| 1 | 常時 | クッション・衝撃吸収 | 2 | 正 |
+| 2 | `speed < 1.0` | ローリング・推進サポート | 3 | 正 |
+| 3 | `speed < 0.8` | 転倒予防・安定性強化 | 3 | 正 |
+| 4 | `speed >= 1.2` | 高反発・軽量性 | 2 | 正 |
+| 5 | `stride < 0.55` | 歩幅拡大サポート | 2 | 正 |
+| 6 | `foot === 'wide'` | 幅広（3E以上）対応 | 4 | 正 |
+| 7 | `foot === 'bunion'` | 外反母趾対応 | 4 | 正 |
+| 8 | `foot === 'higharch'` | 甲高・アーチサポート | 3 | 正 |
+| 9 | `knee === true` | 膝関節保護・クッション | 3 | 正 |
+| 10 | `rain === true` | 防水・防滑 | 3 | 正 |
+| 11 | 常時 | ウォーキング専用設計 | 1 | 正 |
+| 12a | `fasten === 'velcro'` | マジックテープ・ワンタッチ | 4 | 正 |
+| 12b | `fasten === 'velcro'` | 紐靴を回避 | 2 | **負** |
+| 12c | `fasten === 'zipper'` | サイドジッパー | 4 | 正 |
+| 12d | `fasten === 'lace'` | 紐靴（フィット調整） | 2 | 正 |
+| 12e | `fasten === 'lace'` | ベルクロ・ジッパーを回避 | 2 | **負** |
+| 13a | `activityLevel === 'high'` | 推進力・エネルギーリターン | 2 | 正 |
+| 13b | `activityLevel === 'high' && fasten === 'any'` | ベルクロ・ジッパー不要 | 1 | **負** |
+| 13c | `activityLevel === 'verylow' && fasten === 'any'` | 着脱しやすさ自動推奨 | 3 | 正 |
+| 13d | `activityLevel === 'low'` | 日常歩行・快適性 | 1 | 正 |
+| 13e | `activityLevel === 'low' && fasten === 'any'` | 着脱しやすさ配慮 | 1 | 正 |
+| 14a | `gender === 'male'` | メンズモデル | 3 | 正 |
+| 14b | `gender === 'male'` | レディースを除外 | 4 | **負** |
+| 14c | `gender === 'female'` | レディースモデル | 3 | 正 |
+| 14d | `gender === 'female'` | メンズを除外 | 4 | **負** |
+
+> **設計方針：** Q4（着脱方法）でユーザーが明示的に選択した場合、活動量による自動推薦（ルール 13c/13e/13b）は適用しない（`fasten === 'any'` 条件で制御）。これによりユーザーの明示的な希望が活動量による自動推薦に優先される。
+
+---
+
+### 9.3 scoreShoeAdvanced() — スコアリング
+
+```javascript
+function scoreShoeAdvanced(shoe, requirements) {
+  // 検索対象テキスト（名前 + 説明 + features を結合して小文字化）
+  const searchText = [shoe.name || '', shoe.description || '',
+                      ...(shoe.features || [])].join(' ').toLowerCase();
+  const featureText = (shoe.features || []).join(' ').toLowerCase();
+
+  // totalWeight: 負要件を除く正要件の重み合計（ゼロ除算防止で最小 1）
+  const totalWeight = requirements
+    .filter(r => !r.negativeKeywords)
+    .reduce((s, r) => s + r.weight, 0) || 1;
+
+  let score = 0;
+  const reasons = [];  // UI 表示用マッチ理由（負要件は追加しない）
+
+  requirements.forEach(req => {
+    if (req.negativeKeywords) {
+      // 負要件: キーワードに一致した場合スコアを減算（サイレントペナルティ）
+      const hitNeg = req.negativeKeywords.find(kw =>
+        searchText.includes(kw.toLowerCase()));
+      if (hitNeg) score -= req.weight;
+    } else {
+      // 正要件: keywords または featureKeys に一致した場合スコアを加算
+      const hitKw   = req.keywords.find(kw =>
+        searchText.includes(kw.toLowerCase()));
+      const hitFeat = (req.featureKeys || []).find(fk =>
+        featureText.includes(fk.toLowerCase()));
+      if (hitKw || hitFeat) {
+        score += req.weight;
+        reasons.push({ label: req.label, reason: req.reason, term: hitFeat || hitKw });
+      }
+    }
+  });
+
+  // 適合度 [%]: 0〜100 にクランプ
+  const pct = Math.max(0, Math.min(100, Math.round(score / totalWeight * 100)));
+  return { score, totalWeight, pct, reasons };
+}
+```
+
+**スコア計算例**
+
+```
+totalWeight = 正要件の重み合計  例: 2+3+3+1+3 = 12
+score = 正マッチ合計 − 負マッチ合計  例: 9 − 4 = 5
+pct   = clamp(round(5 / 12 × 100), 0, 100) = 42%
+```
+
+---
+
+### 9.4 アルゴリズム定数（シューズレコメンド）
+
+| 定数 | 値 | 説明 |
+|------|----|------|
+| 上位表示件数 | 3 件 | pct 降順ソートの上位 3 件を表示 |
+| 最低スコア閾値 | 0 % | 0 以上なら表示対象（厳格な除外基準なし） |
+| activityLevel `verylow` 閾値 | < 0.8 m/s | 着脱自動推薦トリガー |
+| activityLevel `low` 閾値 | 0.8–1.0 m/s | 軽度着脱配慮トリガー |
+| activityLevel `high` 閾値 | ≥ 1.2 m/s | ベルクロ軽減ペナルティトリガー |
+| 性別マッチ重み（正） | 3 | メンズ→メンズ / レディース→レディース |
+| 性別ミスマッチ重み（負） | 4 | メンズ→レディース / レディース→メンズ |

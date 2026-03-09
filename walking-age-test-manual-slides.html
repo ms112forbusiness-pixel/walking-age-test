@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="UTF-8">
-  <title>歩行年齢テスト診断システム — 使用マニュアル v6</title>
+  <title>歩行年齢テスト計測システム — 使用マニュアル v6</title>
   <link
     href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Inter:wght@400;600;700;900&display=swap"
     rel="stylesheet">
@@ -1206,7 +1206,7 @@
   <div id="nav">
     <button onclick="go(-1)">◀ 前へ</button>
     <span id="counter">— / —</span>
-    <span class="nav-brand">歩行年齢テスト診断システム v6 — 使用マニュアル</span>
+    <span class="nav-brand">歩行年齢テスト計測システム v6 — 使用マニュアル</span>
     <button onclick="go(1)">次へ ▶</button>
     <button id="btn-pdf" onclick="window.print()">🖨 印刷 / PDF保存</button>
   </div>
@@ -1238,7 +1238,7 @@
           <!-- Main title -->
           <h1
             style="font-size:40px; font-weight:900; color:var(--ink-900); letter-spacing:-.5px; line-height:1.1; margin-bottom:12px;">
-            歩行年齢テスト<br>診断システム
+            歩行年齢テスト<br>計測システム
           </h1>
 
           <!-- Divider rule -->
@@ -1303,7 +1303,7 @@
           <!-- App header bar -->
           <div
             style="background:linear-gradient(135deg,#1E3A8A,#2563EB); padding:7px 10px; display:flex; align-items:center; justify-content:space-between;">
-            <div style="color:#fff; font-size:8px; font-weight:900;">歩行年齢テスト 診断システム v6</div>
+            <div style="color:#fff; font-size:8px; font-weight:900;">歩行年齢テスト 計測システム v6</div>
             <div
               style="background:rgba(255,255,255,0.2); border-radius:3px; padding:1px 6px; font-size:7px; font-weight:700; color:#fff;">
               PDF出力</div>
@@ -1385,7 +1385,7 @@
       <div
         style="position:absolute; bottom:0; left:0; right:0; height:28px; background:rgba(11,32,69,0.92); display:flex; align-items:center; justify-content:space-between; padding:0 52px; z-index:10;">
         <span
-          style="font-family:'Inter',sans-serif; font-size:9px; font-weight:600; color:rgba(255,255,255,0.35); letter-spacing:.3px;">歩行年齢テスト診断システム
+          style="font-family:'Inter',sans-serif; font-size:9px; font-weight:600; color:rgba(255,255,255,0.35); letter-spacing:.3px;">歩行年齢テスト計測システム
           v6 — 使用マニュアル</span>
         <span style="font-family:'Inter',sans-serif; font-size:9px; font-weight:600; color:rgba(255,255,255,0.3);">1 /
           16</span>
@@ -1395,738 +1395,2382 @@
     <!-- /SLIDE 1 -->
 
 
-<!-- ══════════════════════════════════════════════════════════
+    <!-- ══════════════════════════════════════════════════════════
      SLIDE 2  システム全体フロー
 ══════════════════════════════════════════════════════════ -->
-<div class="slide">
-  <div class="chbar ch-sys"></div>
-  <div class="shdr">
-    <div class="sh-row">
-      <div style="display:flex;align-items:center;gap:12px;">
-        <span class="cpill cp-sys">OVERVIEW</span>
-        <h2>診断システム — ご利用の全体フロー</h2>
-      </div>
-      <span class="pgnum">02 / 16</span>
-    </div>
-    <p class="lead">スマートフォンで歩く → データ解析 → PDF レポート出力まで、全 5 ステップで完了します。</p>
-  </div>
-  <div class="sbody" style="gap:16px;">
-
-    <!-- 5-step flow -->
-    <div style="display:flex;align-items:stretch;gap:0;">
-
-      <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px 10px;background:var(--blue-050);border:1.5px solid var(--blue-200);border-radius:8px;">
-        <div style="width:36px;height:36px;border-radius:50%;background:var(--c-setup);color:#fff;display:flex;align-items:center;justify-content:center;font-family:'Inter',sans-serif;font-size:15px;font-weight:900;">1</div>
-        <div style="font-size:20px;">📱</div>
-        <div style="font-size:12px;font-weight:900;color:var(--c-setup);text-align:center;">事前準備</div>
-        <div style="font-size:10.5px;color:var(--ink-500);text-align:center;line-height:1.6;">phyphox アプリを<br>スマートフォンに<br>インストール</div>
-      </div>
-
-      <div style="display:flex;align-items:center;padding:0 6px;color:var(--ink-300);font-size:16px;">▶</div>
-
-      <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px 10px;background:#DCFCE7;border:1.5px solid #86EFAC;border-radius:8px;">
-        <div style="width:36px;height:36px;border-radius:50%;background:var(--c-meas);color:#fff;display:flex;align-items:center;justify-content:center;font-family:'Inter',sans-serif;font-size:15px;font-weight:900;">2</div>
-        <div style="font-size:20px;">🚶</div>
-        <div style="font-size:12px;font-weight:900;color:var(--c-meas);text-align:center;">歩行計測</div>
-        <div style="font-size:10.5px;color:var(--ink-500);text-align:center;line-height:1.6;">腰にスマホを固定し<br>いつもの速さで<br>10 m を歩く</div>
-      </div>
-
-      <div style="display:flex;align-items:center;padding:0 6px;color:var(--ink-300);font-size:16px;">▶</div>
-
-      <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px 10px;background:var(--blue-050);border:1.5px solid var(--blue-200);border-radius:8px;">
-        <div style="width:36px;height:36px;border-radius:50%;background:var(--blue-700);color:#fff;display:flex;align-items:center;justify-content:center;font-family:'Inter',sans-serif;font-size:15px;font-weight:900;">3</div>
-        <div style="font-size:20px;">📤</div>
-        <div style="font-size:12px;font-weight:900;color:var(--blue-700);text-align:center;">データ転送</div>
-        <div style="font-size:10.5px;color:var(--ink-500);text-align:center;line-height:1.6;">CSV ファイルを PC へ<br>または WiFi で<br>直接取得</div>
-      </div>
-
-      <div style="display:flex;align-items:center;padding:0 6px;color:var(--ink-300);font-size:16px;">▶</div>
-
-      <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px 10px;background:var(--blue-050);border:1.5px solid var(--blue-200);border-radius:8px;">
-        <div style="width:36px;height:36px;border-radius:50%;background:var(--blue-700);color:#fff;display:flex;align-items:center;justify-content:center;font-family:'Inter',sans-serif;font-size:15px;font-weight:900;">4</div>
-        <div style="font-size:20px;">🔍</div>
-        <div style="font-size:12px;font-weight:900;color:var(--blue-700);text-align:center;">自動解析</div>
-        <div style="font-size:10.5px;color:var(--ink-500);text-align:center;line-height:1.6;">7 指標をリアルタイム<br>算出・年齢推定・<br>スコアリング</div>
-      </div>
-
-      <div style="display:flex;align-items:center;padding:0 6px;color:var(--ink-300);font-size:16px;">▶</div>
-
-      <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px 10px;background:#F3E8FF;border:1.5px solid #D8B4FE;border-radius:8px;">
-        <div style="width:36px;height:36px;border-radius:50%;background:var(--c-rep);color:#fff;display:flex;align-items:center;justify-content:center;font-family:'Inter',sans-serif;font-size:15px;font-weight:900;">5</div>
-        <div style="font-size:20px;">📄</div>
-        <div style="font-size:12px;font-weight:900;color:var(--c-rep);text-align:center;">レポート出力</div>
-        <div style="font-size:10.5px;color:var(--ink-500);text-align:center;line-height:1.6;">A4 PDF を出力・印刷<br>患者さんへ<br>フィードバック</div>
-      </div>
-
-    </div>
-
-    <!-- Bottom: metrics + outputs -->
-    <div class="g2" style="flex:1;">
-
-      <div class="card off" style="display:flex;flex-direction:column;gap:8px;">
-        <div class="clabel">解析される 7 つの指標</div>
-        <table>
-          <thead><tr><th>指標</th><th>単位</th><th>意味</th></tr></thead>
-          <tbody>
-            <tr><td><b>歩くスピード</b></td><td style="font-family:'Inter',monospace;color:var(--blue-700);">m/s</td><td>1秒間に進む距離</td></tr>
-            <tr><td><b>歩幅の広さ</b></td><td style="font-family:'Inter',monospace;color:var(--blue-700);">m</td><td>1歩の長さ</td></tr>
-            <tr><td><b>歩くテンポ</b></td><td style="font-family:'Inter',monospace;color:var(--blue-700);">歩/分</td><td>ケイデンス</td></tr>
-            <tr><td><b>リズムの安定性</b></td><td style="font-family:'Inter',monospace;color:var(--blue-700);">%</td><td>ステップ時間 CV</td></tr>
-            <tr><td><b>左右対称性</b></td><td style="font-family:'Inter',monospace;color:var(--blue-700);">%</td><td>左右バランス</td></tr>
-            <tr><td><b>ウォークレシオ</b></td><td style="font-family:'Inter',monospace;color:var(--blue-700);">m/Hz</td><td>効率性指標</td></tr>
-            <tr><td><b>RMS 加速度</b></td><td style="font-family:'Inter',monospace;color:var(--blue-700);">m/s²</td><td>揺れの大きさ</td></tr>
-          </tbody>
-        </table>
-      </div>
-
-      <div style="display:flex;flex-direction:column;gap:8px;">
-        <div class="clabel" style="color:var(--ink-700);">出力される 3 つのレポートページ</div>
-        <div style="display:flex;flex-direction:column;gap:7px;flex:1;">
-          <div style="background:#fff;border:1px solid var(--border);border-left:4px solid var(--blue-700);border-radius:0 6px 6px 0;padding:10px 14px;display:flex;flex-direction:column;gap:3px;">
-            <div style="font-size:11px;font-weight:700;color:var(--blue-700);">Page 1 — 患者さん向け</div>
-            <div style="font-size:11px;color:var(--ink-500);line-height:1.5;">歩行年齢・総合スコア・グラフ・コメント。わかりやすい言葉で書かれた結果シート。</div>
+    <div class="slide">
+      <div class="chbar ch-sys"></div>
+      <div class="shdr">
+        <div class="sh-row">
+          <div style="display:flex;align-items:center;gap:12px;">
+            <span class="cpill cp-sys">OVERVIEW</span>
+            <h2>計測システム — ご利用の全体フロー</h2>
           </div>
-          <div style="background:#fff;border:1px solid var(--border);border-left:4px solid var(--c-rep);border-radius:0 6px 6px 0;padding:10px 14px;display:flex;flex-direction:column;gap:3px;">
-            <div style="font-size:11px;font-weight:700;color:var(--c-rep);">Page 2 — 専門家向け</div>
-            <div style="font-size:11px;color:var(--ink-500);line-height:1.5;">臨床リスク評価・バイオメカニクス数値・レーダーチャート・加速度波形。</div>
-          </div>
-          <div style="background:#fff;border:1px solid var(--border);border-left:4px solid var(--c-opt);border-radius:0 6px 6px 0;padding:10px 14px;display:flex;flex-direction:column;gap:3px;">
-            <div style="font-size:11px;font-weight:700;color:var(--c-opt);">Page 3 — シューズレコメンド（任意）</div>
-            <div style="font-size:11px;color:var(--ink-500);line-height:1.5;">歩行プロファイルに基づくシューズ推薦。Google Sheets データと連携して表示。</div>
-          </div>
+          <span class="pgnum">02 / 16</span>
         </div>
+        <p class="lead">スマートフォンで歩く → データ解析 → PDF レポート出力まで、全 5 ステップで完了します。</p>
       </div>
+      <div class="sbody" style="gap:16px;">
 
-    </div>
-  </div>
-  <div class="sftr">
-    <span>歩行年齢テスト診断システム v6 — 使用マニュアル</span>
-    <span>2 / 16</span>
-  </div>
-</div>
+        <!-- 5-step flow -->
+        <div style="display:flex;align-items:stretch;gap:0;">
 
+          <div
+            style="flex:1;display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px 10px;background:var(--blue-050);border:1.5px solid var(--blue-200);border-radius:8px;">
+            <div
+              style="width:36px;height:36px;border-radius:50%;background:var(--c-setup);color:#fff;display:flex;align-items:center;justify-content:center;font-family:'Inter',sans-serif;font-size:15px;font-weight:900;">
+              1</div>
+            <div style="font-size:20px;">📱</div>
+            <div style="font-size:12px;font-weight:900;color:var(--c-setup);text-align:center;">事前準備</div>
+            <div style="font-size:10.5px;color:var(--ink-500);text-align:center;line-height:1.6;">phyphox
+              アプリを<br>スマートフォンに<br>インストール</div>
+          </div>
 
-<!-- ══════════════════════════════════════════════════════════
-     SLIDE 3  必要なものを用意する
-══════════════════════════════════════════════════════════ -->
-<div class="slide">
-  <div class="chbar ch-setup"></div>
-  <div class="shdr">
-    <div class="sh-row">
-      <div style="display:flex;align-items:center;gap:12px;">
-        <span class="cpill cp-setup">準備</span>
-        <h2>必要なものを用意する</h2>
-      </div>
-      <span class="pgnum">03 / 16</span>
-    </div>
-    <p class="lead">機器・アプリ・計測環境の 3 つを事前に確認してください。すべて無料または手持ちの機材で対応できます。</p>
-  </div>
-  <div class="sbody" style="gap:16px;">
+          <div style="display:flex;align-items:center;padding:0 6px;color:var(--ink-300);font-size:16px;">▶</div>
 
-    <div class="g3" style="flex:1;">
+          <div
+            style="flex:1;display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px 10px;background:#DCFCE7;border:1.5px solid #86EFAC;border-radius:8px;">
+            <div
+              style="width:36px;height:36px;border-radius:50%;background:var(--c-meas);color:#fff;display:flex;align-items:center;justify-content:center;font-family:'Inter',sans-serif;font-size:15px;font-weight:900;">
+              2</div>
+            <div style="font-size:20px;">🚶</div>
+            <div style="font-size:12px;font-weight:900;color:var(--c-meas);text-align:center;">歩行計測</div>
+            <div style="font-size:10.5px;color:var(--ink-500);text-align:center;line-height:1.6;">
+              腰にスマホを固定し<br>いつもの速さで<br>10 m を歩く</div>
+          </div>
 
-      <!-- スマートフォン -->
-      <div style="background:#fff;border:1px solid var(--border);border-radius:10px;padding:22px 20px;display:flex;flex-direction:column;gap:12px;">
-        <div style="font-size:36px;text-align:center;">📱</div>
-        <div style="text-align:center;">
-          <div style="font-size:13px;font-weight:900;color:var(--ink-900);margin-bottom:4px;">スマートフォン</div>
-          <span class="badge b-blue">必須</span>
+          <div style="display:flex;align-items:center;padding:0 6px;color:var(--ink-300);font-size:16px;">▶</div>
+
+          <div
+            style="flex:1;display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px 10px;background:var(--blue-050);border:1.5px solid var(--blue-200);border-radius:8px;">
+            <div
+              style="width:36px;height:36px;border-radius:50%;background:var(--blue-700);color:#fff;display:flex;align-items:center;justify-content:center;font-family:'Inter',sans-serif;font-size:15px;font-weight:900;">
+              3</div>
+            <div style="font-size:20px;">📤</div>
+            <div style="font-size:12px;font-weight:900;color:var(--blue-700);text-align:center;">データ転送</div>
+            <div style="font-size:10.5px;color:var(--ink-500);text-align:center;line-height:1.6;">CSV ファイルを PC へ<br>または
+              WiFi で<br>直接取得</div>
+          </div>
+
+          <div style="display:flex;align-items:center;padding:0 6px;color:var(--ink-300);font-size:16px;">▶</div>
+
+          <div
+            style="flex:1;display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px 10px;background:var(--blue-050);border:1.5px solid var(--blue-200);border-radius:8px;">
+            <div
+              style="width:36px;height:36px;border-radius:50%;background:var(--blue-700);color:#fff;display:flex;align-items:center;justify-content:center;font-family:'Inter',sans-serif;font-size:15px;font-weight:900;">
+              4</div>
+            <div style="font-size:20px;">🔍</div>
+            <div style="font-size:12px;font-weight:900;color:var(--blue-700);text-align:center;">自動解析</div>
+            <div style="font-size:10.5px;color:var(--ink-500);text-align:center;line-height:1.6;">7
+              指標をリアルタイム<br>算出・年齢推定・<br>スコアリング</div>
+          </div>
+
+          <div style="display:flex;align-items:center;padding:0 6px;color:var(--ink-300);font-size:16px;">▶</div>
+
+          <div
+            style="flex:1;display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px 10px;background:#F3E8FF;border:1.5px solid #D8B4FE;border-radius:8px;">
+            <div
+              style="width:36px;height:36px;border-radius:50%;background:var(--c-rep);color:#fff;display:flex;align-items:center;justify-content:center;font-family:'Inter',sans-serif;font-size:15px;font-weight:900;">
+              5</div>
+            <div style="font-size:20px;">📄</div>
+            <div style="font-size:12px;font-weight:900;color:var(--c-rep);text-align:center;">レポート出力</div>
+            <div style="font-size:10.5px;color:var(--ink-500);text-align:center;line-height:1.6;">A4 PDF
+              を出力・印刷<br>患者さんへ<br>フィードバック</div>
+          </div>
+
         </div>
-        <ul class="bul">
-          <li>iPhone または Android（加速度センサー内蔵）</li>
-          <li>ほぼ全機種対応</li>
-        </ul>
-        <div style="border-top:1px solid var(--border);padding-top:10px;">
-          <div style="font-size:10px;font-weight:700;color:var(--c-setup);letter-spacing:.8px;text-transform:uppercase;margin-bottom:6px;">必要なアプリ</div>
-          <div style="background:var(--blue-050);border:1px solid var(--blue-200);border-radius:7px;padding:10px 12px;display:flex;align-items:center;gap:10px;">
-            <div style="background:#3A0A6E;color:#fff;border-radius:6px;padding:5px 8px;font-size:9px;font-weight:900;white-space:nowrap;">phyphox</div>
-            <div>
-              <div style="font-size:11px;font-weight:700;color:var(--ink-900);">phyphox — 無料</div>
-              <div style="font-size:10px;color:var(--ink-500);">App Store / Google Play</div>
-              <div style="font-size:9.5px;color:var(--ink-300);">開発: RWTH Aachen Univ.</div>
+
+        <!-- Bottom: metrics + outputs -->
+        <div class="g2" style="flex:1;">
+
+          <div class="card off" style="display:flex;flex-direction:column;gap:8px;">
+            <div class="clabel">解析される 7 つの指標</div>
+            <table>
+              <thead>
+                <tr>
+                  <th>指標</th>
+                  <th>単位</th>
+                  <th>意味</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><b>歩くスピード</b></td>
+                  <td style="font-family:'Inter',monospace;color:var(--blue-700);">m/s</td>
+                  <td>1秒間に進む距離</td>
+                </tr>
+                <tr>
+                  <td><b>歩幅の広さ</b></td>
+                  <td style="font-family:'Inter',monospace;color:var(--blue-700);">m</td>
+                  <td>1歩の長さ</td>
+                </tr>
+                <tr>
+                  <td><b>歩くテンポ</b></td>
+                  <td style="font-family:'Inter',monospace;color:var(--blue-700);">歩/分</td>
+                  <td>ケイデンス</td>
+                </tr>
+                <tr>
+                  <td><b>リズムの安定性</b></td>
+                  <td style="font-family:'Inter',monospace;color:var(--blue-700);">%</td>
+                  <td>ステップ時間 CV</td>
+                </tr>
+                <tr>
+                  <td><b>左右対称性</b></td>
+                  <td style="font-family:'Inter',monospace;color:var(--blue-700);">%</td>
+                  <td>左右バランス</td>
+                </tr>
+                <tr>
+                  <td><b>ウォークレシオ</b></td>
+                  <td style="font-family:'Inter',monospace;color:var(--blue-700);">m/Hz</td>
+                  <td>効率性指標</td>
+                </tr>
+                <tr>
+                  <td><b>RMS 加速度</b></td>
+                  <td style="font-family:'Inter',monospace;color:var(--blue-700);">m/s²</td>
+                  <td>揺れの大きさ</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div style="display:flex;flex-direction:column;gap:8px;">
+            <div class="clabel" style="color:var(--ink-700);">出力される 3 つのレポートページ</div>
+            <div style="display:flex;flex-direction:column;gap:7px;flex:1;">
+              <div
+                style="background:#fff;border:1px solid var(--border);border-left:4px solid var(--blue-700);border-radius:0 6px 6px 0;padding:10px 14px;display:flex;flex-direction:column;gap:3px;">
+                <div style="font-size:11px;font-weight:700;color:var(--blue-700);">Page 1 — 患者さん向け</div>
+                <div style="font-size:11px;color:var(--ink-500);line-height:1.5;">
+                  歩行年齢・総合スコア・グラフ・コメント。わかりやすい言葉で書かれた結果シート。</div>
+              </div>
+              <div
+                style="background:#fff;border:1px solid var(--border);border-left:4px solid var(--c-rep);border-radius:0 6px 6px 0;padding:10px 14px;display:flex;flex-direction:column;gap:3px;">
+                <div style="font-size:11px;font-weight:700;color:var(--c-rep);">Page 2 — 専門家向け</div>
+                <div style="font-size:11px;color:var(--ink-500);line-height:1.5;">臨床リスク評価・バイオメカニクス数値・レーダーチャート・加速度波形。
+                </div>
+              </div>
+              <div
+                style="background:#fff;border:1px solid var(--border);border-left:4px solid var(--c-opt);border-radius:0 6px 6px 0;padding:10px 14px;display:flex;flex-direction:column;gap:3px;">
+                <div style="font-size:11px;font-weight:700;color:var(--c-opt);">Page 3 — シューズレコメンド（任意）</div>
+                <div style="font-size:11px;color:var(--ink-500);line-height:1.5;">歩行プロファイルに基づくシューズ推薦。Google Sheets
+                  データと連携して表示。</div>
+              </div>
             </div>
           </div>
+
         </div>
       </div>
-
-      <!-- PC / タブレット -->
-      <div style="background:#fff;border:1px solid var(--border);border-radius:10px;padding:22px 20px;display:flex;flex-direction:column;gap:12px;">
-        <div style="font-size:36px;text-align:center;">💻</div>
-        <div style="text-align:center;">
-          <div style="font-size:13px;font-weight:900;color:var(--ink-900);margin-bottom:4px;">PC / タブレット</div>
-          <span class="badge b-blue">必須</span>
-        </div>
-        <ul class="bul">
-          <li>Windows / Mac / iPad など</li>
-          <li>最新 Chrome・Safari・Edge を推奨</li>
-          <li>インターネット接続が必要</li>
-          <li>インストール不要 — ブラウザで動作</li>
-        </ul>
-        <div style="border-top:1px solid var(--border);padding-top:10px;">
-          <div style="font-size:10px;font-weight:700;color:var(--blue-700);letter-spacing:.8px;text-transform:uppercase;margin-bottom:6px;">起動方法（3 択）</div>
-          <div style="display:flex;flex-direction:column;gap:4px;">
-            <div style="font-size:10.5px;color:var(--ink-700);">① GAS の URL をブラウザに貼り付ける <span class="badge b-green" style="margin-left:4px;">推奨</span></div>
-            <div style="font-size:10.5px;color:var(--ink-700);">② Netlify の URL をブラウザに貼り付ける</div>
-            <div style="font-size:10.5px;color:var(--ink-700);">③ index.html をダブルクリック</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- 計測環境 -->
-      <div style="background:#fff;border:1px solid var(--border);border-radius:10px;padding:22px 20px;display:flex;flex-direction:column;gap:12px;">
-        <div style="font-size:36px;text-align:center;">🏃</div>
-        <div style="text-align:center;">
-          <div style="font-size:13px;font-weight:900;color:var(--ink-900);margin-bottom:4px;">計測スペース</div>
-          <span class="badge b-gray">確認が必要</span>
-        </div>
-        <ul class="bul m">
-          <li>直線で <b>10 m 以上</b> 歩けるスペース</li>
-          <li>平坦な床（屋内廊下・体育館など）</li>
-          <li>普段履いている靴でOK</li>
-          <li>杖・歩行器を使っている方もそのまま計測可</li>
-        </ul>
-        <div style="border-top:1px solid var(--border);padding-top:10px;">
-          <div class="hl m" style="font-size:11px;">
-            💡 床にテープで <b>10 m のライン</b> を貼っておくと計測がスムーズです。
-          </div>
-        </div>
-      </div>
-
-    </div>
-
-    <!-- Bottom note -->
-    <div style="background:var(--blue-050);border:1px solid var(--blue-200);border-radius:7px;padding:10px 16px;display:flex;align-items:center;gap:16px;">
-      <span style="font-size:18px;">☑️</span>
-      <div style="font-size:12px;color:var(--blue-800);font-weight:500;line-height:1.5;">
-        <b>任意：Google アカウント</b>（GAS でのセットアップ時のみ必要）&ensp;/&ensp;
-        <b>同一 WiFi 環境</b>（phyphox WiFi リモート取得機能を使う場合のみ必要）
+      <div class="sftr">
+        <span>歩行年齢テスト計測システム v6 — 使用マニュアル</span>
+        <span>2 / 16</span>
       </div>
     </div>
 
-  </div>
-  <div class="sftr">
-    <span>歩行年齢テスト診断システム v6 — 使用マニュアル</span>
-    <span>3 / 16</span>
-  </div>
-</div>
+
+    <!-- ══════════════════════════════════════════════════════════
+     SLIDE 3  必要なものを用意する
+══════════════════════════════════════════════════════════ -->
+    <div class="slide">
+      <div class="chbar ch-setup"></div>
+      <div class="shdr">
+        <div class="sh-row">
+          <div style="display:flex;align-items:center;gap:12px;">
+            <span class="cpill cp-setup">準備</span>
+            <h2>必要なものを用意する</h2>
+          </div>
+          <span class="pgnum">03 / 16</span>
+        </div>
+        <p class="lead">機器・アプリ・計測環境の 3 つを事前に確認してください。すべて無料または手持ちの機材で対応できます。</p>
+      </div>
+      <div class="sbody" style="gap:16px;">
+
+        <div class="g3" style="flex:1;">
+
+          <!-- スマートフォン -->
+          <div
+            style="background:#fff;border:1px solid var(--border);border-radius:10px;padding:22px 20px;display:flex;flex-direction:column;gap:12px;">
+            <div style="font-size:36px;text-align:center;">📱</div>
+            <div style="text-align:center;">
+              <div style="font-size:13px;font-weight:900;color:var(--ink-900);margin-bottom:4px;">スマートフォン</div>
+              <span class="badge b-blue">必須</span>
+            </div>
+            <ul class="bul">
+              <li>iPhone または Android（加速度センサー内蔵）</li>
+              <li>ほぼ全機種対応</li>
+            </ul>
+            <div style="border-top:1px solid var(--border);padding-top:10px;">
+              <div
+                style="font-size:10px;font-weight:700;color:var(--c-setup);letter-spacing:.8px;text-transform:uppercase;margin-bottom:6px;">
+                必要なアプリ</div>
+              <div
+                style="background:var(--blue-050);border:1px solid var(--blue-200);border-radius:7px;padding:10px 12px;display:flex;align-items:center;gap:10px;">
+                <div
+                  style="background:#3A0A6E;color:#fff;border-radius:6px;padding:5px 8px;font-size:9px;font-weight:900;white-space:nowrap;">
+                  phyphox</div>
+                <div>
+                  <div style="font-size:11px;font-weight:700;color:var(--ink-900);">phyphox — 無料</div>
+                  <div style="font-size:10px;color:var(--ink-500);">App Store / Google Play</div>
+                  <div style="font-size:9.5px;color:var(--ink-300);">開発: RWTH Aachen Univ.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- PC / タブレット -->
+          <div
+            style="background:#fff;border:1px solid var(--border);border-radius:10px;padding:22px 20px;display:flex;flex-direction:column;gap:12px;">
+            <div style="font-size:36px;text-align:center;">💻</div>
+            <div style="text-align:center;">
+              <div style="font-size:13px;font-weight:900;color:var(--ink-900);margin-bottom:4px;">PC / タブレット</div>
+              <span class="badge b-blue">必須</span>
+            </div>
+            <ul class="bul">
+              <li>Windows / Mac / iPad など</li>
+              <li>最新 Chrome・Safari・Edge を推奨</li>
+              <li>インターネット接続が必要</li>
+              <li>インストール不要 — ブラウザで動作</li>
+            </ul>
+            <div style="border-top:1px solid var(--border);padding-top:10px;">
+              <div
+                style="font-size:10px;font-weight:700;color:var(--blue-700);letter-spacing:.8px;text-transform:uppercase;margin-bottom:6px;">
+                起動方法（3 択）</div>
+              <div style="display:flex;flex-direction:column;gap:4px;">
+                <div style="font-size:10.5px;color:var(--ink-700);">① GAS の URL をブラウザに貼り付ける <span class="badge b-green"
+                    style="margin-left:4px;">推奨</span></div>
+                <div style="font-size:10.5px;color:var(--ink-700);">② Netlify の URL をブラウザに貼り付ける</div>
+                <div style="font-size:10.5px;color:var(--ink-700);">③ index.html をダブルクリック</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 計測環境 -->
+          <div
+            style="background:#fff;border:1px solid var(--border);border-radius:10px;padding:22px 20px;display:flex;flex-direction:column;gap:12px;">
+            <div style="font-size:36px;text-align:center;">🏃</div>
+            <div style="text-align:center;">
+              <div style="font-size:13px;font-weight:900;color:var(--ink-900);margin-bottom:4px;">計測スペース</div>
+              <span class="badge b-gray">確認が必要</span>
+            </div>
+            <ul class="bul m">
+              <li>直線で <b>10 m 以上</b> 歩けるスペース</li>
+              <li>平坦な床（屋内廊下・体育館など）</li>
+              <li>普段履いている靴でOK</li>
+              <li>杖・歩行器を使っている方もそのまま計測可</li>
+            </ul>
+            <div style="border-top:1px solid var(--border);padding-top:10px;">
+              <div class="hl m" style="font-size:11px;">
+                💡 床にテープで <b>10 m のライン</b> を貼っておくと計測がスムーズです。
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Bottom note -->
+        <div
+          style="background:var(--blue-050);border:1px solid var(--blue-200);border-radius:7px;padding:10px 16px;display:flex;align-items:center;gap:16px;">
+          <span style="font-size:18px;">☑️</span>
+          <div style="font-size:12px;color:var(--blue-800);font-weight:500;line-height:1.5;">
+            <b>任意：Google アカウント</b>（GAS でのセットアップ時のみ必要）&ensp;/&ensp;
+            <b>同一 WiFi 環境</b>（phyphox WiFi リモート取得機能を使う場合のみ必要）
+          </div>
+        </div>
+
+      </div>
+      <div class="sftr">
+        <span>歩行年齢テスト計測システム v6 — 使用マニュアル</span>
+        <span>3 / 16</span>
+      </div>
+    </div>
 
 
-<!-- ══════════════════════════════════════════════════════════
+    <!-- ══════════════════════════════════════════════════════════
      SLIDE 4  phyphox アプリのセットアップ
      左: 手順  ／  右: phyphox 画面モックアップ
 ══════════════════════════════════════════════════════════ -->
-<div class="slide">
-  <div class="chbar ch-setup"></div>
-  <div class="shdr">
-    <div class="sh-row">
-      <div style="display:flex;align-items:center;gap:12px;">
-        <span class="cpill cp-setup">準備</span>
-        <h2>phyphox アプリのセットアップ</h2>
+    <div class="slide">
+      <div class="chbar ch-setup"></div>
+      <div class="shdr">
+        <div class="sh-row">
+          <div style="display:flex;align-items:center;gap:12px;">
+            <span class="cpill cp-setup">準備</span>
+            <h2>phyphox アプリのセットアップ</h2>
+          </div>
+          <span class="pgnum">04 / 16</span>
+        </div>
+        <p class="lead">phyphox（フィフォックス）はドイツ・アーヘン工科大学が開発した無料の計測アプリです。加速度センサーを使って歩行データを収集します。</p>
       </div>
-      <span class="pgnum">04 / 16</span>
-    </div>
-    <p class="lead">phyphox（フィフォックス）はドイツ・アーヘン工科大学が開発した無料の計測アプリです。加速度センサーを使って歩行データを収集します。</p>
-  </div>
-  <div class="sbody">
-    <div class="g23" style="flex:1;align-items:stretch;">
+      <div class="sbody">
+        <div class="g23" style="flex:1;align-items:stretch;">
 
-      <!-- Left: steps -->
-      <div style="display:flex;flex-direction:column;gap:10px;">
+          <!-- Left: steps -->
+          <div style="display:flex;flex-direction:column;gap:10px;">
 
-        <div class="card setup">
-          <div class="clabel">① インストール</div>
-          <div class="steps">
-            <div class="step">
-              <div class="snum s">1</div>
-              <div class="stxt">App Store（iPhone）または Google Play（Android）を開く</div>
+            <div class="card setup">
+              <div class="clabel">① インストール</div>
+              <div class="steps">
+                <div class="step">
+                  <div class="snum s">1</div>
+                  <div class="stxt">App Store（iPhone）または Google Play（Android）を開く</div>
+                </div>
+                <div class="step">
+                  <div class="snum s">2</div>
+                  <div class="stxt"><b>「phyphox」</b> で検索してインストール（完全無料）</div>
+                </div>
+              </div>
             </div>
-            <div class="step">
-              <div class="snum s">2</div>
-              <div class="stxt"><b>「phyphox」</b> で検索してインストール（完全無料）</div>
+
+            <div class="card blue">
+              <div class="clabel">② 計測メニューの選択</div>
+              <div class="steps">
+                <div class="step">
+                  <div class="snum">1</div>
+                  <div class="stxt">phyphox を起動 → 画面下の <b>「＋」ボタン</b> をタップ</div>
+                </div>
+                <div class="step">
+                  <div class="snum">2</div>
+                  <div class="stxt"><b>「Acceleration (without g)」</b> を選択する</div>
+                </div>
+                <div class="step">
+                  <div class="snum">3</div>
+                  <div class="stxt">新しい実験が作成される → タップして開く</div>
+                </div>
+              </div>
+              <div class="hl" style="margin-top:8px;font-size:11px;">日本語の場合は<b>「加速度（重力補正）」</b>または<b>「Linear
+                  Acceleration」</b></div>
+            </div>
+
+            <div class="card opt">
+              <div class="clabel">③ WiFi リモート機能（任意・便利）</div>
+              <div class="steps">
+                <div class="step">
+                  <div class="snum o">1</div>
+                  <div class="stxt">実験画面右上の <b>「⋮」→「Remote Access」</b> をタップ</div>
+                </div>
+                <div class="step">
+                  <div class="snum o">2</div>
+                  <div class="stxt"><b>「Access Address」</b> が表示 → IP アドレスをメモ（例: <code>192.168.1.5</code>）</div>
+                </div>
+              </div>
+              <div class="hl"
+                style="margin-top:8px;font-size:11px;border-color:var(--c-opt);background:#FEF3C7;color:var(--c-opt);">
+                スマートフォンと PC が同じ WiFi に接続されている場合に使えます</div>
+            </div>
+
+          </div>
+
+          <!-- Right: phyphox mockup -->
+          <div style="display:flex;flex-direction:column;gap:10px;justify-content:center;">
+            <!-- phyphox app mockup -->
+            <div class="phy-win">
+              <div class="phy-hdr">
+                <div class="phy-title">Acceleration (without g)</div>
+                <div class="phy-sub">phyphox</div>
+              </div>
+              <!-- Graph area -->
+              <div class="phy-graph-wrap" style="height:80px;">
+                <div class="phy-graph-lbl">m/s²</div>
+                <svg width="100%" height="80" viewBox="0 0 320 80" preserveAspectRatio="none">
+                  <rect width="320" height="80" fill="#0C0C18" />
+                  <line x1="0" y1="40" x2="320" y2="40" stroke="#ffffff" stroke-width="0.4" stroke-opacity="0.12" />
+                  <!-- x-axis: red -->
+                  <polyline
+                    points="0,40 18,22 36,52 54,16 72,55 90,30 108,50 126,18 144,52 162,28 180,55 198,22 216,48 234,20 252,52 270,28 288,50 306,24 320,42"
+                    fill="none" stroke="#FF5252" stroke-width="1.5" stroke-linejoin="round" />
+                  <!-- y-axis: green -->
+                  <polyline
+                    points="0,46 22,52 44,34 66,56 88,36 110,50 132,34 154,56 176,38 198,52 220,34 242,54 264,36 286,50 320,40"
+                    fill="none" stroke="#69F0AE" stroke-width="1.5" stroke-linejoin="round" />
+                  <!-- z-axis: blue -->
+                  <polyline
+                    points="0,28 22,38 44,24 66,38 88,26 110,36 132,24 154,38 176,26 198,36 220,24 242,38 264,26 286,36 320,30"
+                    fill="none" stroke="#64B5F6" stroke-width="1.5" stroke-linejoin="round" />
+                </svg>
+              </div>
+              <div class="phy-legend">
+                <div class="phy-le">
+                  <div class="phy-dot" style="background:#FF5252;"></div>x 軸
+                </div>
+                <div class="phy-le">
+                  <div class="phy-dot" style="background:#69F0AE;"></div>y 軸
+                </div>
+                <div class="phy-le">
+                  <div class="phy-dot" style="background:#64B5F6;"></div>z 軸
+                </div>
+              </div>
+              <!-- Menu item showing Remote Access -->
+              <div class="phy-menu">
+                <div class="phy-mdot"></div>
+                <span>Remote Access — Access Address</span>
+              </div>
+              <div class="phy-menu" style="margin-top:0;background:#2A2A3E;">
+                <div class="phy-mdot" style="background:#69F0AE;"></div>
+                <span style="color:#fff;">http://192.168.1.5</span>
+              </div>
+              <div class="phy-rec">● REC</div>
+            </div>
+
+            <!-- Caption -->
+            <div
+              style="background:var(--blue-050);border:1px solid var(--blue-200);border-radius:6px;padding:10px 12px;">
+              <div style="font-size:10px;font-weight:700;color:var(--blue-700);margin-bottom:4px;">画面の見方</div>
+              <ul class="bul" style="font-size:10.5px;">
+                <li>グラフの波形が歩行中の加速度</li>
+                <li>3色の線が x・y・z 軸それぞれ</li>
+                <li>REC ボタンで計測開始/停止</li>
+              </ul>
+            </div>
+          </div>
+
+        </div>
+      </div>
+      <div class="sftr">
+        <span>歩行年齢テスト計測システム v6 — 使用マニュアル</span>
+        <span>4 / 16</span>
+      </div>
+    </div>
+
+
+    <!-- ═══════════════════════════════════════════════════════════════
+     SLIDE 5 — 計測手順
+═══════════════════════════════════════════════════════════════ -->
+    <div class="slide">
+      <div class="chbar ch-setup"></div>
+      <div class="shdr">
+        <div style="display:flex;align-items:center;gap:12px;">
+          <span class="cpill cp-setup">STEP 1–2</span>
+          <h2>計測の準備と歩行手順</h2>
+        </div>
+        <p class="sub">スマートフォンをウエストに装着し、指定コースを歩行します</p>
+      </div>
+      <div class="sbody" style="display:flex;flex-direction:row;gap:32px;align-items:stretch;">
+
+        <!-- Left: Steps -->
+        <div style="flex:1;display:flex;flex-direction:column;gap:14px;">
+
+          <div class="card" style="padding:16px 18px;">
+            <div style="display:flex;gap:14px;align-items:flex-start;">
+              <div
+                style="width:32px;height:32px;border-radius:50%;background:var(--c-setup);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:15px;flex-shrink:0;">
+                1</div>
+              <div>
+                <div style="font-weight:700;font-size:13px;color:var(--blue-900);margin-bottom:6px;">スマートフォンの装着</div>
+                <ul style="margin:0;padding-left:16px;font-size:11.5px;color:var(--blue-700);line-height:1.7;">
+                  <li>スマートフォンをウエストポーチまたはポケットに入れる</li>
+                  <li>画面を<strong>外側</strong>に向け、端末の<strong>長軸が体軸と平行</strong>になるよう固定</li>
+                  <li>ズレ防止のためポーチのジッパーをしっかり締める</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <div class="card" style="padding:16px 18px;">
+            <div style="display:flex;gap:14px;align-items:flex-start;">
+              <div
+                style="width:32px;height:32px;border-radius:50%;background:var(--c-setup);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:15px;flex-shrink:0;">
+                2</div>
+              <div>
+                <div style="font-weight:700;font-size:13px;color:var(--blue-900);margin-bottom:6px;">phyphox の記録開始</div>
+                <ul style="margin:0;padding-left:16px;font-size:11.5px;color:var(--blue-700);line-height:1.7;">
+                  <li>phyphox で「加速度 (m/s²)」を開き ▶ ボタンをタップ</li>
+                  <li>または PCブラウザの「リモート制御」で <kbd
+                      style="background:var(--blue-100);border:1px solid var(--blue-300);border-radius:4px;padding:1px 5px;font-size:10px;">▶
+                      開始</kbd> をクリック</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <div class="card" style="padding:16px 18px;">
+            <div style="display:flex;gap:14px;align-items:flex-start;">
+              <div
+                style="width:32px;height:32px;border-radius:50%;background:var(--c-setup);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:15px;flex-shrink:0;">
+                3</div>
+              <div>
+                <div style="font-weight:700;font-size:13px;color:var(--blue-900);margin-bottom:6px;">歩行と記録停止</div>
+                <ul style="margin:0;padding-left:16px;font-size:11.5px;color:var(--blue-700);line-height:1.7;">
+                  <li>平坦な廊下を<strong>通常歩行速度</strong>で 10〜20 m 歩く</li>
+                  <li>歩行完了後、phyphox の ⏹ ボタンで記録停止</li>
+                  <li>開始・終了の静止区間（約 2 秒）を含めて記録すると解析精度が上がる</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <div
+            style="background:var(--blue-050);border-left:4px solid var(--c-setup);border-radius:0 8px 8px 0;padding:10px 14px;font-size:11px;color:var(--blue-800);">
+            <strong>注意：</strong>測定中は会話・立ち止まり・方向転換をしないでください。自然な歩行を保つことが重要です。
+          </div>
+
+        </div>
+
+        <!-- Right: SVG body diagram -->
+        <div
+          style="width:260px;display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--blue-050);border-radius:12px;padding:20px 16px;">
+          <div style="font-size:11px;font-weight:700;color:var(--blue-600);margin-bottom:12px;letter-spacing:.06em;">
+            装着位置イメージ</div>
+          <svg width="180" height="340" viewBox="0 0 180 340">
+            <!-- Head -->
+            <circle cx="90" cy="32" r="22" fill="none" stroke="var(--blue-400)" stroke-width="2.5" />
+            <!-- Neck -->
+            <line x1="90" y1="54" x2="90" y2="72" stroke="var(--blue-400)" stroke-width="2.5" />
+            <!-- Torso -->
+            <rect x="60" y="72" width="60" height="90" rx="8" fill="none" stroke="var(--blue-400)" stroke-width="2.5" />
+            <!-- Arms -->
+            <line x1="60" y1="82" x2="32" y2="140" stroke="var(--blue-400)" stroke-width="2.5" />
+            <line x1="120" y1="82" x2="148" y2="140" stroke="var(--blue-400)" stroke-width="2.5" />
+            <!-- Legs -->
+            <line x1="75" y1="162" x2="65" y2="240" stroke="var(--blue-400)" stroke-width="2.5" />
+            <line x1="105" y1="162" x2="115" y2="240" stroke="var(--blue-400)" stroke-width="2.5" />
+            <!-- Feet -->
+            <line x1="65" y1="240" x2="52" y2="248" stroke="var(--blue-400)" stroke-width="2.5" />
+            <line x1="115" y1="240" x2="128" y2="248" stroke="var(--blue-400)" stroke-width="2.5" />
+            <!-- Waist band -->
+            <rect x="55" y="148" width="70" height="16" rx="4" fill="var(--c-setup)" opacity=".25"
+              stroke="var(--c-setup)" stroke-width="1.5" />
+            <!-- Phone at waist -->
+            <rect x="84" y="144" width="22" height="36" rx="4" fill="var(--blue-900)" stroke="var(--blue-600)"
+              stroke-width="1.5" />
+            <rect x="87" y="148" width="16" height="24" rx="2" fill="var(--blue-600)" opacity=".6" />
+            <!-- Arrow pointing to phone -->
+            <line x1="140" y1="160" x2="112" y2="162" stroke="var(--c-setup)" stroke-width="2" marker-end="url(#arr)" />
+            <defs>
+              <marker id="arr" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
+                <path d="M0,0 L6,3 L0,6 Z" fill="var(--c-setup)" />
+              </marker>
+            </defs>
+            <!-- Label -->
+            <text x="143" y="155" font-size="10" fill="var(--blue-700)" font-family="sans-serif">ウエスト</text>
+            <text x="143" y="167" font-size="10" fill="var(--blue-700)" font-family="sans-serif">ポーチ</text>
+            <!-- Direction arrow (walking) -->
+            <text x="40" y="275" font-size="10" fill="var(--blue-500)" font-family="sans-serif">歩行方向</text>
+            <line x1="40" y1="280" x2="140" y2="280" stroke="var(--blue-400)" stroke-width="1.5" stroke-dasharray="4,3"
+              marker-end="url(#arr2)" />
+            <defs>
+              <marker id="arr2" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
+                <path d="M0,0 L6,3 L0,6 Z" fill="var(--blue-400)" />
+              </marker>
+            </defs>
+            <!-- Distance label -->
+            <text x="72" y="298" font-size="9" fill="var(--blue-400)" font-family="sans-serif">10〜20 m</text>
+          </svg>
+        </div>
+
+      </div>
+      <div class="sftr">
+        <span>歩行年齢テスト計測システム v6 — 使用マニュアル</span>
+        <span>5 / 16</span>
+      </div>
+    </div>
+
+
+    <!-- ═══════════════════════════════════════════════════════════════
+     SLIDE 6 — データのエクスポート
+═══════════════════════════════════════════════════════════════ -->
+    <div class="slide">
+      <div class="chbar ch-setup"></div>
+      <div class="shdr">
+        <div style="display:flex;align-items:center;gap:12px;">
+          <span class="cpill cp-setup">STEP 3</span>
+          <h2>加速度データのエクスポート</h2>
+        </div>
+        <p class="sub">2 つの方法でCSVファイルを取得できます。どちらか使いやすい方を選んでください</p>
+      </div>
+      <div class="sbody" style="display:flex;flex-direction:row;gap:24px;align-items:stretch;">
+
+        <!-- Method A: WiFi / Remote -->
+        <div style="flex:1;display:flex;flex-direction:column;gap:12px;">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;">
+            <div
+              style="width:28px;height:28px;border-radius:50%;background:var(--blue-700);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:13px;flex-shrink:0;">
+              A</div>
+            <div style="font-weight:700;font-size:13px;color:var(--blue-900);">WiFi リモート経由でダウンロード</div>
+            <span
+              style="font-size:10px;background:var(--c-setup);color:#fff;padding:2px 8px;border-radius:12px;font-weight:600;">推奨</span>
+          </div>
+          <!-- phyphox remote mockup -->
+          <div style="background:#1a0a2e;border-radius:10px;padding:14px;flex:1;min-height:0;">
+            <div style="display:flex;align-items:center;gap:6px;margin-bottom:10px;">
+              <div style="width:8px;height:8px;border-radius:50%;background:#ff5f57;"></div>
+              <div style="width:8px;height:8px;border-radius:50%;background:#ffbd2e;"></div>
+              <div style="width:8px;height:8px;border-radius:50%;background:#28c841;"></div>
+              <div style="color:#8b7bc8;font-size:10px;margin-left:6px;font-family:monospace;">192.168.1.xx — phyphox
+                remote</div>
+            </div>
+            <!-- Export button area -->
+            <div style="background:#2d1b4e;border-radius:6px;padding:10px;margin-bottom:8px;">
+              <div style="color:#c9b8ff;font-size:10px;margin-bottom:8px;font-weight:600;">⬇ エクスポート</div>
+              <div style="display:flex;gap:6px;flex-wrap:wrap;">
+                <div
+                  style="background:#4a2d7a;border:1px solid #6a4d9a;border-radius:4px;padding:5px 10px;color:#e0d0ff;font-size:10px;cursor:pointer;">
+                  CSV (Raw)</div>
+                <div
+                  style="background:#3d5afe;border-radius:4px;padding:5px 10px;color:#fff;font-size:10px;font-weight:600;box-shadow:0 2px 8px rgba(61,90,254,.5);">
+                  CSV (time,ax,ay,az)</div>
+                <div
+                  style="background:#4a2d7a;border:1px solid #6a4d9a;border-radius:4px;padding:5px 10px;color:#e0d0ff;font-size:10px;">
+                  Excel</div>
+              </div>
+            </div>
+            <div style="color:#69f0ae;font-size:9.5px;font-family:monospace;">✓ ダウンロードが完了しました: acceleration_data.csv
+            </div>
+          </div>
+          <!-- Steps -->
+          <div style="font-size:11px;color:var(--blue-700);line-height:1.8;padding-left:4px;">
+            <div>① phyphox → <strong>3点メニュー</strong> → <strong>リモートアクセス許可</strong></div>
+            <div>② PCブラウザで <kbd
+                style="background:var(--blue-100);border:1px solid var(--blue-300);border-radius:3px;padding:1px 5px;font-size:10px;">http://192.168.x.x</kbd>
+              を開く</div>
+            <div>③ 「エクスポート」→ <strong>CSV (time,ax,ay,az)</strong> をクリック</div>
+          </div>
+        </div>
+
+        <!-- Divider -->
+        <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;">
+          <div style="width:1px;flex:1;background:var(--blue-200);"></div>
+          <div style="font-size:11px;color:var(--blue-400);font-weight:600;">または</div>
+          <div style="width:1px;flex:1;background:var(--blue-200);"></div>
+        </div>
+
+        <!-- Method B: Direct share from phone -->
+        <div style="flex:1;display:flex;flex-direction:column;gap:12px;">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;">
+            <div
+              style="width:28px;height:28px;border-radius:50%;background:var(--blue-600);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:13px;flex-shrink:0;">
+              B</div>
+            <div style="font-weight:700;font-size:13px;color:var(--blue-900);">スマホから直接エクスポート</div>
+          </div>
+          <!-- Phone mockup showing phyphox share -->
+          <div
+            style="background:#1a0a2e;border-radius:10px;padding:14px;flex:1;min-height:0;display:flex;flex-direction:column;">
+            <!-- Phone screen top bar -->
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+              <div style="color:#c9b8ff;font-size:10px;font-weight:600;">phyphox</div>
+              <div style="display:flex;gap:6px;">
+                <div
+                  style="width:18px;height:18px;border-radius:3px;background:#3d1e6e;display:flex;align-items:center;justify-content:center;">
+                  <div style="color:#ff5252;font-size:11px;">⋮</div>
+                </div>
+              </div>
+            </div>
+            <!-- Menu items mockup -->
+            <div style="background:#2d1b4e;border-radius:6px;padding:4px 0;margin-bottom:8px;">
+              <div style="padding:6px 12px;color:#a090d0;font-size:10px;border-bottom:1px solid #3d2b5e;">タイムライン表示</div>
+              <div style="padding:6px 12px;color:#a090d0;font-size:10px;border-bottom:1px solid #3d2b5e;">リモートアクセス許可
+              </div>
+              <div style="padding:6px 12px;color:#e0d0ff;font-size:10px;font-weight:600;background:#3d1e6e;">エクスポート ▶
+              </div>
+              <div style="padding:6px 12px;color:#a090d0;font-size:10px;">設定</div>
+            </div>
+            <!-- Export submenu -->
+            <div style="background:#3d1e6e;border-radius:6px;padding:8px 10px;margin-left:20px;">
+              <div style="color:#c9b8ff;font-size:10px;margin-bottom:6px;font-weight:600;">形式を選択</div>
+              <div
+                style="color:#69f0ae;font-size:10px;font-weight:700;padding:4px 8px;background:#1a6e3e;border-radius:4px;display:inline-block;">
+                CSV (セパレータ: コンマ)</div>
+            </div>
+            <div style="color:#a090d0;font-size:9px;margin-top:8px;text-align:center;">→ メール / AirDrop / クラウドで PC に転送
+            </div>
+          </div>
+          <!-- Steps -->
+          <div style="font-size:11px;color:var(--blue-700);line-height:1.8;padding-left:4px;">
+            <div>① phyphox → <strong>⋮ メニュー</strong> → <strong>エクスポート</strong></div>
+            <div>② <strong>CSV（コンマ区切り）</strong> を選択</div>
+            <div>③ AirDrop・メール等で PC へ転送</div>
+          </div>
+        </div>
+
+        <!-- File spec box -->
+        <div style="width:180px;display:flex;flex-direction:column;gap:10px;justify-content:center;">
+          <div style="background:var(--blue-900);border-radius:10px;padding:16px;color:#fff;">
+            <div style="font-size:10px;font-weight:700;letter-spacing:.08em;color:var(--blue-300);margin-bottom:10px;">
+              出力ファイル仕様</div>
+            <div
+              style="font-family:monospace;font-size:10px;background:var(--blue-950);border-radius:6px;padding:10px;margin-bottom:10px;color:#a8d8ff;line-height:1.7;">
+              time,ax,ay,az<br>
+              0.000,0.12,-9.81,0.05<br>
+              0.010,0.18,-9.79,0.11<br>
+              ···
+            </div>
+            <div style="font-size:10px;color:var(--blue-300);line-height:1.6;">
+              <div>• ヘッダー行あり</div>
+              <div>• サンプリング: ~100 Hz</div>
+              <div>• 単位: m/s²</div>
+              <div>• 文字コード: UTF-8</div>
             </div>
           </div>
         </div>
 
-        <div class="card blue">
-          <div class="clabel">② 計測メニューの選択</div>
-          <div class="steps">
+      </div>
+      <div class="sftr">
+        <span>歩行年齢テスト計測システム v6 — 使用マニュアル</span>
+        <span>6 / 16</span>
+      </div>
+    </div>
+
+
+    <!-- ═══════════════════════════════════════════════════════════════
+     SLIDE 7 — 計測システムの起動
+═══════════════════════════════════════════════════════════════ -->
+    <div class="slide">
+      <div class="chbar ch-sys"></div>
+      <div class="shdr">
+        <div style="display:flex;align-items:center;gap:12px;">
+          <span class="cpill cp-sys">STEP 4</span>
+          <h2>計測システムの起動方法</h2>
+        </div>
+        <p class="sub">3 つの起動方法から環境に合わせて選択してください</p>
+      </div>
+      <div class="sbody" style="display:flex;flex-direction:row;gap:20px;align-items:stretch;">
+
+        <!-- Method 1: Bookmark/Direct URL -->
+        <div
+          style="flex:1;background:var(--blue-050);border-radius:12px;padding:20px 18px;display:flex;flex-direction:column;gap:10px;border-top:4px solid var(--blue-700);">
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div style="font-size:24px;">🔖</div>
+            <div>
+              <div style="font-weight:700;font-size:13px;color:var(--blue-900);">ブラウザブックマーク</div>
+              <div style="font-size:10px;color:var(--blue-500);font-weight:600;letter-spacing:.06em;">最も簡単</div>
+            </div>
+          </div>
+          <div style="font-size:11px;color:var(--blue-700);line-height:1.75;flex:1;">
+            <p style="margin:0 0 8px;">GAS でデプロイした URL をブラウザにブックマーク登録しておく方法です。</p>
+            <div
+              style="background:#fff;border-radius:6px;border:1px solid var(--blue-200);padding:8px 10px;font-family:monospace;font-size:10px;color:var(--blue-600);word-break:break-all;">
+              https://script.google.com/macros/s/<br>
+              <span style="color:var(--blue-400);">AKfy···長いID···/exec</span>
+            </div>
+          </div>
+          <div style="border-top:1px solid var(--blue-200);padding-top:10px;">
+            <div style="font-size:10px;font-weight:700;color:var(--blue-700);margin-bottom:6px;">手順</div>
+            <ol style="margin:0;padding-left:16px;font-size:10.5px;color:var(--blue-700);line-height:1.7;">
+              <li>GAS エディタ → デプロイ → URL をコピー</li>
+              <li>Chrome/Safari でURL を開く</li>
+              <li>ブックマークに追加（⌘D）</li>
+            </ol>
+          </div>
+        </div>
+
+        <!-- Method 2: GAS Deploy -->
+        <div
+          style="flex:1;background:var(--blue-900);border-radius:12px;padding:20px 18px;display:flex;flex-direction:column;gap:10px;border-top:4px solid #4fc3f7;">
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div style="font-size:24px;">⚙️</div>
+            <div>
+              <div style="font-weight:700;font-size:13px;color:#fff;">GAS 再デプロイ</div>
+              <div style="font-size:10px;color:#4fc3f7;font-weight:600;letter-spacing:.06em;">更新時に使用</div>
+            </div>
+          </div>
+          <!-- Mini GAS editor mockup -->
+          <div
+            style="background:#1e1e1e;border-radius:8px;padding:10px;font-family:monospace;font-size:9.5px;line-height:1.6;flex:1;">
+            <div style="color:#858585;margin-bottom:4px;">// doGet(e) — メインエントリ</div>
+            <div><span style="color:#569cd6;">function</span> <span style="color:#dcdcaa;">doGet</span><span
+                style="color:#fff;">(e) &#123;</span></div>
+            <div style="padding-left:12px;"><span style="color:#569cd6;">return</span> <span
+                style="color:#dcdcaa;">HtmlService</span></div>
+            <div style="padding-left:20px;"><span style="color:#fff;">.</span><span
+                style="color:#dcdcaa;">createHtmlOutputFromFile</span></div>
+            <div style="padding-left:20px;"><span style="color:#fff;">(</span><span
+                style="color:#ce9178;">'index'</span><span style="color:#fff;">);</span></div>
+            <div><span style="color:#fff;">&#125;</span></div>
+          </div>
+          <div style="border-top:1px solid var(--blue-700);padding-top:10px;">
+            <ol style="margin:0;padding-left:16px;font-size:10.5px;color:#a0c8e8;line-height:1.7;">
+              <li>GAS エディタを開く</li>
+              <li>「デプロイ」→「デプロイを管理」</li>
+              <li>編集アイコン → 「新しいバージョン」</li>
+              <li>「デプロイ」をクリック</li>
+            </ol>
+          </div>
+        </div>
+
+        <!-- Method 3: Local file -->
+        <div
+          style="flex:1;background:var(--blue-050);border-radius:12px;padding:20px 18px;display:flex;flex-direction:column;gap:10px;border-top:4px solid var(--c-meas);">
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div style="font-size:24px;">📁</div>
+            <div>
+              <div style="font-weight:700;font-size:13px;color:var(--blue-900);">ローカルファイルを直接開く</div>
+              <div style="font-size:10px;color:var(--c-meas);font-weight:600;letter-spacing:.06em;">オフライン環境向け</div>
+            </div>
+          </div>
+          <div style="font-size:11px;color:var(--blue-700);line-height:1.75;flex:1;">
+            <p style="margin:0 0 8px;">index.html をブラウザで直接開く方法です。一部機能（GAS連携）は動作しません。</p>
+            <div
+              style="background:#fff;border-radius:6px;border:1px solid var(--blue-200);padding:8px 10px;font-family:monospace;font-size:10px;color:var(--blue-700);">
+              $ open index.html<br>
+              <span style="color:var(--blue-400);"># または</span><br>
+              $ python3 -m http.server 8080
+            </div>
+          </div>
+          <div style="border-top:1px solid var(--blue-200);padding-top:10px;">
+            <div
+              style="background:var(--blue-100);border-radius:6px;padding:8px 10px;font-size:10px;color:var(--blue-700);">
+              <strong>⚠ 注意：</strong>ローカル起動では CSV 読み込みは可能ですが、GAS への送信・レポート生成は行えません。
+            </div>
+          </div>
+        </div>
+
+        <!-- Summary comparison -->
+        <div style="width:200px;display:flex;flex-direction:column;justify-content:center;gap:8px;">
+          <div style="font-size:10px;font-weight:700;color:var(--blue-700);letter-spacing:.06em;margin-bottom:4px;">
+            比較サマリー</div>
+          <table style="width:100%;border-collapse:collapse;font-size:10px;">
+            <thead>
+              <tr style="background:var(--blue-100);">
+                <th
+                  style="padding:5px 8px;text-align:left;color:var(--blue-700);font-weight:700;border-radius:6px 0 0 0;">
+                </th>
+                <th style="padding:5px 6px;text-align:center;color:var(--blue-700);">A</th>
+                <th style="padding:5px 6px;text-align:center;color:var(--blue-700);">B</th>
+                <th style="padding:5px 6px;text-align:center;color:var(--blue-700);border-radius:0 6px 0 0;">C</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr style="border-bottom:1px solid var(--blue-100);">
+                <td style="padding:5px 8px;color:var(--blue-700);">簡単さ</td>
+                <td style="text-align:center;color:var(--c-setup);">◎</td>
+                <td style="text-align:center;color:var(--blue-500);">○</td>
+                <td style="text-align:center;color:var(--blue-500);">○</td>
+              </tr>
+              <tr style="border-bottom:1px solid var(--blue-100);">
+                <td style="padding:5px 8px;color:var(--blue-700);">GAS連携</td>
+                <td style="text-align:center;color:var(--c-setup);">✓</td>
+                <td style="text-align:center;color:var(--c-setup);">✓</td>
+                <td style="text-align:center;color:var(--blue-400);">✗</td>
+              </tr>
+              <tr style="border-bottom:1px solid var(--blue-100);">
+                <td style="padding:5px 8px;color:var(--blue-700);">オフライン</td>
+                <td style="text-align:center;color:var(--blue-400);">✗</td>
+                <td style="text-align:center;color:var(--blue-400);">✗</td>
+                <td style="text-align:center;color:var(--c-setup);">✓</td>
+              </tr>
+              <tr>
+                <td style="padding:5px 8px;color:var(--blue-700);">更新</td>
+                <td style="text-align:center;color:var(--blue-400);">手動</td>
+                <td style="text-align:center;color:var(--c-setup);">自動</td>
+                <td style="text-align:center;color:var(--blue-400);">手動</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+      <div class="sftr">
+        <span>歩行年齢テスト計測システム v6 — 使用マニュアル</span>
+        <span>7 / 16</span>
+      </div>
+    </div>
+
+
+    <!-- ═══════════════════════════════════════════════════════════════
+     SLIDE 8 — 対象者情報の入力
+═══════════════════════════════════════════════════════════════ -->
+    <div class="slide">
+      <div class="chbar ch-sys"></div>
+      <div class="shdr">
+        <div class="sh-row">
+          <div style="display:flex;align-items:center;gap:12px;">
+            <span class="cpill cp-sys">STEP 5</span>
+            <h2>計測システムへの対象者情報入力</h2>
+          </div>
+          <span class="pgnum">08 / 16</span>
+        </div>
+        <p class="lead">システム起動後、左パネルに対象者の基本情報を入力してから CSV を読み込みます。</p>
+      </div>
+      <div class="sbody" style="display:flex;flex-direction:row;gap:24px;align-items:stretch;">
+
+        <!-- Left: explanation -->
+        <div style="flex:1;display:flex;flex-direction:column;gap:12px;justify-content:center;">
+          <div class="card blue" style="padding:14px 16px;">
+            <div class="clabel">入力が必要な項目</div>
+            <div style="display:flex;flex-direction:column;gap:8px;margin-top:6px;">
+              <div style="display:flex;align-items:center;gap:10px;">
+                <div
+                  style="width:20px;height:20px;border-radius:50%;background:var(--blue-700);color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                  1</div>
+                <div style="font-size:12px;color:var(--ink-700);"><strong>氏名</strong> — 姓と名（レポートに記載）</div>
+              </div>
+              <div style="display:flex;align-items:center;gap:10px;">
+                <div
+                  style="width:20px;height:20px;border-radius:50%;background:var(--blue-700);color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                  2</div>
+                <div style="font-size:12px;color:var(--ink-700);"><strong>生年月日 / 年齢</strong> — 規準値の年代補正に使用</div>
+              </div>
+              <div style="display:flex;align-items:center;gap:10px;">
+                <div
+                  style="width:20px;height:20px;border-radius:50%;background:var(--blue-700);color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                  3</div>
+                <div style="font-size:12px;color:var(--ink-700);"><strong>性別</strong> — 男性 / 女性（規準値が異なります）</div>
+              </div>
+              <div style="display:flex;align-items:center;gap:10px;">
+                <div
+                  style="width:20px;height:20px;border-radius:50%;background:var(--blue-700);color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                  4</div>
+                <div style="font-size:12px;color:var(--ink-700);"><strong>身長</strong> — ウォークレシオ計算に使用（cm）</div>
+              </div>
+              <div style="display:flex;align-items:center;gap:10px;">
+                <div
+                  style="width:20px;height:20px;border-radius:50%;background:var(--blue-300);color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                  5</div>
+                <div style="font-size:12px;color:var(--ink-500);"><strong>歩行補助具</strong>（任意） — 杖・歩行器の使用有無</div>
+              </div>
+              <div style="display:flex;align-items:center;gap:10px;">
+                <div
+                  style="width:20px;height:20px;border-radius:50%;background:var(--blue-300);color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                  6</div>
+                <div style="font-size:12px;color:var(--ink-500);"><strong>担当者 / メモ</strong>（任意） — レポートに記載</div>
+              </div>
+            </div>
+          </div>
+          <div class="hl s" style="font-size:11px;">
+            <strong>入力後は「保存」不要：</strong>フォームに入力した時点で自動記憶されます。CSV 読み込み前に必ず入力してください。
+          </div>
+          <div class="card warn" style="padding:11px 14px;">
+            <div class="clabel">注意</div>
+            <div style="font-size:11px;color:var(--ink-700);line-height:1.6;">
+              性別・年齢を正確に入力しないと、規準値との比較が正しく行われません。実年齢（満年齢）を入力してください。</div>
+          </div>
+        </div>
+
+        <!-- Right: App mockup showing left input panel -->
+        <div style="flex:1.4;display:flex;align-items:center;justify-content:center;">
+          <div class="app-win" style="width:100%;max-width:620px;height:510px;">
+            <div class="app-win-bar">
+              <div class="app-win-logo">歩行年齢テスト 計測システム v6</div>
+              <div class="app-win-btns">
+                <div class="awb">📊 解析</div>
+                <div class="awb">📄 レポート</div>
+                <div class="awb p">🖨 PDF出力</div>
+              </div>
+            </div>
+            <div class="app-win-body">
+              <div class="app-left-pane" style="width:200px;">
+                <div class="ap-sec">対象者情報</div>
+                <div class="ap-lbl">氏名（姓）</div>
+                <div class="ap-inp" style="margin-bottom:5px;">山田</div>
+                <div class="ap-lbl">氏名（名）</div>
+                <div class="ap-inp" style="margin-bottom:5px;">花子</div>
+                <div class="ap-lbl">生年月日</div>
+                <div class="ap-inp" style="margin-bottom:5px;">1955 / 08 / 12</div>
+                <div class="ap-row" style="margin-bottom:5px;">
+                  <div>
+                    <div class="ap-lbl">年齢</div>
+                    <div class="ap-inp">70 歳</div>
+                  </div>
+                  <div>
+                    <div class="ap-lbl">性別</div>
+                    <div class="ap-inp" style="background:#EFF6FF;border-color:#93C5FD;color:#1D4ED8;font-weight:700;">
+                      女性</div>
+                  </div>
+                </div>
+                <div class="ap-lbl">身長 (cm)</div>
+                <div class="ap-inp" style="margin-bottom:5px;">155</div>
+                <div class="ap-sec" style="margin-top:6px;">オプション</div>
+                <div class="ap-lbl">歩行補助具</div>
+                <div class="ap-inp" style="margin-bottom:5px;color:#6B7280;">なし</div>
+                <div class="ap-lbl">担当者名</div>
+                <div class="ap-inp" style="margin-bottom:5px;">田中 理学療法士</div>
+                <div class="ap-sec" style="margin-top:6px;">CSV データ</div>
+                <div class="ap-csv">📂 クリックまたはドロップ</div>
+              </div>
+              <div class="app-right-pane">
+                <div style="text-align:center;color:var(--ink-300);">
+                  <div style="font-size:36px;margin-bottom:10px;">📂</div>
+                  <div style="font-size:12px;font-weight:600;">CSV ファイルを読み込んでください</div>
+                  <div style="font-size:10px;margin-top:6px;">左パネルの入力後、CSVをドロップ</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+      <div class="sftr">
+        <span>歩行年齢テスト計測システム v6 — 使用マニュアル</span>
+        <span>8 / 16</span>
+      </div>
+    </div>
+
+
+    <!-- ═══════════════════════════════════════════════════════════════
+     SLIDE 9 — CSV データの読み込み
+═══════════════════════════════════════════════════════════════ -->
+    <div class="slide">
+      <div class="chbar ch-sys"></div>
+      <div class="shdr">
+        <div class="sh-row">
+          <div style="display:flex;align-items:center;gap:12px;">
+            <span class="cpill cp-sys">STEP 6</span>
+            <h2>CSV データの読み込みと波形確認</h2>
+          </div>
+          <span class="pgnum">09 / 16</span>
+        </div>
+        <p class="lead">phyphox からエクスポートした CSV をシステムに読み込み、加速度波形を確認してから解析を実行します。</p>
+      </div>
+      <div class="sbody" style="display:flex;flex-direction:row;gap:20px;align-items:stretch;">
+
+        <!-- Left: steps -->
+        <div style="flex:1;display:flex;flex-direction:column;gap:10px;justify-content:center;">
+          <div class="steps" style="gap:10px;">
             <div class="step">
               <div class="snum">1</div>
-              <div class="stxt">phyphox を起動 → 画面下の <b>「＋」ボタン</b> をタップ</div>
+              <div class="stxt">左パネル下の <b>「📂 クリックまたはドロップ」</b> エリアに CSV をドラッグ&amp;ドロップ、またはクリックしてファイルを選択</div>
             </div>
             <div class="step">
               <div class="snum">2</div>
-              <div class="stxt"><b>「Acceleration (without g)」</b> を選択する</div>
+              <div class="stxt">右パネルに <b>加速度波形</b> が表示される。歩行区間（緑の点線範囲）が自動検出されていることを確認</div>
+            </div>
+            <div class="step">
+              <div class="snum m">3</div>
+              <div class="stxt">波形が正常であれば <b>「📊 解析」</b> ボタンをクリック。約 2〜5 秒で 7 指標の算出が完了</div>
+            </div>
+          </div>
+
+          <div class="card blue" style="padding:12px 14px;margin-top:4px;">
+            <div class="clabel">波形の見方</div>
+            <div
+              style="display:flex;flex-direction:column;gap:5px;font-size:11px;color:var(--ink-700);line-height:1.6;">
+              <div style="display:flex;align-items:center;gap:8px;">
+                <div style="width:24px;height:3px;background:#3B82F6;border-radius:2px;flex-shrink:0;"></div>
+                <span>青線 = 鉛直方向（ay）加速度。歩行中に規則的な波形が現れる</span>
+              </div>
+              <div style="display:flex;align-items:center;gap:8px;">
+                <div
+                  style="width:24px;height:1px;background:#22C55E;border-radius:2px;border-top:1px dashed #22C55E;flex-shrink:0;">
+                </div>
+                <span>緑の点線 = 自動検出された歩行区間の境界</span>
+              </div>
+            </div>
+          </div>
+
+          <div
+            style="background:var(--blue-050);border:1px solid var(--blue-200);border-radius:7px;padding:10px 14px;font-size:11px;color:var(--blue-800);line-height:1.6;">
+            <strong>読み込みエラーが出る場合：</strong>CSV のヘッダーが <code
+              style="background:#fff;border:1px solid var(--blue-200);padding:1px 5px;border-radius:3px;font-family:monospace;font-size:10px;">time,ax,ay,az</code>
+            形式か確認してください。
+          </div>
+        </div>
+
+        <!-- Right: App mockup with waveform -->
+        <div style="flex:1.5;display:flex;align-items:center;justify-content:center;">
+          <div class="app-win" style="width:100%;max-width:640px;height:510px;">
+            <div class="app-win-bar">
+              <div class="app-win-logo">歩行年齢テスト 計測システム v6</div>
+              <div class="app-win-btns">
+                <div class="awb p">📊 解析</div>
+                <div class="awb">📄 レポート</div>
+                <div class="awb">🖨 PDF</div>
+              </div>
+            </div>
+            <div class="app-win-body">
+              <div class="app-left-pane" style="width:160px;">
+                <div class="ap-sec">対象者情報</div>
+                <div style="font-size:8px;font-weight:700;color:var(--ink-700);margin-bottom:2px;">山田 花子（女性 / 70歳）</div>
+                <div style="font-size:7.5px;color:var(--ink-300);margin-bottom:8px;">身長 155cm / 担当: 田中 PT</div>
+                <div class="ap-sec">CSV ファイル</div>
+                <div
+                  style="background:#DCFCE7;border:1px solid #86EFAC;border-radius:4px;padding:5px 7px;font-size:8px;font-weight:700;color:#166534;margin-bottom:6px;">
+                  ✓ acceleration_data.csv<br>
+                  <span style="font-weight:400;color:#15803D;">9,842 行 読み込み済み</span>
+                </div>
+                <div class="ap-sec">解析設定</div>
+                <div class="ap-lbl">歩行区間</div>
+                <div class="ap-inp" style="margin-bottom:4px;">自動検出</div>
+                <div class="ap-lbl">フィルタ</div>
+                <div class="ap-inp">バターワース 0.5Hz</div>
+              </div>
+              <div
+                style="flex:1;background:#0F172A;display:flex;flex-direction:column;padding:10px 12px;gap:6px;overflow:hidden;">
+                <div style="font-size:8px;font-weight:700;color:#94A3B8;letter-spacing:.5px;">加速度波形 — 鉛直成分 (ay)</div>
+                <div style="flex:1;background:#0C0C18;border-radius:4px;border:1px solid #1E293B;overflow:hidden;">
+                  <svg width="100%" height="100%" viewBox="0 0 480 180" preserveAspectRatio="none">
+                    <rect width="480" height="180" fill="#0C0C18" />
+                    <line x1="0" y1="90" x2="480" y2="90" stroke="#1E293B" stroke-width="1" />
+                    <line x1="0" y1="45" x2="480" y2="45" stroke="#1E293B" stroke-width=".5" />
+                    <line x1="0" y1="135" x2="480" y2="135" stroke="#1E293B" stroke-width=".5" />
+                    <polyline points="0,90 10,91 20,89 30,90 40,91 50,90" fill="none" stroke="#3B82F6"
+                      stroke-width="1.2" />
+                    <polyline
+                      points="50,90 62,58 74,112 86,52 98,116 110,54 122,110 134,50 146,114 158,52 170,110 182,50 194,114 206,52 218,110 230,50 242,114 254,52 266,110 278,50 290,114 302,52 314,108 326,52 338,114 350,52 362,110 374,52 386,112 398,54 410,90"
+                      fill="none" stroke="#3B82F6" stroke-width="1.5" />
+                    <polyline points="410,90 420,91 430,89 440,90 450,91 460,90 470,90 480,90" fill="none"
+                      stroke="#3B82F6" stroke-width="1.2" />
+                    <rect x="50" y="0" width="360" height="180" fill="#3B82F6" fill-opacity=".05" />
+                    <line x1="50" y1="0" x2="50" y2="180" stroke="#22C55E" stroke-width="1" stroke-dasharray="4,3" />
+                    <line x1="410" y1="0" x2="410" y2="180" stroke="#22C55E" stroke-width="1" stroke-dasharray="4,3" />
+                    <text x="55" y="14" font-size="9" fill="#22C55E" font-family="sans-serif">歩行区間（自動）</text>
+                    <text x="2" y="49" font-size="7" fill="#475569" font-family="monospace">+5</text>
+                    <text x="2" y="93" font-size="7" fill="#475569" font-family="monospace"> 0</text>
+                    <text x="2" y="138" font-size="7" fill="#475569" font-family="monospace">-5</text>
+                  </svg>
+                </div>
+                <div style="display:flex;gap:14px;">
+                  <div style="font-size:8px;color:#64748B;"><span style="color:#94A3B8;font-weight:600;">サンプル数:</span>
+                    9,842</div>
+                  <div style="font-size:8px;color:#64748B;"><span style="color:#94A3B8;font-weight:600;">サンプリング:</span>
+                    100 Hz</div>
+                  <div style="font-size:8px;color:#64748B;"><span style="color:#94A3B8;font-weight:600;">歩行区間:</span>
+                    3.5〜13.7 s</div>
+                  <div style="font-size:8px;color:#22C55E;font-weight:600;">✓ 解析可能</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+      <div class="sftr">
+        <span>歩行年齢テスト計測システム v6 — 使用マニュアル</span>
+        <span>9 / 16</span>
+      </div>
+    </div>
+
+
+    <!-- ═══════════════════════════════════════════════════════════════
+     SLIDE 10 — GAS セットアップ
+═══════════════════════════════════════════════════════════════ -->
+    <div class="slide">
+      <div class="chbar ch-sys"></div>
+      <div class="shdr">
+        <div class="sh-row">
+          <div style="display:flex;align-items:center;gap:12px;">
+            <span class="cpill cp-sys">初回のみ</span>
+            <h2>Google Apps Script (GAS) セットアップ</h2>
+          </div>
+          <span class="pgnum">10 / 16</span>
+        </div>
+        <p class="lead">初回のみ必要な設定です。GAS にコードを貼り付けてデプロイするとシステムの URL が発行されます。</p>
+      </div>
+      <div class="sbody" style="display:flex;flex-direction:row;gap:20px;align-items:stretch;">
+
+        <!-- Left: Steps -->
+        <div style="flex:1;display:flex;flex-direction:column;gap:10px;justify-content:center;">
+          <div class="steps" style="gap:10px;">
+            <div class="step">
+              <div class="snum">1</div>
+              <div class="stxt"><b>script.google.com</b> を開き、<b>「新しいプロジェクト」</b> をクリック</div>
+            </div>
+            <div class="step">
+              <div class="snum">2</div>
+              <div class="stxt">左ファイル一覧から <b>「コード.gs」</b> を開く → 既存コードを全選択して削除</div>
             </div>
             <div class="step">
               <div class="snum">3</div>
-              <div class="stxt">新しい実験が作成される → タップして開く</div>
-            </div>
-          </div>
-          <div class="hl" style="margin-top:8px;font-size:11px;">日本語の場合は<b>「加速度（重力補正）」</b>または<b>「Linear Acceleration」</b></div>
-        </div>
-
-        <div class="card opt">
-          <div class="clabel">③ WiFi リモート機能（任意・便利）</div>
-          <div class="steps">
-            <div class="step">
-              <div class="snum o">1</div>
-              <div class="stxt">実験画面右上の <b>「⋮」→「Remote Access」</b> をタップ</div>
+              <div class="stxt">配布ファイル <b>「Code.gs」</b> の内容をコピー＆ペーストして <b>Ctrl+S / ⌘S で保存</b></div>
             </div>
             <div class="step">
-              <div class="snum o">2</div>
-              <div class="stxt"><b>「Port 8080」</b> が表示 → IP アドレスをメモ（例: <code>192.168.1.5</code>）</div>
+              <div class="snum">4</div>
+              <div class="stxt">メニュー <b>「デプロイ」→「新しいデプロイ」</b> をクリック</div>
+            </div>
+            <div class="step">
+              <div class="snum">5</div>
+              <div class="stxt">種類:「ウェブアプリ」/ アクセス:「<b>全員</b>」に設定 → <b>「デプロイ」</b></div>
+            </div>
+            <div class="step">
+              <div class="snum m">6</div>
+              <div class="stxt">発行された <b>ウェブアプリ URL</b> をコピーしてブラウザで開く → 完了</div>
             </div>
           </div>
-          <div class="hl" style="margin-top:8px;font-size:11px;border-color:var(--c-opt);background:#FEF3C7;color:var(--c-opt);">スマートフォンと PC が同じ WiFi に接続されている場合に使えます</div>
-        </div>
-
-      </div>
-
-      <!-- Right: phyphox mockup -->
-      <div style="display:flex;flex-direction:column;gap:10px;justify-content:center;">
-        <!-- phyphox app mockup -->
-        <div class="phy-win">
-          <div class="phy-hdr">
-            <div class="phy-title">Acceleration (without g)</div>
-            <div class="phy-sub">phyphox</div>
-          </div>
-          <!-- Graph area -->
-          <div class="phy-graph-wrap" style="height:80px;">
-            <div class="phy-graph-lbl">m/s²</div>
-            <svg width="100%" height="80" viewBox="0 0 320 80" preserveAspectRatio="none">
-              <rect width="320" height="80" fill="#0C0C18"/>
-              <line x1="0" y1="40" x2="320" y2="40" stroke="#ffffff" stroke-width="0.4" stroke-opacity="0.12"/>
-              <!-- x-axis: red -->
-              <polyline points="0,40 18,22 36,52 54,16 72,55 90,30 108,50 126,18 144,52 162,28 180,55 198,22 216,48 234,20 252,52 270,28 288,50 306,24 320,42"
-                fill="none" stroke="#FF5252" stroke-width="1.5" stroke-linejoin="round"/>
-              <!-- y-axis: green -->
-              <polyline points="0,46 22,52 44,34 66,56 88,36 110,50 132,34 154,56 176,38 198,52 220,34 242,54 264,36 286,50 320,40"
-                fill="none" stroke="#69F0AE" stroke-width="1.5" stroke-linejoin="round"/>
-              <!-- z-axis: blue -->
-              <polyline points="0,28 22,38 44,24 66,38 88,26 110,36 132,24 154,38 176,26 198,36 220,24 242,38 264,26 286,36 320,30"
-                fill="none" stroke="#64B5F6" stroke-width="1.5" stroke-linejoin="round"/>
-            </svg>
-          </div>
-          <div class="phy-legend">
-            <div class="phy-le"><div class="phy-dot" style="background:#FF5252;"></div>x 軸</div>
-            <div class="phy-le"><div class="phy-dot" style="background:#69F0AE;"></div>y 軸</div>
-            <div class="phy-le"><div class="phy-dot" style="background:#64B5F6;"></div>z 軸</div>
-          </div>
-          <!-- Menu item showing Remote Access -->
-          <div class="phy-menu">
-            <div class="phy-mdot"></div>
-            <span>Remote Access — Port 8080</span>
-          </div>
-          <div class="phy-menu" style="margin-top:0;background:#2A2A3E;">
-            <div class="phy-mdot" style="background:#69F0AE;"></div>
-            <span style="color:#fff;">192.168.1.5:8080</span>
-          </div>
-          <div class="phy-rec">● REC</div>
-        </div>
-
-        <!-- Caption -->
-        <div style="background:var(--blue-050);border:1px solid var(--blue-200);border-radius:6px;padding:10px 12px;">
-          <div style="font-size:10px;font-weight:700;color:var(--blue-700);margin-bottom:4px;">画面の見方</div>
-          <ul class="bul" style="font-size:10.5px;">
-            <li>グラフの波形が歩行中の加速度</li>
-            <li>3色の線が x・y・z 軸それぞれ</li>
-            <li>REC ボタンで計測開始/停止</li>
-          </ul>
-        </div>
-      </div>
-
-    </div>
-  </div>
-  <div class="sftr">
-    <span>歩行年齢テスト診断システム v6 — 使用マニュアル</span>
-    <span>4 / 16</span>
-  </div>
-</div>
-
-
-<!-- ═══════════════════════════════════════════════════════════════
-     SLIDE 5 — 計測手順
-═══════════════════════════════════════════════════════════════ -->
-<div class="slide">
-  <div class="chbar ch-setup"></div>
-  <div class="shdr">
-    <div style="display:flex;align-items:center;gap:12px;">
-      <span class="cpill cp-setup">STEP 1–2</span>
-      <h2>計測の準備と歩行手順</h2>
-    </div>
-    <p class="sub">スマートフォンをウエストに装着し、指定コースを歩行します</p>
-  </div>
-  <div class="sbody" style="display:flex;flex-direction:row;gap:32px;align-items:stretch;">
-
-    <!-- Left: Steps -->
-    <div style="flex:1;display:flex;flex-direction:column;gap:14px;">
-
-      <div class="card" style="padding:16px 18px;">
-        <div style="display:flex;gap:14px;align-items:flex-start;">
-          <div style="width:32px;height:32px;border-radius:50%;background:var(--c-setup);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:15px;flex-shrink:0;">1</div>
-          <div>
-            <div style="font-weight:700;font-size:13px;color:var(--blue-900);margin-bottom:6px;">スマートフォンの装着</div>
-            <ul style="margin:0;padding-left:16px;font-size:11.5px;color:var(--blue-700);line-height:1.7;">
-              <li>スマートフォンをウエストポーチまたはポケットに入れる</li>
-              <li>画面を<strong>外側</strong>に向け、端末の<strong>長軸が体軸と平行</strong>になるよう固定</li>
-              <li>ズレ防止のためポーチのジッパーをしっかり締める</li>
-            </ul>
+          <div class="card opt" style="padding:11px 14px;margin-top:4px;">
+            <div class="clabel">初回アクセス時の権限確認</div>
+            <div style="font-size:11px;color:var(--ink-700);line-height:1.6;">「このアプリは Google
+              で確認されていません」と表示されたら「詳細」→「（プロジェクト名）に移動」をクリック。自作スクリプト固有の仕様です。</div>
           </div>
         </div>
-      </div>
 
-      <div class="card" style="padding:16px 18px;">
-        <div style="display:flex;gap:14px;align-items:flex-start;">
-          <div style="width:32px;height:32px;border-radius:50%;background:var(--c-setup);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:15px;flex-shrink:0;">2</div>
-          <div>
-            <div style="font-weight:700;font-size:13px;color:var(--blue-900);margin-bottom:6px;">phyphox の記録開始</div>
-            <ul style="margin:0;padding-left:16px;font-size:11.5px;color:var(--blue-700);line-height:1.7;">
-              <li>phyphox で「加速度 (m/s²)」を開き ▶ ボタンをタップ</li>
-              <li>または PCブラウザの「リモート制御」で <kbd style="background:var(--blue-100);border:1px solid var(--blue-300);border-radius:4px;padding:1px 5px;font-size:10px;">▶ 開始</kbd> をクリック</li>
-            </ul>
+        <!-- Right: GAS editor + deploy dialog mockup -->
+        <div style="flex:1.4;display:flex;flex-direction:column;gap:10px;align-items:stretch;">
+          <div class="gas-win" style="flex:1;">
+            <div class="gas-hdr">
+              <div
+                style="background:rgba(255,255,255,0.15);border-radius:4px;padding:2px 6px;font-size:8px;font-weight:700;color:#fff;">
+                GS</div>
+              <div class="gas-hdr-t">歩行年齢テスト計測システム — コード.gs</div>
+              <div style="margin-left:auto;display:flex;gap:8px;">
+                <div
+                  style="background:rgba(255,255,255,0.15);border-radius:3px;padding:2px 8px;font-size:8px;font-weight:700;color:#fff;">
+                  ▶ 実行</div>
+                <div
+                  style="background:#fff;color:#1565C0;border-radius:3px;padding:2px 8px;font-size:8px;font-weight:700;">
+                  デプロイ ▾</div>
+              </div>
+            </div>
+            <div class="gas-toolbar">
+              <div class="gas-tbtn">ファイル</div>
+              <div class="gas-tbtn">編集</div>
+              <div class="gas-tbtn">表示</div>
+              <div class="gas-tbtn">実行</div>
+              <div style="flex:1;"></div>
+              <div style="font-size:8px;color:#5F6368;">コード.gs</div>
+            </div>
+            <div class="gas-body">
+              <div class="gas-nums">
+                <div class="gas-n">1</div>
+                <div class="gas-n">2</div>
+                <div class="gas-n">3</div>
+                <div class="gas-n">4</div>
+                <div class="gas-n">5</div>
+                <div class="gas-n">6</div>
+                <div class="gas-n">7</div>
+                <div class="gas-n">8</div>
+                <div class="gas-n">9</div>
+                <div class="gas-n">10</div>
+                <div class="gas-n">11</div>
+                <div class="gas-n">12</div>
+                <div class="gas-n">13</div>
+                <div class="gas-n">14</div>
+              </div>
+              <div class="gas-code">
+                <div><span class="cc">// 歩行年齢テスト計測システム v6 — GAS バックエンド</span></div>
+                <div><span class="cc">// (c) 2025 配布・改変自由</span></div>
+                <div>&nbsp;</div>
+                <div><span class="ck">const</span> <span style="color:#9CDCFE;">SHEET_ID</span> <span
+                    style="color:#D4D4D4;">=</span> <span class="cs">'YOUR_SPREADSHEET_ID'</span><span
+                    style="color:#D4D4D4;">;</span></div>
+                <div><span class="ck">const</span> <span style="color:#9CDCFE;">SHEET_NAME</span> <span
+                    style="color:#D4D4D4;">=</span> <span class="cs">'results'</span><span
+                    style="color:#D4D4D4;">;</span></div>
+                <div>&nbsp;</div>
+                <div><span class="ck">function</span> <span class="cf">doGet</span><span style="color:#D4D4D4;">(e)
+                    &#123;</span></div>
+                <div>&nbsp;&nbsp;<span class="ck">return</span> <span style="color:#9CDCFE;">HtmlService</span></div>
+                <div>&nbsp;&nbsp;&nbsp;&nbsp;.<span class="cf">createHtmlOutputFromFile</span><span
+                    style="color:#D4D4D4;">(</span><span class="cs">'index'</span><span style="color:#D4D4D4;">)</span>
+                </div>
+                <div>&nbsp;&nbsp;&nbsp;&nbsp;.<span class="cf">setTitle</span><span style="color:#D4D4D4;">(</span><span
+                    class="cs">'歩行年齢テスト'</span><span style="color:#D4D4D4;">);</span></div>
+                <div><span style="color:#D4D4D4;">&#125;</span></div>
+                <div>&nbsp;</div>
+                <div><span class="ck">function</span> <span class="cf">doPost</span><span style="color:#D4D4D4;">(e)
+                    &#123;</span> <span class="cc">/* データ保存処理 */</span> <span style="color:#D4D4D4;">&#125;</span></div>
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
 
-      <div class="card" style="padding:16px 18px;">
-        <div style="display:flex;gap:14px;align-items:flex-start;">
-          <div style="width:32px;height:32px;border-radius:50%;background:var(--c-setup);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:15px;flex-shrink:0;">3</div>
-          <div>
-            <div style="font-weight:700;font-size:13px;color:var(--blue-900);margin-bottom:6px;">歩行と記録停止</div>
-            <ul style="margin:0;padding-left:16px;font-size:11.5px;color:var(--blue-700);line-height:1.7;">
-              <li>平坦な廊下を<strong>通常歩行速度</strong>で 10〜20 m 歩く</li>
-              <li>歩行完了後、phyphox の ⏹ ボタンで記録停止</li>
-              <li>開始・終了の静止区間（約 2 秒）を含めて記録すると解析精度が上がる</li>
-            </ul>
-          </div>
-        </div>
-      </div>
-
-      <div style="background:var(--blue-050);border-left:4px solid var(--c-setup);border-radius:0 8px 8px 0;padding:10px 14px;font-size:11px;color:var(--blue-800);">
-        <strong>注意：</strong>測定中は会話・立ち止まり・方向転換をしないでください。自然な歩行を保つことが重要です。
-      </div>
-
-    </div>
-
-    <!-- Right: SVG body diagram -->
-    <div style="width:260px;display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--blue-050);border-radius:12px;padding:20px 16px;">
-      <div style="font-size:11px;font-weight:700;color:var(--blue-600);margin-bottom:12px;letter-spacing:.06em;">装着位置イメージ</div>
-      <svg width="180" height="340" viewBox="0 0 180 340">
-        <!-- Head -->
-        <circle cx="90" cy="32" r="22" fill="none" stroke="var(--blue-400)" stroke-width="2.5"/>
-        <!-- Neck -->
-        <line x1="90" y1="54" x2="90" y2="72" stroke="var(--blue-400)" stroke-width="2.5"/>
-        <!-- Torso -->
-        <rect x="60" y="72" width="60" height="90" rx="8" fill="none" stroke="var(--blue-400)" stroke-width="2.5"/>
-        <!-- Arms -->
-        <line x1="60" y1="82" x2="32" y2="140" stroke="var(--blue-400)" stroke-width="2.5"/>
-        <line x1="120" y1="82" x2="148" y2="140" stroke="var(--blue-400)" stroke-width="2.5"/>
-        <!-- Legs -->
-        <line x1="75" y1="162" x2="65" y2="240" stroke="var(--blue-400)" stroke-width="2.5"/>
-        <line x1="105" y1="162" x2="115" y2="240" stroke="var(--blue-400)" stroke-width="2.5"/>
-        <!-- Feet -->
-        <line x1="65" y1="240" x2="52" y2="248" stroke="var(--blue-400)" stroke-width="2.5"/>
-        <line x1="115" y1="240" x2="128" y2="248" stroke="var(--blue-400)" stroke-width="2.5"/>
-        <!-- Waist band -->
-        <rect x="55" y="148" width="70" height="16" rx="4" fill="var(--c-setup)" opacity=".25" stroke="var(--c-setup)" stroke-width="1.5"/>
-        <!-- Phone at waist -->
-        <rect x="84" y="144" width="22" height="36" rx="4" fill="var(--blue-900)" stroke="var(--blue-600)" stroke-width="1.5"/>
-        <rect x="87" y="148" width="16" height="24" rx="2" fill="var(--blue-600)" opacity=".6"/>
-        <!-- Arrow pointing to phone -->
-        <line x1="140" y1="160" x2="112" y2="162" stroke="var(--c-setup)" stroke-width="2" marker-end="url(#arr)"/>
-        <defs>
-          <marker id="arr" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
-            <path d="M0,0 L6,3 L0,6 Z" fill="var(--c-setup)"/>
-          </marker>
-        </defs>
-        <!-- Label -->
-        <text x="143" y="155" font-size="10" fill="var(--blue-700)" font-family="sans-serif">ウエスト</text>
-        <text x="143" y="167" font-size="10" fill="var(--blue-700)" font-family="sans-serif">ポーチ</text>
-        <!-- Direction arrow (walking) -->
-        <text x="40" y="275" font-size="10" fill="var(--blue-500)" font-family="sans-serif">歩行方向</text>
-        <line x1="40" y1="280" x2="140" y2="280" stroke="var(--blue-400)" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arr2)"/>
-        <defs>
-          <marker id="arr2" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
-            <path d="M0,0 L6,3 L0,6 Z" fill="var(--blue-400)"/>
-          </marker>
-        </defs>
-        <!-- Distance label -->
-        <text x="72" y="298" font-size="9" fill="var(--blue-400)" font-family="sans-serif">10〜20 m</text>
-      </svg>
-    </div>
-
-  </div>
-  <div class="sftr">
-    <span>歩行年齢テスト診断システム v6 — 使用マニュアル</span>
-    <span>5 / 16</span>
-  </div>
-</div>
-
-
-<!-- ═══════════════════════════════════════════════════════════════
-     SLIDE 6 — データのエクスポート
-═══════════════════════════════════════════════════════════════ -->
-<div class="slide">
-  <div class="chbar ch-setup"></div>
-  <div class="shdr">
-    <div style="display:flex;align-items:center;gap:12px;">
-      <span class="cpill cp-setup">STEP 3</span>
-      <h2>加速度データのエクスポート</h2>
-    </div>
-    <p class="sub">2 つの方法でCSVファイルを取得できます。どちらか使いやすい方を選んでください</p>
-  </div>
-  <div class="sbody" style="display:flex;flex-direction:row;gap:24px;align-items:stretch;">
-
-    <!-- Method A: WiFi / Remote -->
-    <div style="flex:1;display:flex;flex-direction:column;gap:12px;">
-      <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;">
-        <div style="width:28px;height:28px;border-radius:50%;background:var(--blue-700);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:13px;flex-shrink:0;">A</div>
-        <div style="font-weight:700;font-size:13px;color:var(--blue-900);">WiFi リモート経由でダウンロード</div>
-        <span style="font-size:10px;background:var(--c-setup);color:#fff;padding:2px 8px;border-radius:12px;font-weight:600;">推奨</span>
-      </div>
-      <!-- phyphox remote mockup -->
-      <div style="background:#1a0a2e;border-radius:10px;padding:14px;flex:1;min-height:0;">
-        <div style="display:flex;align-items:center;gap:6px;margin-bottom:10px;">
-          <div style="width:8px;height:8px;border-radius:50%;background:#ff5f57;"></div>
-          <div style="width:8px;height:8px;border-radius:50%;background:#ffbd2e;"></div>
-          <div style="width:8px;height:8px;border-radius:50%;background:#28c841;"></div>
-          <div style="color:#8b7bc8;font-size:10px;margin-left:6px;font-family:monospace;">192.168.1.xx — phyphox remote</div>
-        </div>
-        <!-- Export button area -->
-        <div style="background:#2d1b4e;border-radius:6px;padding:10px;margin-bottom:8px;">
-          <div style="color:#c9b8ff;font-size:10px;margin-bottom:8px;font-weight:600;">⬇  エクスポート</div>
-          <div style="display:flex;gap:6px;flex-wrap:wrap;">
-            <div style="background:#4a2d7a;border:1px solid #6a4d9a;border-radius:4px;padding:5px 10px;color:#e0d0ff;font-size:10px;cursor:pointer;">CSV (Raw)</div>
-            <div style="background:#3d5afe;border-radius:4px;padding:5px 10px;color:#fff;font-size:10px;font-weight:600;box-shadow:0 2px 8px rgba(61,90,254,.5);">CSV (time,ax,ay,az)</div>
-            <div style="background:#4a2d7a;border:1px solid #6a4d9a;border-radius:4px;padding:5px 10px;color:#e0d0ff;font-size:10px;">Excel</div>
-          </div>
-        </div>
-        <div style="color:#69f0ae;font-size:9.5px;font-family:monospace;">✓ ダウンロードが完了しました: acceleration_data.csv</div>
-      </div>
-      <!-- Steps -->
-      <div style="font-size:11px;color:var(--blue-700);line-height:1.8;padding-left:4px;">
-        <div>① phyphox → <strong>3点メニュー</strong> → <strong>リモートアクセス許可</strong></div>
-        <div>② PCブラウザで <kbd style="background:var(--blue-100);border:1px solid var(--blue-300);border-radius:3px;padding:1px 5px;font-size:10px;">http://192.168.x.x</kbd> を開く</div>
-        <div>③ 「エクスポート」→ <strong>CSV (time,ax,ay,az)</strong> をクリック</div>
-      </div>
-    </div>
-
-    <!-- Divider -->
-    <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;">
-      <div style="width:1px;flex:1;background:var(--blue-200);"></div>
-      <div style="font-size:11px;color:var(--blue-400);font-weight:600;">または</div>
-      <div style="width:1px;flex:1;background:var(--blue-200);"></div>
-    </div>
-
-    <!-- Method B: Direct share from phone -->
-    <div style="flex:1;display:flex;flex-direction:column;gap:12px;">
-      <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;">
-        <div style="width:28px;height:28px;border-radius:50%;background:var(--blue-600);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:13px;flex-shrink:0;">B</div>
-        <div style="font-weight:700;font-size:13px;color:var(--blue-900);">スマホから直接エクスポート</div>
-      </div>
-      <!-- Phone mockup showing phyphox share -->
-      <div style="background:#1a0a2e;border-radius:10px;padding:14px;flex:1;min-height:0;display:flex;flex-direction:column;">
-        <!-- Phone screen top bar -->
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
-          <div style="color:#c9b8ff;font-size:10px;font-weight:600;">phyphox</div>
-          <div style="display:flex;gap:6px;">
-            <div style="width:18px;height:18px;border-radius:3px;background:#3d1e6e;display:flex;align-items:center;justify-content:center;">
-              <div style="color:#ff5252;font-size:11px;">⋮</div>
+          <div class="dep-win">
+            <div class="dep-hdr">新しいデプロイ</div>
+            <div class="dep-body">
+              <div>
+                <div class="dep-fl">種類</div>
+                <div class="dep-fv">ウェブアプリ</div>
+              </div>
+              <div>
+                <div class="dep-fl">次のユーザーとして実行</div>
+                <div class="dep-fv">自分（your@gmail.com）</div>
+              </div>
+              <div>
+                <div class="dep-fl">アクセスできるユーザー</div>
+                <div class="dep-fv" style="color:#1A73E8;font-weight:700;">全員</div>
+              </div>
+              <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:4px;">
+                <div
+                  style="border-radius:4px;padding:5px 12px;font-size:10px;font-weight:600;color:#5F6368;border:1px solid #E8EAED;">
+                  キャンセル</div>
+                <div class="dep-btn">デプロイ</div>
+              </div>
             </div>
           </div>
         </div>
-        <!-- Menu items mockup -->
-        <div style="background:#2d1b4e;border-radius:6px;padding:4px 0;margin-bottom:8px;">
-          <div style="padding:6px 12px;color:#a090d0;font-size:10px;border-bottom:1px solid #3d2b5e;">タイムライン表示</div>
-          <div style="padding:6px 12px;color:#a090d0;font-size:10px;border-bottom:1px solid #3d2b5e;">リモートアクセス許可</div>
-          <div style="padding:6px 12px;color:#e0d0ff;font-size:10px;font-weight:600;background:#3d1e6e;">エクスポート ▶</div>
-          <div style="padding:6px 12px;color:#a090d0;font-size:10px;">設定</div>
-        </div>
-        <!-- Export submenu -->
-        <div style="background:#3d1e6e;border-radius:6px;padding:8px 10px;margin-left:20px;">
-          <div style="color:#c9b8ff;font-size:10px;margin-bottom:6px;font-weight:600;">形式を選択</div>
-          <div style="color:#69f0ae;font-size:10px;font-weight:700;padding:4px 8px;background:#1a6e3e;border-radius:4px;display:inline-block;">CSV (セパレータ: コンマ)</div>
-        </div>
-        <div style="color:#a090d0;font-size:9px;margin-top:8px;text-align:center;">→ メール / AirDrop / クラウドで PC に転送</div>
+
       </div>
-      <!-- Steps -->
-      <div style="font-size:11px;color:var(--blue-700);line-height:1.8;padding-left:4px;">
-        <div>① phyphox → <strong>⋮ メニュー</strong> → <strong>エクスポート</strong></div>
-        <div>② <strong>CSV（コンマ区切り）</strong> を選択</div>
-        <div>③ AirDrop・メール等で PC へ転送</div>
+      <div class="sftr">
+        <span>歩行年齢テスト計測システム v6 — 使用マニュアル</span>
+        <span>10 / 16</span>
       </div>
     </div>
 
-    <!-- File spec box -->
-    <div style="width:180px;display:flex;flex-direction:column;gap:10px;justify-content:center;">
-      <div style="background:var(--blue-900);border-radius:10px;padding:16px;color:#fff;">
-        <div style="font-size:10px;font-weight:700;letter-spacing:.08em;color:var(--blue-300);margin-bottom:10px;">出力ファイル仕様</div>
-        <div style="font-family:monospace;font-size:10px;background:var(--blue-950);border-radius:6px;padding:10px;margin-bottom:10px;color:#a8d8ff;line-height:1.7;">
-          time,ax,ay,az<br>
-          0.000,0.12,-9.81,0.05<br>
-          0.010,0.18,-9.79,0.11<br>
-          ···
-        </div>
-        <div style="font-size:10px;color:var(--blue-300);line-height:1.6;">
-          <div>• ヘッダー行あり</div>
-          <div>• サンプリング: ~100 Hz</div>
-          <div>• 単位: m/s²</div>
-          <div>• 文字コード: UTF-8</div>
-        </div>
-      </div>
-    </div>
 
-  </div>
-  <div class="sftr">
-    <span>歩行年齢テスト診断システム v6 — 使用マニュアル</span>
-    <span>6 / 16</span>
-  </div>
-</div>
-
-
-<!-- ═══════════════════════════════════════════════════════════════
-     SLIDE 7 — 診断システムの起動
+    <!-- ═══════════════════════════════════════════════════════════════
+     SLIDE 11 — 解析結果の確認
 ═══════════════════════════════════════════════════════════════ -->
-<div class="slide">
-  <div class="chbar ch-sys"></div>
-  <div class="shdr">
-    <div style="display:flex;align-items:center;gap:12px;">
-      <span class="cpill cp-sys">STEP 4</span>
-      <h2>診断システムの起動方法</h2>
+    <div class="slide">
+      <div class="chbar ch-sys"></div>
+      <div class="shdr">
+        <div class="sh-row">
+          <div style="display:flex;align-items:center;gap:12px;">
+            <span class="cpill cp-sys">STEP 7</span>
+            <h2>解析結果の確認</h2>
+          </div>
+          <span class="pgnum">11 / 16</span>
+        </div>
+        <p class="lead">解析完了後、7 指標と歩行年齢・総合スコアが表示されます。各数値の意味と正常範囲を確認してください。</p>
+      </div>
+      <div class="sbody" style="display:flex;flex-direction:row;gap:20px;align-items:stretch;">
+
+        <!-- Left: result explanation -->
+        <div style="flex:1;display:flex;flex-direction:column;gap:10px;justify-content:center;">
+
+          <div class="card blue" style="padding:13px 15px;">
+            <div class="clabel">画面の構成</div>
+            <div
+              style="display:flex;flex-direction:column;gap:7px;font-size:11.5px;color:var(--ink-700);line-height:1.6;">
+              <div style="display:flex;gap:8px;align-items:flex-start;">
+                <div
+                  style="width:18px;height:18px;border-radius:50%;background:var(--blue-700);color:#fff;font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;">
+                  A</div>
+                <span><strong>歩行年齢</strong> — 計測値を Mobbs 2025 基準値と比較した推定年齢</span>
+              </div>
+              <div style="display:flex;gap:8px;align-items:flex-start;">
+                <div
+                  style="width:18px;height:18px;border-radius:50%;background:var(--blue-700);color:#fff;font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;">
+                  B</div>
+                <span><strong>総合スコア</strong> — 7 指標を 100 点満点に換算した総合評価</span>
+              </div>
+              <div style="display:flex;gap:8px;align-items:flex-start;">
+                <div
+                  style="width:18px;height:18px;border-radius:50%;background:var(--blue-700);color:#fff;font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;">
+                  C</div>
+                <span><strong>レーダーチャート</strong> — 7 指標の偏差値を視覚化</span>
+              </div>
+              <div style="display:flex;gap:8px;align-items:flex-start;">
+                <div
+                  style="width:18px;height:18px;border-radius:50%;background:var(--blue-700);color:#fff;font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;">
+                  D</div>
+                <span><strong>各指標値</strong> — 実測値・偏差値・リスク評価の一覧</span>
+              </div>
+            </div>
+          </div>
+
+          <div style="background:var(--blue-050);border:1px solid var(--blue-200);border-radius:7px;padding:10px 14px;">
+            <div style="font-size:10px;font-weight:700;color:var(--blue-700);letter-spacing:.06em;margin-bottom:6px;">
+              スコアの目安</div>
+            <div style="display:flex;flex-direction:column;gap:4px;font-size:11px;">
+              <div style="display:flex;align-items:center;gap:8px;">
+                <div
+                  style="width:40px;height:8px;background:linear-gradient(90deg,#22C55E,#16A34A);border-radius:4px;flex-shrink:0;">
+                </div>
+                <span style="color:var(--ink-700);"><strong style="color:#166534;">80〜100点</strong> — 同年代より良い歩き方</span>
+              </div>
+              <div style="display:flex;align-items:center;gap:8px;">
+                <div
+                  style="width:40px;height:8px;background:linear-gradient(90deg,#EAB308,#CA8A04);border-radius:4px;flex-shrink:0;">
+                </div>
+                <span style="color:var(--ink-700);"><strong style="color:#92400E;">50〜79点</strong> — 同年代の標準的な歩き方</span>
+              </div>
+              <div style="display:flex;align-items:center;gap:8px;">
+                <div
+                  style="width:40px;height:8px;background:linear-gradient(90deg,#EF4444,#B91C1C);border-radius:4px;flex-shrink:0;">
+                </div>
+                <span style="color:var(--ink-700);"><strong style="color:#B91C1C;">0〜49点</strong> — 介入・再評価を推奨</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="hl" style="font-size:11px;">
+            結果に問題がなければ <strong>「📄 レポート」</strong> ボタンをクリックして PDF レポートを生成します。
+          </div>
+
+        </div>
+
+        <!-- Right: Result screen mockup -->
+        <div style="flex:1.5;display:flex;align-items:center;justify-content:center;">
+          <div class="app-win" style="width:100%;max-width:650px;height:510px;">
+            <div class="app-win-bar">
+              <div class="app-win-logo">歩行年齢テスト 計測システム v6</div>
+              <div class="app-win-btns">
+                <div class="awb">📊 解析</div>
+                <div class="awb p">📄 レポート</div>
+                <div class="awb">🖨 PDF</div>
+              </div>
+            </div>
+            <div class="app-win-body"
+              style="background:var(--off);padding:12px;display:flex;flex-direction:column;gap:10px;overflow:hidden;">
+              <!-- Top: Walking age + score -->
+              <div style="display:flex;gap:10px;">
+                <!-- A: Walking age -->
+                <div
+                  style="flex:1;background:#fff;border:1px solid var(--border);border-radius:8px;padding:10px 12px;display:flex;flex-direction:column;align-items:center;position:relative;">
+                  <div
+                    style="position:absolute;top:6px;left:8px;font-size:7px;font-weight:700;background:var(--blue-700);color:#fff;border-radius:3px;padding:1px 5px;">
+                    A</div>
+                  <div
+                    style="font-size:7.5px;font-weight:700;color:var(--blue-500);letter-spacing:.5px;text-transform:uppercase;margin-top:8px;">
+                    歩行年齢</div>
+                  <div
+                    style="font-family:'Inter',sans-serif;font-size:36px;font-weight:900;color:var(--blue-800);line-height:1.1;">
+                    52<span style="font-size:14px;color:var(--blue-500);font-weight:600;"> 歳</span></div>
+                  <div style="font-size:8px;color:#22C55E;font-weight:700;">実年齢より若い歩き方 ✓</div>
+                  <div style="font-size:7.5px;color:var(--ink-300);margin-top:2px;">実年齢 70歳</div>
+                </div>
+                <!-- B: Score bar -->
+                <div
+                  style="flex:1.4;background:#fff;border:1px solid var(--border);border-radius:8px;padding:10px 12px;position:relative;">
+                  <div
+                    style="position:absolute;top:6px;left:8px;font-size:7px;font-weight:700;background:var(--blue-700);color:#fff;border-radius:3px;padding:1px 5px;">
+                    B</div>
+                  <div
+                    style="font-size:7.5px;font-weight:700;color:var(--blue-500);letter-spacing:.5px;margin-bottom:6px;margin-top:8px;">
+                    総合スコア</div>
+                  <div style="display:flex;align-items:baseline;gap:4px;margin-bottom:6px;">
+                    <span
+                      style="font-family:'Inter',sans-serif;font-size:28px;font-weight:900;color:var(--ink-900);">74</span>
+                    <span style="font-size:12px;color:var(--ink-500);font-weight:600;">/ 100点</span>
+                  </div>
+                  <div style="height:8px;background:#E2E8F0;border-radius:99px;overflow:hidden;margin-bottom:6px;">
+                    <div
+                      style="width:74%;height:100%;background:linear-gradient(90deg,#22C55E,#16A34A);border-radius:99px;">
+                    </div>
+                  </div>
+                  <!-- 4 mini metrics -->
+                  <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-top:4px;">
+                    <div
+                      style="background:var(--off);border:1px solid var(--border);border-radius:4px;padding:3px 6px;">
+                      <div style="font-size:6.5px;color:var(--ink-300);">歩くスピード</div>
+                      <div style="font-family:'Inter',sans-serif;font-size:11px;font-weight:900;color:var(--ink-900);">
+                        1.38<span style="font-size:6.5px;font-weight:400;"> m/s</span></div>
+                    </div>
+                    <div
+                      style="background:var(--off);border:1px solid var(--border);border-radius:4px;padding:3px 6px;">
+                      <div style="font-size:6.5px;color:var(--ink-300);">歩幅</div>
+                      <div style="font-family:'Inter',sans-serif;font-size:11px;font-weight:900;color:var(--ink-900);">
+                        0.68<span style="font-size:6.5px;font-weight:400;"> m</span></div>
+                    </div>
+                    <div
+                      style="background:var(--off);border:1px solid var(--border);border-radius:4px;padding:3px 6px;">
+                      <div style="font-size:6.5px;color:var(--ink-300);">テンポ</div>
+                      <div style="font-family:'Inter',sans-serif;font-size:11px;font-weight:900;color:var(--ink-900);">
+                        122<span style="font-size:6.5px;font-weight:400;"> 歩/分</span></div>
+                    </div>
+                    <div
+                      style="background:var(--off);border:1px solid var(--border);border-radius:4px;padding:3px 6px;">
+                      <div style="font-size:6.5px;color:var(--ink-300);">左右対称性</div>
+                      <div style="font-family:'Inter',sans-serif;font-size:11px;font-weight:900;color:var(--ink-900);">
+                        96<span style="font-size:6.5px;font-weight:400;"> %</span></div>
+                    </div>
+                  </div>
+                </div>
+                <!-- C: Radar chart (SVG) -->
+                <div
+                  style="flex:1;background:#fff;border:1px solid var(--border);border-radius:8px;padding:8px;position:relative;display:flex;align-items:center;justify-content:center;">
+                  <div
+                    style="position:absolute;top:6px;left:8px;font-size:7px;font-weight:700;background:var(--blue-700);color:#fff;border-radius:3px;padding:1px 5px;">
+                    C</div>
+                  <svg width="110" height="110" viewBox="0 0 110 110">
+                    <!-- Radar bg -->
+                    <polygon points="55,10 92,30 92,80 55,100 18,80 18,30" fill="none" stroke="#E2E8F0"
+                      stroke-width="1" />
+                    <polygon points="55,22 82,37 82,73 55,88 28,73 28,37" fill="none" stroke="#E2E8F0"
+                      stroke-width="1" />
+                    <polygon points="55,34 72,44 72,66 55,76 38,66 38,44" fill="none" stroke="#E2E8F0"
+                      stroke-width="1" />
+                    <!-- Axes -->
+                    <line x1="55" y1="10" x2="55" y2="100" stroke="#E2E8F0" stroke-width=".8" />
+                    <line x1="18" y1="30" x2="92" y2="80" stroke="#E2E8F0" stroke-width=".8" />
+                    <line x1="92" y1="30" x2="18" y2="80" stroke="#E2E8F0" stroke-width=".8" />
+                    <!-- Data polygon -->
+                    <polygon points="55,18 85,36 88,72 55,90 24,76 22,34" fill="#2A78F4" fill-opacity=".2"
+                      stroke="#2A78F4" stroke-width="1.5" />
+                    <!-- Dots -->
+                    <circle cx="55" cy="18" r="3" fill="#2A78F4" />
+                    <circle cx="85" cy="36" r="3" fill="#2A78F4" />
+                    <circle cx="88" cy="72" r="3" fill="#2A78F4" />
+                    <circle cx="55" cy="90" r="3" fill="#2A78F4" />
+                    <circle cx="24" cy="76" r="3" fill="#2A78F4" />
+                    <circle cx="22" cy="34" r="3" fill="#2A78F4" />
+                    <!-- Labels -->
+                    <text x="52" y="8" font-size="6" fill="#64748B" font-family="sans-serif"
+                      text-anchor="middle">速度</text>
+                    <text x="96" y="30" font-size="6" fill="#64748B" font-family="sans-serif">歩幅</text>
+                    <text x="96" y="82" font-size="6" fill="#64748B" font-family="sans-serif">テンポ</text>
+                    <text x="52" y="106" font-size="6" fill="#64748B" font-family="sans-serif"
+                      text-anchor="middle">対称性</text>
+                    <text x="2" y="82" font-size="6" fill="#64748B" font-family="sans-serif">安定性</text>
+                    <text x="2" y="30" font-size="6" fill="#64748B" font-family="sans-serif">WR</text>
+                  </svg>
+                </div>
+              </div>
+              <!-- D: Metrics table -->
+              <div
+                style="background:#fff;border:1px solid var(--border);border-radius:8px;padding:8px 10px;position:relative;">
+                <div
+                  style="position:absolute;top:6px;left:8px;font-size:7px;font-weight:700;background:var(--blue-700);color:#fff;border-radius:3px;padding:1px 5px;">
+                  D</div>
+                <table style="font-size:8.5px;margin-top:6px;">
+                  <thead>
+                    <tr style="background:var(--blue-900);">
+                      <th style="padding:4px 8px;text-align:left;font-size:7.5px;">指標</th>
+                      <th style="padding:4px 8px;">計測値</th>
+                      <th style="padding:4px 8px;">偏差値</th>
+                      <th style="padding:4px 8px;">同年代比</th>
+                      <th style="padding:4px 8px;">評価</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td style="padding:3px 8px;">歩くスピード</td>
+                      <td style="text-align:center;font-family:monospace;">1.38 m/s</td>
+                      <td style="text-align:center;font-family:monospace;">62</td>
+                      <td style="text-align:center;color:#15803D;">上位 27%</td>
+                      <td style="text-align:center;"><span
+                          style="background:#DCFCE7;color:#166534;padding:1px 5px;border-radius:3px;font-weight:700;">良好</span>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style="padding:3px 8px;">歩幅</td>
+                      <td style="text-align:center;font-family:monospace;">0.68 m</td>
+                      <td style="text-align:center;font-family:monospace;">58</td>
+                      <td style="text-align:center;color:#15803D;">上位 34%</td>
+                      <td style="text-align:center;"><span
+                          style="background:#DCFCE7;color:#166534;padding:1px 5px;border-radius:3px;font-weight:700;">良好</span>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style="padding:3px 8px;">テンポ</td>
+                      <td style="text-align:center;font-family:monospace;">122 歩/分</td>
+                      <td style="text-align:center;font-family:monospace;">55</td>
+                      <td style="text-align:center;color:#92400E;">標準</td>
+                      <td style="text-align:center;"><span
+                          style="background:#FEF9C3;color:#92400E;padding:1px 5px;border-radius:3px;font-weight:700;">標準</span>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style="padding:3px 8px;">リズム安定性</td>
+                      <td style="text-align:center;font-family:monospace;">4.2 %</td>
+                      <td style="text-align:center;font-family:monospace;">60</td>
+                      <td style="text-align:center;color:#15803D;">上位 30%</td>
+                      <td style="text-align:center;"><span
+                          style="background:#DCFCE7;color:#166534;padding:1px 5px;border-radius:3px;font-weight:700;">良好</span>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+      <div class="sftr">
+        <span>歩行年齢テスト計測システム v6 — 使用マニュアル</span>
+        <span>11 / 16</span>
+      </div>
     </div>
-    <p class="sub">3 つの起動方法から環境に合わせて選択してください</p>
-  </div>
-  <div class="sbody" style="display:flex;flex-direction:row;gap:20px;align-items:stretch;">
 
-    <!-- Method 1: Bookmark/Direct URL -->
-    <div style="flex:1;background:var(--blue-050);border-radius:12px;padding:20px 18px;display:flex;flex-direction:column;gap:10px;border-top:4px solid var(--blue-700);">
-      <div style="display:flex;align-items:center;gap:10px;">
-        <div style="font-size:24px;">🔖</div>
-        <div>
-          <div style="font-weight:700;font-size:13px;color:var(--blue-900);">ブラウザブックマーク</div>
-          <div style="font-size:10px;color:var(--blue-500);font-weight:600;letter-spacing:.06em;">最も簡単</div>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+     SLIDE 12 — PDF レポート Page 1（患者向け）
+═══════════════════════════════════════════════════════════════ -->
+    <div class="slide">
+      <div class="chbar ch-rep"></div>
+      <div class="shdr">
+        <div class="sh-row">
+          <div style="display:flex;align-items:center;gap:12px;">
+            <span class="cpill cp-rep">REPORT P.1</span>
+            <h2>PDF レポート — 患者さん向け（1 ページ目）</h2>
+          </div>
+          <span class="pgnum">12 / 16</span>
         </div>
+        <p class="lead">「📄 レポート → 🖨 PDF 保存」で A4 縦 PDF が生成されます。1 ページ目は患者さんに直接お渡しできるデザインです。</p>
       </div>
-      <div style="font-size:11px;color:var(--blue-700);line-height:1.75;flex:1;">
-        <p style="margin:0 0 8px;">GAS でデプロイした URL をブラウザにブックマーク登録しておく方法です。</p>
-        <div style="background:#fff;border-radius:6px;border:1px solid var(--blue-200);padding:8px 10px;font-family:monospace;font-size:10px;color:var(--blue-600);word-break:break-all;">
-          https://script.google.com/macros/s/<br>
-          <span style="color:var(--blue-400);">AKfy···長いID···/exec</span>
+      <div class="sbody" style="display:flex;flex-direction:row;gap:28px;align-items:stretch;">
+
+        <!-- Left: Annotation list -->
+        <div style="flex:1;display:flex;flex-direction:column;gap:10px;justify-content:center;">
+          <div style="font-size:10.5px;font-weight:700;color:var(--blue-700);letter-spacing:.06em;margin-bottom:2px;">
+            レポート内容の説明</div>
+
+          <div style="display:flex;flex-direction:column;gap:8px;">
+            <div style="display:flex;gap:10px;align-items:flex-start;">
+              <div
+                style="width:22px;height:22px;border-radius:50%;background:var(--blue-700);color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                ①</div>
+              <div style="font-size:11.5px;color:var(--ink-700);line-height:1.6;"><strong>歩行年齢</strong> —
+                計測値から推定した機能的年齢。実年齢との差分でコメントが自動生成されます。</div>
+            </div>
+            <div style="display:flex;gap:10px;align-items:flex-start;">
+              <div
+                style="width:22px;height:22px;border-radius:50%;background:var(--blue-700);color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                ②</div>
+              <div style="font-size:11.5px;color:var(--ink-700);line-height:1.6;"><strong>総合スコア＋バー</strong> — 7 指標を統合した
+                100 点満点スコアと、グラデーションのスコアバー。</div>
+            </div>
+            <div style="display:flex;gap:10px;align-items:flex-start;">
+              <div
+                style="width:22px;height:22px;border-radius:50%;background:var(--blue-700);color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                ③</div>
+              <div style="font-size:11.5px;color:var(--ink-700);line-height:1.6;"><strong>わかりやすい 4 指標</strong> —
+                歩くスピード・歩幅・テンポ・対称性を日常語で表示。</div>
+            </div>
+            <div style="display:flex;gap:10px;align-items:flex-start;">
+              <div
+                style="width:22px;height:22px;border-radius:50%;background:var(--blue-700);color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                ④</div>
+              <div style="font-size:11.5px;color:var(--ink-700);line-height:1.6;"><strong>コメント欄</strong> —
+                結果に応じた励ましのコメントと改善アドバイスが自動生成されます。</div>
+            </div>
+            <div style="display:flex;gap:10px;align-items:flex-start;">
+              <div
+                style="width:22px;height:22px;border-radius:50%;background:var(--c-rep);color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                ⑤</div>
+              <div style="font-size:11.5px;color:var(--ink-700);line-height:1.6;"><strong>対象者・担当者情報</strong> —
+                入力した氏名・計測日・担当者名が自動で記載されます。</div>
+            </div>
+          </div>
+
+          <div class="hl" style="margin-top:4px;font-size:11px;">
+            レポートはブラウザの印刷機能（Ctrl+P / ⌘P）または「🖨 PDF保存」ボタンから A4 縦 PDF として保存できます。
+          </div>
         </div>
+
+        <!-- Right: Report page 1 mockup -->
+        <div style="flex:1;display:flex;align-items:center;justify-content:center;">
+          <div class="rpt-win" style="width:280px;height:396px;">
+            <!-- Report header -->
+            <div class="rpt-hdr">
+              <div class="rh1">歩行年齢テスト 診断レポート</div>
+              <div class="rh2">計測日: 2025年12月15日 ／ 担当: 田中 理学療法士</div>
+            </div>
+            <div class="rpt-body">
+              <!-- ① Walking age -->
+              <div
+                style="background:var(--blue-050);border-radius:7px;padding:8px 10px;text-align:center;margin-bottom:8px;border:1px solid var(--blue-200);position:relative;">
+                <div
+                  style="position:absolute;top:-8px;left:8px;font-size:7px;font-weight:700;background:var(--blue-700);color:#fff;border-radius:3px;padding:1px 5px;">
+                  ①</div>
+                <div
+                  style="font-size:7px;font-weight:700;color:var(--blue-500);letter-spacing:.5px;text-transform:uppercase;margin-bottom:2px;">
+                  歩行年齢</div>
+                <div
+                  style="font-family:'Inter',sans-serif;font-size:34px;font-weight:900;color:var(--blue-800);line-height:1;">
+                  52<span style="font-size:13px;font-weight:600;color:var(--blue-500);"> 歳</span></div>
+                <div style="font-size:7px;color:#166534;font-weight:700;margin-top:2px;">▼ 実年齢より 18 歳若い歩き方です ✓</div>
+                <div style="font-size:6.5px;color:var(--ink-300);">山田 花子様（実年齢 70 歳 ／ 女性）</div>
+              </div>
+              <!-- ② Score bar -->
+              <div style="margin-bottom:7px;position:relative;">
+                <div
+                  style="position:absolute;top:-6px;left:0px;font-size:7px;font-weight:700;background:var(--blue-700);color:#fff;border-radius:3px;padding:1px 5px;">
+                  ②</div>
+                <div
+                  style="display:flex;justify-content:space-between;align-items:baseline;font-size:7.5px;color:var(--ink-500);margin-bottom:2px;margin-top:8px;">
+                  <span style="font-weight:700;">総合スコア</span>
+                  <span style="font-family:'Inter',sans-serif;font-weight:900;font-size:11px;color:var(--ink-900);">74
+                    <span style="font-weight:400;font-size:8px;">/ 100点</span></span>
+                </div>
+                <div style="height:8px;background:#E2E8F0;border-radius:99px;overflow:hidden;">
+                  <div
+                    style="width:74%;height:100%;background:linear-gradient(90deg,#22C55E,#16A34A);border-radius:99px;">
+                  </div>
+                </div>
+              </div>
+              <!-- ③ 4 metrics -->
+              <div style="position:relative;margin-bottom:7px;">
+                <div
+                  style="position:absolute;top:-6px;left:0px;font-size:7px;font-weight:700;background:var(--blue-700);color:#fff;border-radius:3px;padding:1px 5px;">
+                  ③</div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-top:8px;">
+                  <div style="background:var(--off);border:1px solid var(--border);border-radius:4px;padding:4px 6px;">
+                    <div style="font-size:6.5px;color:var(--ink-300);">歩くスピード</div>
+                    <div style="font-family:'Inter',sans-serif;font-size:12px;font-weight:900;color:var(--ink-900);">
+                      1.38 <span style="font-size:6px;font-weight:400;">m/s</span></div>
+                    <div style="font-size:6px;color:#15803D;font-weight:600;">● 良好</div>
+                  </div>
+                  <div style="background:var(--off);border:1px solid var(--border);border-radius:4px;padding:4px 6px;">
+                    <div style="font-size:6.5px;color:var(--ink-300);">歩幅</div>
+                    <div style="font-family:'Inter',sans-serif;font-size:12px;font-weight:900;color:var(--ink-900);">
+                      0.68 <span style="font-size:6px;font-weight:400;">m</span></div>
+                    <div style="font-size:6px;color:#15803D;font-weight:600;">● 良好</div>
+                  </div>
+                  <div style="background:var(--off);border:1px solid var(--border);border-radius:4px;padding:4px 6px;">
+                    <div style="font-size:6.5px;color:var(--ink-300);">テンポ</div>
+                    <div style="font-family:'Inter',sans-serif;font-size:12px;font-weight:900;color:var(--ink-900);">122
+                      <span style="font-size:6px;font-weight:400;">歩/分</span></div>
+                    <div style="font-size:6px;color:#92400E;font-weight:600;">● 標準</div>
+                  </div>
+                  <div style="background:var(--off);border:1px solid var(--border);border-radius:4px;padding:4px 6px;">
+                    <div style="font-size:6.5px;color:var(--ink-300);">左右対称性</div>
+                    <div style="font-family:'Inter',sans-serif;font-size:12px;font-weight:900;color:var(--ink-900);">96
+                      <span style="font-size:6px;font-weight:400;">%</span></div>
+                    <div style="font-size:6px;color:#15803D;font-weight:600;">● 良好</div>
+                  </div>
+                </div>
+              </div>
+              <!-- ④ Comment -->
+              <div
+                style="background:#F0FDF4;border:1px solid #86EFAC;border-radius:5px;padding:6px 8px;margin-bottom:6px;position:relative;">
+                <div
+                  style="position:absolute;top:-6px;left:6px;font-size:7px;font-weight:700;background:var(--blue-700);color:#fff;border-radius:3px;padding:1px 5px;">
+                  ④</div>
+                <div style="font-size:7.5px;color:#166534;font-weight:700;margin-bottom:3px;margin-top:4px;">担当者からのコメント
+                </div>
+                <div style="font-size:7px;color:#166534;line-height:1.6;">
+                  歩行速度・歩幅ともに同年代上位の数値です。このペースを維持するため、週3回以上のウォーキングを続けましょう。</div>
+              </div>
+              <!-- ⑤ Footer info -->
+              <div
+                style="border-top:1px solid var(--border);padding-top:5px;display:flex;justify-content:space-between;align-items:center;position:relative;">
+                <div
+                  style="position:absolute;top:-10px;left:0px;font-size:7px;font-weight:700;background:var(--c-rep);color:#fff;border-radius:3px;padding:1px 5px;">
+                  ⑤</div>
+                <div style="font-size:6.5px;color:var(--ink-300);">歩行年齢テスト計測システム v6</div>
+                <div style="font-size:6.5px;color:var(--ink-300);">1 / 3</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
       </div>
-      <div style="border-top:1px solid var(--blue-200);padding-top:10px;">
-        <div style="font-size:10px;font-weight:700;color:var(--blue-700);margin-bottom:6px;">手順</div>
-        <ol style="margin:0;padding-left:16px;font-size:10.5px;color:var(--blue-700);line-height:1.7;">
-          <li>GAS エディタ → デプロイ → URL をコピー</li>
-          <li>Chrome/Safari でURL を開く</li>
-          <li>ブックマークに追加（⌘D）</li>
-        </ol>
+      <div class="sftr">
+        <span>歩行年齢テスト計測システム v6 — 使用マニュアル</span>
+        <span>12 / 16</span>
       </div>
     </div>
 
-    <!-- Method 2: GAS Deploy -->
-    <div style="flex:1;background:var(--blue-900);border-radius:12px;padding:20px 18px;display:flex;flex-direction:column;gap:10px;border-top:4px solid #4fc3f7;">
-      <div style="display:flex;align-items:center;gap:10px;">
-        <div style="font-size:24px;">⚙️</div>
-        <div>
-          <div style="font-weight:700;font-size:13px;color:#fff;">GAS 再デプロイ</div>
-          <div style="font-size:10px;color:#4fc3f7;font-weight:600;letter-spacing:.06em;">更新時に使用</div>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+     SLIDE 13 — PDF レポート Page 2（専門家向け）
+═══════════════════════════════════════════════════════════════ -->
+    <div class="slide">
+      <div class="chbar ch-rep"></div>
+      <div class="shdr">
+        <div class="sh-row">
+          <div style="display:flex;align-items:center;gap:12px;">
+            <span class="cpill cp-rep">REPORT P.2</span>
+            <h2>PDF レポート — 専門家向け（2 ページ目）</h2>
+          </div>
+          <span class="pgnum">13 / 16</span>
         </div>
+        <p class="lead">2 ページ目はリハビリ・スポーツ医学の専門家向け。全 7 指標の数値・偏差値・臨床リスク評価を掲載します。</p>
       </div>
-      <!-- Mini GAS editor mockup -->
-      <div style="background:#1e1e1e;border-radius:8px;padding:10px;font-family:monospace;font-size:9.5px;line-height:1.6;flex:1;">
-        <div style="color:#858585;margin-bottom:4px;">// doGet(e) — メインエントリ</div>
-        <div><span style="color:#569cd6;">function</span> <span style="color:#dcdcaa;">doGet</span><span style="color:#fff;">(e) &#123;</span></div>
-        <div style="padding-left:12px;"><span style="color:#569cd6;">return</span> <span style="color:#dcdcaa;">HtmlService</span></div>
-        <div style="padding-left:20px;"><span style="color:#fff;">.</span><span style="color:#dcdcaa;">createHtmlOutputFromFile</span></div>
-        <div style="padding-left:20px;"><span style="color:#fff;">(</span><span style="color:#ce9178;">'index'</span><span style="color:#fff;">);</span></div>
-        <div><span style="color:#fff;">&#125;</span></div>
+      <div class="sbody" style="display:flex;flex-direction:row;gap:28px;align-items:stretch;">
+
+        <!-- Left: Annotation list -->
+        <div style="flex:1;display:flex;flex-direction:column;gap:10px;justify-content:center;">
+          <div style="font-size:10.5px;font-weight:700;color:var(--c-rep);letter-spacing:.06em;margin-bottom:2px;">
+            専門家向けページの内容</div>
+          <div style="display:flex;flex-direction:column;gap:8px;">
+            <div style="display:flex;gap:10px;align-items:flex-start;">
+              <div
+                style="width:22px;height:22px;border-radius:50%;background:var(--c-rep);color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                ①</div>
+              <div style="font-size:11.5px;color:var(--ink-700);line-height:1.6;"><strong>7 指標の完全テーブル</strong> —
+                実測値・偏差値・Z スコア・判定ランクを一覧表示。</div>
+            </div>
+            <div style="display:flex;gap:10px;align-items:flex-start;">
+              <div
+                style="width:22px;height:22px;border-radius:50%;background:var(--c-rep);color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                ②</div>
+              <div style="font-size:11.5px;color:var(--ink-700);line-height:1.6;"><strong>レーダーチャート</strong> — 7
+                指標の偏差値プロット。同年代基準（偏差値 50）との比較が一目でわかる。</div>
+            </div>
+            <div style="display:flex;gap:10px;align-items:flex-start;">
+              <div
+                style="width:22px;height:22px;border-radius:50%;background:var(--c-rep);color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                ③</div>
+              <div style="font-size:11.5px;color:var(--ink-700);line-height:1.6;"><strong>臨床リスク評価</strong> —
+                転倒リスク・フレイル疑い・生活機能低下の自動スクリーニング結果。</div>
+            </div>
+            <div style="display:flex;gap:10px;align-items:flex-start;">
+              <div
+                style="width:22px;height:22px;border-radius:50%;background:var(--c-rep);color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                ④</div>
+              <div style="font-size:11.5px;color:var(--ink-700);line-height:1.6;"><strong>加速度波形サムネイル</strong> —
+                計測時の生波形を縮小表示。データの品質確認に使用。</div>
+            </div>
+          </div>
+          <div class="card rep" style="padding:11px 14px;margin-top:4px;">
+            <div class="clabel">基準値について</div>
+            <div style="font-size:11px;color:var(--ink-700);line-height:1.6;">Mobbs et al. (2025) による地域在住高齢者 313
+              名のデータを基準値として使用。5 歳刻みの年齢階層・性別別に分類されています。</div>
+          </div>
+        </div>
+
+        <!-- Right: Report page 2 mockup -->
+        <div style="flex:1;display:flex;align-items:center;justify-content:center;">
+          <div class="rpt-win" style="width:280px;height:396px;">
+            <div class="rpt-hdr">
+              <div class="rh1">専門家向けデータシート（2 / 3）</div>
+              <div class="rh2">山田 花子様 ／ 70歳 女性 ／ 2025.12.15</div>
+            </div>
+            <div class="rpt-body">
+              <!-- ① Metrics table -->
+              <div style="position:relative;margin-bottom:8px;">
+                <div
+                  style="position:absolute;top:-7px;left:0px;font-size:7px;font-weight:700;background:var(--c-rep);color:#fff;border-radius:3px;padding:1px 5px;">
+                  ①</div>
+                <table style="margin-top:6px;font-size:7.5px;">
+                  <thead>
+                    <tr style="background:#581C87;">
+                      <th style="padding:3px 5px;font-size:7px;">指標</th>
+                      <th style="padding:3px 5px;font-size:7px;">実測値</th>
+                      <th style="padding:3px 5px;font-size:7px;">偏差値</th>
+                      <th style="padding:3px 5px;font-size:7px;">判定</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td style="padding:2px 5px;">歩くスピード</td>
+                      <td style="text-align:center;font-family:monospace;font-size:7px;">1.38</td>
+                      <td style="text-align:center;font-family:monospace;font-size:7px;color:#15803D;font-weight:700;">
+                        62</td>
+                      <td style="text-align:center;"><span style="color:#15803D;font-weight:700;font-size:7px;">A</span>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style="padding:2px 5px;">歩幅</td>
+                      <td style="text-align:center;font-family:monospace;font-size:7px;">0.68</td>
+                      <td style="text-align:center;font-family:monospace;font-size:7px;color:#15803D;font-weight:700;">
+                        58</td>
+                      <td style="text-align:center;"><span
+                          style="color:#15803D;font-weight:700;font-size:7px;">B+</span></td>
+                    </tr>
+                    <tr>
+                      <td style="padding:2px 5px;">テンポ</td>
+                      <td style="text-align:center;font-family:monospace;font-size:7px;">122</td>
+                      <td style="text-align:center;font-family:monospace;font-size:7px;color:#92400E;font-weight:700;">
+                        55</td>
+                      <td style="text-align:center;"><span style="color:#92400E;font-weight:700;font-size:7px;">B</span>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style="padding:2px 5px;">リズム安定性</td>
+                      <td style="text-align:center;font-family:monospace;font-size:7px;">4.2%</td>
+                      <td style="text-align:center;font-family:monospace;font-size:7px;color:#15803D;font-weight:700;">
+                        60</td>
+                      <td style="text-align:center;"><span
+                          style="color:#15803D;font-weight:700;font-size:7px;">A−</span></td>
+                    </tr>
+                    <tr>
+                      <td style="padding:2px 5px;">左右対称性</td>
+                      <td style="text-align:center;font-family:monospace;font-size:7px;">96%</td>
+                      <td style="text-align:center;font-family:monospace;font-size:7px;color:#15803D;font-weight:700;">
+                        65</td>
+                      <td style="text-align:center;"><span style="color:#15803D;font-weight:700;font-size:7px;">A</span>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style="padding:2px 5px;">ウォークレシオ</td>
+                      <td style="text-align:center;font-family:monospace;font-size:7px;">0.0056</td>
+                      <td style="text-align:center;font-family:monospace;font-size:7px;color:#92400E;font-weight:700;">
+                        52</td>
+                      <td style="text-align:center;"><span style="color:#92400E;font-weight:700;font-size:7px;">B</span>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style="padding:2px 5px;">RMS 加速度</td>
+                      <td style="text-align:center;font-family:monospace;font-size:7px;">1.12</td>
+                      <td style="text-align:center;font-family:monospace;font-size:7px;color:#15803D;font-weight:700;">
+                        57</td>
+                      <td style="text-align:center;"><span
+                          style="color:#15803D;font-weight:700;font-size:7px;">B+</span></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <!-- ② Radar + ③ Risk side by side -->
+              <div style="display:flex;gap:8px;align-items:flex-start;">
+                <div style="flex:1;position:relative;">
+                  <div
+                    style="position:absolute;top:-6px;left:0px;font-size:7px;font-weight:700;background:var(--c-rep);color:#fff;border-radius:3px;padding:1px 5px;">
+                    ②</div>
+                  <svg width="100%" height="80" viewBox="0 0 90 80" style="margin-top:6px;">
+                    <polygon points="45,6 72,22 72,58 45,74 18,58 18,22" fill="none" stroke="#E2E8F0"
+                      stroke-width=".8" />
+                    <polygon points="45,18 63,28 63,52 45,62 27,52 27,28" fill="none" stroke="#E2E8F0"
+                      stroke-width=".8" />
+                    <polygon points="45,6 72,22 72,58 45,74 18,58 18,22" fill="none" stroke="#E2E8F0"
+                      stroke-width=".4" />
+                    <polygon points="45,10 68,25 70,56 45,68 20,56 20,26" fill="#7C3AED" fill-opacity=".2"
+                      stroke="#7C3AED" stroke-width="1.2" />
+                    <circle cx="45" cy="10" r="2.5" fill="#7C3AED" />
+                    <circle cx="68" cy="25" r="2.5" fill="#7C3AED" />
+                    <circle cx="70" cy="56" r="2.5" fill="#7C3AED" />
+                    <circle cx="45" cy="68" r="2.5" fill="#7C3AED" />
+                    <circle cx="20" cy="56" r="2.5" fill="#7C3AED" />
+                    <circle cx="20" cy="26" r="2.5" fill="#7C3AED" />
+                  </svg>
+                </div>
+                <div style="flex:1.4;position:relative;">
+                  <div
+                    style="position:absolute;top:-6px;left:0px;font-size:7px;font-weight:700;background:var(--c-rep);color:#fff;border-radius:3px;padding:1px 5px;">
+                    ③</div>
+                  <div
+                    style="margin-top:6px;background:#FFF7ED;border:1px solid #FED7AA;border-radius:5px;padding:5px 7px;">
+                    <div style="font-size:7.5px;font-weight:700;color:#92400E;margin-bottom:4px;">臨床リスク評価</div>
+                    <div style="display:flex;flex-direction:column;gap:3px;font-size:7px;">
+                      <div style="display:flex;justify-content:space-between;align-items:center;">
+                        <span style="color:#374151;">転倒リスク</span>
+                        <span
+                          style="background:#DCFCE7;color:#166534;padding:1px 5px;border-radius:3px;font-weight:700;">低</span>
+                      </div>
+                      <div style="display:flex;justify-content:space-between;align-items:center;">
+                        <span style="color:#374151;">フレイル疑い</span>
+                        <span
+                          style="background:#DCFCE7;color:#166534;padding:1px 5px;border-radius:3px;font-weight:700;">なし</span>
+                      </div>
+                      <div style="display:flex;justify-content:space-between;align-items:center;">
+                        <span style="color:#374151;">生活機能低下</span>
+                        <span
+                          style="background:#FEF9C3;color:#92400E;padding:1px 5px;border-radius:3px;font-weight:700;">要観察</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- ④ Waveform thumbnail -->
+              <div style="position:relative;margin-top:8px;">
+                <div
+                  style="position:absolute;top:-6px;left:0px;font-size:7px;font-weight:700;background:var(--c-rep);color:#fff;border-radius:3px;padding:1px 5px;">
+                  ④</div>
+                <div style="background:#0C0C18;border-radius:4px;height:28px;overflow:hidden;margin-top:6px;">
+                  <svg width="100%" height="28" viewBox="0 0 260 28" preserveAspectRatio="none">
+                    <polyline
+                      points="0,14 8,14 12,14 20,7 28,18 36,6 44,19 52,7 60,18 68,6 76,19 84,7 92,18 100,6 108,19 116,7 124,18 132,6 140,19 148,7 156,18 164,6 172,19 180,7 188,18 196,6 204,19 212,7 220,14 228,14 236,14 248,14 260,14"
+                      fill="none" stroke="#3B82F6" stroke-width="1.2" />
+                  </svg>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
       </div>
-      <div style="border-top:1px solid var(--blue-700);padding-top:10px;">
-        <ol style="margin:0;padding-left:16px;font-size:10.5px;color:#a0c8e8;line-height:1.7;">
-          <li>GAS エディタを開く</li>
-          <li>「デプロイ」→「デプロイを管理」</li>
-          <li>編集アイコン → 「新しいバージョン」</li>
-          <li>「デプロイ」をクリック</li>
-        </ol>
+      <div class="sftr">
+        <span>歩行年齢テスト計測システム v6 — 使用マニュアル</span>
+        <span>13 / 16</span>
       </div>
     </div>
 
-    <!-- Method 3: Local file -->
-    <div style="flex:1;background:var(--blue-050);border-radius:12px;padding:20px 18px;display:flex;flex-direction:column;gap:10px;border-top:4px solid var(--c-meas);">
-      <div style="display:flex;align-items:center;gap:10px;">
-        <div style="font-size:24px;">📁</div>
-        <div>
-          <div style="font-weight:700;font-size:13px;color:var(--blue-900);">ローカルファイルを直接開く</div>
-          <div style="font-size:10px;color:var(--c-meas);font-weight:600;letter-spacing:.06em;">オフライン環境向け</div>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+     SLIDE 14 — シューズレコメンド（任意）
+═══════════════════════════════════════════════════════════════ -->
+    <div class="slide">
+      <div class="chbar ch-opt"></div>
+      <div class="shdr">
+        <div class="sh-row">
+          <div style="display:flex;align-items:center;gap:12px;">
+            <span class="cpill cp-opt">任意機能</span>
+            <h2>シューズレコメンド機能</h2>
+          </div>
+          <span class="pgnum">14 / 16</span>
         </div>
+        <p class="lead">歩行プロファイルに基づき、最適なシューズを自動推薦します。Google Sheets と連携して使用します。</p>
       </div>
-      <div style="font-size:11px;color:var(--blue-700);line-height:1.75;flex:1;">
-        <p style="margin:0 0 8px;">index.html をブラウザで直接開く方法です。一部機能（GAS連携）は動作しません。</p>
-        <div style="background:#fff;border-radius:6px;border:1px solid var(--blue-200);padding:8px 10px;font-family:monospace;font-size:10px;color:var(--blue-700);">
-          $ open index.html<br>
-          <span style="color:var(--blue-400);"># または</span><br>
-          $ python3 -m http.server 8080
+      <div class="sbody" style="display:flex;flex-direction:row;gap:24px;align-items:stretch;">
+
+        <!-- Left: Setup steps -->
+        <div style="flex:1;display:flex;flex-direction:column;gap:10px;justify-content:center;">
+
+          <div class="card opt" style="padding:13px 15px;">
+            <div class="clabel">初期設定（初回のみ）</div>
+            <div class="steps" style="gap:8px;margin-top:6px;">
+              <div class="step">
+                <div class="snum o">1</div>
+                <div class="stxt">配布の <b>「シューズDB.xlsx」</b> を Google スプレッドシートにインポート</div>
+              </div>
+              <div class="step">
+                <div class="snum o">2</div>
+                <div class="stxt">スプレッドシートの URL から <b>スプレッドシートID</b> をコピー<br>
+                  <code
+                    style="font-size:9.5px;">https://docs.google.com/spreadsheets/d/<b style="color:var(--c-opt);">ここがID</b>/edit</code>
+                </div>
+              </div>
+              <div class="step">
+                <div class="snum o">3</div>
+                <div class="stxt">計測システムの <b>設定パネル</b> → 「シューズDB スプレッドシートID」欄に貼り付けて保存</div>
+              </div>
+              <div class="step">
+                <div class="snum o">4</div>
+                <div class="stxt">解析後に <b>「シューズレコメンド ON」</b> ボタンをクリック → レポート 3 ページ目に追加</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card" style="padding:12px 15px;">
+            <div class="clabel">推薦アルゴリズム</div>
+            <div style="font-size:11px;color:var(--ink-700);line-height:1.7;">
+              歩行速度・歩幅・リズム安定性・左右対称性の 4
+              指標から歩行プロファイルを分類し、<strong>クッション性</strong>・<strong>安定性</strong>・<strong>フレキシビリティ</strong>の優先度スコアを算出して最適なシューズカテゴリを推薦します。
+            </div>
+          </div>
+
+          <div class="hl" style="border-color:var(--c-opt);background:#FEF3C7;color:var(--c-opt);font-size:11px;">
+            この機能は任意です。シューズ推薦が不要な場合は設定せずにスキップしてください。
+          </div>
+
         </div>
+
+        <!-- Right: Shoe recommend mockup (report page 3) -->
+        <div style="flex:1.3;display:flex;flex-direction:column;gap:14px;align-items:center;justify-content:center;">
+
+          <!-- Report page 3 mockup -->
+          <div style="font-size:10px;font-weight:700;color:var(--ink-400);letter-spacing:.06em;margin-bottom:2px;">レポート
+            3 ページ目（シューズレコメンド）</div>
+          <div class="rpt-win" style="width:320px;">
+            <div class="rpt-hdr" style="background:linear-gradient(135deg,#78350F 0%,#B45309 100%);">
+              <div class="rh1">シューズレコメンドレポート（3 / 3）</div>
+              <div class="rh2">山田 花子様 ／ 2025.12.15</div>
+            </div>
+            <div class="rpt-body">
+              <!-- Profile classification -->
+              <div
+                style="background:#FEF3C7;border:1px solid #FCD34D;border-radius:6px;padding:8px 10px;margin-bottom:10px;display:flex;align-items:center;gap:10px;">
+                <div style="font-size:24px;">🥾</div>
+                <div>
+                  <div
+                    style="font-size:8px;font-weight:700;color:#92400E;letter-spacing:.5px;text-transform:uppercase;">
+                    歩行プロファイル</div>
+                  <div style="font-size:13px;font-weight:900;color:#78350F;">アクティブ・安定型</div>
+                  <div style="font-size:7.5px;color:#92400E;">速度 ↑ / 安定性 ↑ / 左右対称 ↑</div>
+                </div>
+              </div>
+
+              <!-- Priority bars -->
+              <div style="margin-bottom:10px;">
+                <div style="font-size:8px;font-weight:700;color:#92400E;letter-spacing:.5px;margin-bottom:6px;">推薦優先度
+                </div>
+                <div style="display:flex;flex-direction:column;gap:4px;font-size:8px;">
+                  <div style="display:flex;align-items:center;gap:6px;">
+                    <span style="width:72px;color:var(--ink-700);">クッション性</span>
+                    <div style="flex:1;height:7px;background:#E2E8F0;border-radius:4px;overflow:hidden;">
+                      <div style="width:80%;height:100%;background:#F59E0B;border-radius:4px;"></div>
+                    </div>
+                    <span style="font-family:monospace;color:var(--ink-700);">80</span>
+                  </div>
+                  <div style="display:flex;align-items:center;gap:6px;">
+                    <span style="width:72px;color:var(--ink-700);">安定性</span>
+                    <div style="flex:1;height:7px;background:#E2E8F0;border-radius:4px;overflow:hidden;">
+                      <div style="width:65%;height:100%;background:#F59E0B;border-radius:4px;"></div>
+                    </div>
+                    <span style="font-family:monospace;color:var(--ink-700);">65</span>
+                  </div>
+                  <div style="display:flex;align-items:center;gap:6px;">
+                    <span style="width:72px;color:var(--ink-700);">屈曲性</span>
+                    <div style="flex:1;height:7px;background:#E2E8F0;border-radius:4px;overflow:hidden;">
+                      <div style="width:45%;height:100%;background:#D1D5DB;border-radius:4px;"></div>
+                    </div>
+                    <span style="font-family:monospace;color:var(--ink-700);">45</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Recommended shoes -->
+              <div style="font-size:8px;font-weight:700;color:#92400E;letter-spacing:.5px;margin-bottom:6px;">推薦シューズ TOP
+                3</div>
+              <div style="display:flex;flex-direction:column;gap:5px;">
+                <div
+                  style="background:#fff;border:1px solid #FCD34D;border-radius:5px;padding:5px 8px;display:flex;align-items:center;gap:8px;">
+                  <div
+                    style="width:20px;height:20px;border-radius:50%;background:#F59E0B;color:#fff;font-size:9px;font-weight:900;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                    1</div>
+                  <div style="flex:1;">
+                    <div style="font-size:8.5px;font-weight:700;color:#78350F;">ウォーキング ハイクッション A</div>
+                    <div style="font-size:7px;color:#92400E;">クッション ◎ ／ 安定 ○ ／ ¥12,800</div>
+                  </div>
+                  <div style="font-size:8px;font-weight:700;color:#15803D;">適合度 92%</div>
+                </div>
+                <div
+                  style="background:#fff;border:1px solid var(--border);border-radius:5px;padding:5px 8px;display:flex;align-items:center;gap:8px;">
+                  <div
+                    style="width:20px;height:20px;border-radius:50%;background:#9CA3AF;color:#fff;font-size:9px;font-weight:900;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                    2</div>
+                  <div style="flex:1;">
+                    <div style="font-size:8.5px;font-weight:700;color:var(--ink-900);">エルダーコンフォート Pro</div>
+                    <div style="font-size:7px;color:var(--ink-400);">クッション ○ ／ 安定 ◎ ／ ¥9,500</div>
+                  </div>
+                  <div style="font-size:8px;font-weight:700;color:#15803D;">適合度 84%</div>
+                </div>
+                <div
+                  style="background:#fff;border:1px solid var(--border);border-radius:5px;padding:5px 8px;display:flex;align-items:center;gap:8px;">
+                  <div
+                    style="width:20px;height:20px;border-radius:50%;background:#CD7C32;color:#fff;font-size:9px;font-weight:900;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                    3</div>
+                  <div style="flex:1;">
+                    <div style="font-size:8.5px;font-weight:700;color:var(--ink-900);">デイリーウォーク Light</div>
+                    <div style="font-size:7px;color:var(--ink-400);">クッション ○ ／ 軽量 ◎ ／ ¥7,200</div>
+                  </div>
+                  <div style="font-size:8px;font-weight:700;color:#15803D;">適合度 78%</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
       </div>
-      <div style="border-top:1px solid var(--blue-200);padding-top:10px;">
-        <div style="background:var(--blue-100);border-radius:6px;padding:8px 10px;font-size:10px;color:var(--blue-700);">
-          <strong>⚠ 注意：</strong>ローカル起動では CSV 読み込みは可能ですが、GAS への送信・レポート生成は行えません。
-        </div>
+      <div class="sftr">
+        <span>歩行年齢テスト計測システム v6 — 使用マニュアル</span>
+        <span>14 / 16</span>
       </div>
     </div>
 
-    <!-- Summary comparison -->
-    <div style="width:200px;display:flex;flex-direction:column;justify-content:center;gap:8px;">
-      <div style="font-size:10px;font-weight:700;color:var(--blue-700);letter-spacing:.06em;margin-bottom:4px;">比較サマリー</div>
-      <table style="width:100%;border-collapse:collapse;font-size:10px;">
-        <thead>
-          <tr style="background:var(--blue-100);">
-            <th style="padding:5px 8px;text-align:left;color:var(--blue-700);font-weight:700;border-radius:6px 0 0 0;"></th>
-            <th style="padding:5px 6px;text-align:center;color:var(--blue-700);">A</th>
-            <th style="padding:5px 6px;text-align:center;color:var(--blue-700);">B</th>
-            <th style="padding:5px 6px;text-align:center;color:var(--blue-700);border-radius:0 6px 0 0;">C</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr style="border-bottom:1px solid var(--blue-100);">
-            <td style="padding:5px 8px;color:var(--blue-700);">簡単さ</td>
-            <td style="text-align:center;color:var(--c-setup);">◎</td>
-            <td style="text-align:center;color:var(--blue-500);">○</td>
-            <td style="text-align:center;color:var(--blue-500);">○</td>
-          </tr>
-          <tr style="border-bottom:1px solid var(--blue-100);">
-            <td style="padding:5px 8px;color:var(--blue-700);">GAS連携</td>
-            <td style="text-align:center;color:var(--c-setup);">✓</td>
-            <td style="text-align:center;color:var(--c-setup);">✓</td>
-            <td style="text-align:center;color:var(--blue-400);">✗</td>
-          </tr>
-          <tr style="border-bottom:1px solid var(--blue-100);">
-            <td style="padding:5px 8px;color:var(--blue-700);">オフライン</td>
-            <td style="text-align:center;color:var(--blue-400);">✗</td>
-            <td style="text-align:center;color:var(--blue-400);">✗</td>
-            <td style="text-align:center;color:var(--c-setup);">✓</td>
-          </tr>
-          <tr>
-            <td style="padding:5px 8px;color:var(--blue-700);">更新</td>
-            <td style="text-align:center;color:var(--blue-400);">手動</td>
-            <td style="text-align:center;color:var(--c-setup);">自動</td>
-            <td style="text-align:center;color:var(--blue-400);">手動</td>
-          </tr>
-        </tbody>
-      </table>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+     SLIDE 15 — PDF 出力と保存・共有
+═══════════════════════════════════════════════════════════════ -->
+    <div class="slide">
+      <div class="chbar ch-rep"></div>
+      <div class="shdr">
+        <div class="sh-row">
+          <div style="display:flex;align-items:center;gap:12px;">
+            <span class="cpill cp-rep">STEP 8</span>
+            <h2>PDF レポートの出力・保存・共有</h2>
+          </div>
+          <span class="pgnum">15 / 16</span>
+        </div>
+        <p class="lead">解析・確認後、A4 縦 PDF を出力します。印刷・電子共有のどちらにも対応しています。</p>
+      </div>
+      <div class="sbody" style="display:flex;flex-direction:row;gap:24px;align-items:stretch;">
+
+        <!-- Left: PDF output steps -->
+        <div style="flex:1;display:flex;flex-direction:column;gap:12px;justify-content:center;">
+
+          <div class="card blue" style="padding:14px 16px;">
+            <div class="clabel">PDF 保存手順</div>
+            <div class="steps" style="gap:8px;margin-top:6px;">
+              <div class="step">
+                <div class="snum">1</div>
+                <div class="stxt">解析結果画面で <b>「📄 レポート」</b> ボタンをクリック → レポートプレビューが表示</div>
+              </div>
+              <div class="step">
+                <div class="snum">2</div>
+                <div class="stxt"><b>「🖨 PDF保存」</b> ボタンをクリック → ブラウザの印刷ダイアログが開く</div>
+              </div>
+              <div class="step">
+                <div class="snum">3</div>
+                <div class="stxt">送信先を <b>「PDF に保存」</b>（Mac: プリンタなし → PDF）に変更して <b>「保存」</b> をクリック</div>
+              </div>
+              <div class="step">
+                <div class="snum r">4</div>
+                <div class="stxt">保存した PDF をメール・クラウドストレージ・電子カルテに添付して共有</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="g2" style="gap:10px;">
+            <div
+              style="background:var(--blue-050);border:1px solid var(--blue-200);border-radius:7px;padding:10px 12px;">
+              <div style="font-size:10px;font-weight:700;color:var(--blue-700);margin-bottom:5px;">🖨 紙印刷の場合</div>
+              <div style="font-size:10.5px;color:var(--ink-700);line-height:1.6;">送信先をプリンタに変更してそのまま印刷。用紙サイズは <strong>A4
+                  縦</strong>、余白は <strong>なし（0mm）</strong> に設定してください。</div>
+            </div>
+            <div style="background:#F0FDF4;border:1px solid #86EFAC;border-radius:7px;padding:10px 12px;">
+              <div style="font-size:10px;font-weight:700;color:#166534;margin-bottom:5px;">📧 電子共有の場合</div>
+              <div style="font-size:10.5px;color:var(--ink-700);line-height:1.6;">PDF ファイルをメール添付、または Google
+                Drive・OneDrive にアップロードしてリンク共有できます。</div>
+            </div>
+          </div>
+
+          <div class="hl w" style="font-size:11px;">
+            <strong>注意：</strong>ブラウザの印刷設定で「背景のグラフィック」を <strong>有効</strong> にしないと、色付きの背景やグラフが白抜きになります。
+          </div>
+
+        </div>
+
+        <!-- Right: Print dialog mockup -->
+        <div style="flex:1.2;display:flex;align-items:center;justify-content:center;">
+          <div
+            style="background:#3C4043;border-radius:12px;padding:20px;width:100%;max-width:500px;box-shadow:0 8px 32px rgba(0,0,0,.4);">
+            <div style="color:#E8EAED;font-size:12px;font-weight:700;margin-bottom:16px;">印刷</div>
+            <div style="display:flex;gap:16px;">
+              <!-- Preview pane -->
+              <div
+                style="flex:1;background:#fff;border-radius:6px;overflow:hidden;aspect-ratio:0.707;display:flex;flex-direction:column;box-shadow:0 2px 8px rgba(0,0,0,.3);">
+                <div style="background:linear-gradient(135deg,#1E3A8A,#2563EB);padding:5px 7px;flex-shrink:0;">
+                  <div style="font-size:5.5px;font-weight:900;color:#fff;">歩行年齢テスト 診断レポート</div>
+                </div>
+                <div style="padding:5px 7px;flex:1;display:flex;flex-direction:column;gap:4px;">
+                  <div style="background:var(--blue-050);border-radius:3px;padding:4px;text-align:center;">
+                    <div style="font-size:4.5px;color:var(--blue-500);">歩行年齢</div>
+                    <div
+                      style="font-family:'Inter',sans-serif;font-size:18px;font-weight:900;color:var(--blue-800);line-height:1;">
+                      52<span style="font-size:7px;"> 歳</span></div>
+                  </div>
+                  <div style="height:4px;background:#E2E8F0;border-radius:2px;overflow:hidden;">
+                    <div style="width:74%;height:100%;background:#22C55E;"></div>
+                  </div>
+                  <div style="display:grid;grid-template-columns:1fr 1fr;gap:2px;">
+                    <div style="background:var(--off);border-radius:2px;padding:2px 3px;">
+                      <div style="font-size:3.5px;color:var(--ink-300);">歩くスピード</div>
+                      <div style="font-size:7px;font-weight:900;color:var(--ink-900);">1.38</div>
+                    </div>
+                    <div style="background:var(--off);border-radius:2px;padding:2px 3px;">
+                      <div style="font-size:3.5px;color:var(--ink-300);">歩幅</div>
+                      <div style="font-size:7px;font-weight:900;color:var(--ink-900);">0.68</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- Settings pane -->
+              <div style="flex:1.4;display:flex;flex-direction:column;gap:8px;">
+                <div>
+                  <div style="font-size:9px;color:#9AA0A6;margin-bottom:3px;">送信先</div>
+                  <div
+                    style="background:#4A4D50;border-radius:4px;padding:5px 8px;font-size:9.5px;color:#E8EAED;display:flex;align-items:center;justify-content:space-between;">
+                    <span>📄 PDF に保存</span>
+                    <span style="color:#9AA0A6;">▾</span>
+                  </div>
+                </div>
+                <div>
+                  <div style="font-size:9px;color:#9AA0A6;margin-bottom:3px;">用紙サイズ</div>
+                  <div style="background:#4A4D50;border-radius:4px;padding:5px 8px;font-size:9.5px;color:#E8EAED;">A4
+                  </div>
+                </div>
+                <div>
+                  <div style="font-size:9px;color:#9AA0A6;margin-bottom:3px;">ページの向き</div>
+                  <div style="background:#4A4D50;border-radius:4px;padding:5px 8px;font-size:9.5px;color:#E8EAED;">縦
+                  </div>
+                </div>
+                <div>
+                  <div style="font-size:9px;color:#9AA0A6;margin-bottom:3px;">詳細設定</div>
+                  <div
+                    style="background:#4A4D50;border-radius:4px;padding:5px 8px;font-size:8.5px;color:#E8EAED;display:flex;align-items:center;justify-content:space-between;">
+                    <span>背景のグラフィック</span>
+                    <div style="width:28px;height:14px;background:#1A73E8;border-radius:7px;position:relative;">
+                      <div
+                        style="position:absolute;right:2px;top:2px;width:10px;height:10px;background:#fff;border-radius:50%;">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div style="margin-top:4px;">
+                  <div
+                    style="background:#1A73E8;color:#fff;border-radius:4px;padding:8px;text-align:center;font-size:11px;font-weight:700;">
+                    保存</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+      <div class="sftr">
+        <span>歩行年齢テスト計測システム v6 — 使用マニュアル</span>
+        <span>15 / 16</span>
+      </div>
     </div>
 
-  </div>
-  <div class="sftr">
-    <span>歩行年齢テスト診断システム v6 — 使用マニュアル</span>
-    <span>7 / 16</span>
-  </div>
-</div>
 
+    <!-- ═══════════════════════════════════════════════════════════════
+     SLIDE 16 — トラブルシューティング
+═══════════════════════════════════════════════════════════════ -->
+    <div class="slide">
+      <div class="chbar" style="background:linear-gradient(90deg,var(--blue-700),var(--blue-500));"></div>
+      <div class="shdr">
+        <div class="sh-row">
+          <div style="display:flex;align-items:center;gap:12px;">
+            <span class="cpill cp-sys">FAQ</span>
+            <h2>トラブルシューティング &amp; よくある質問</h2>
+          </div>
+          <span class="pgnum">16 / 16</span>
+        </div>
+        <p class="lead">問題が発生した場合は以下を確認してください。解決しない場合は担当者にお問い合わせください。</p>
+      </div>
+      <div class="sbody" style="display:flex;flex-direction:row;gap:20px;align-items:stretch;">
 
-<!-- ═══════════════ SLIDES 8〜16 は次ステップで追加 ═══════════════ -->
+        <!-- Column 1: phyphox / CSV issues -->
+        <div style="flex:1;display:flex;flex-direction:column;gap:8px;">
+          <div
+            style="font-size:10px;font-weight:700;color:var(--blue-700);letter-spacing:.06em;border-bottom:2px solid var(--blue-200);padding-bottom:5px;margin-bottom:2px;">
+            計測・CSV 関連</div>
+
+          <div style="background:#FEF2F2;border-left:3px solid #EF4444;border-radius:0 6px 6px 0;padding:9px 11px;">
+            <div style="font-size:11px;font-weight:700;color:#B91C1C;margin-bottom:4px;">❓ CSV を読み込んでも波形が表示されない</div>
+            <div style="font-size:10.5px;color:var(--ink-700);line-height:1.6;">phyphox の「Acceleration (without
+              g)」で記録しているか確認。ヘッダーが <code
+                style="background:#fff;padding:1px 4px;border-radius:3px;font-family:monospace;font-size:9.5px;">time,ax,ay,az</code>
+              になっているか確認してください。</div>
+          </div>
+
+          <div style="background:#FEF2F2;border-left:3px solid #EF4444;border-radius:0 6px 6px 0;padding:9px 11px;">
+            <div style="font-size:11px;font-weight:700;color:#B91C1C;margin-bottom:4px;">❓ 歩行区間が自動検出されない</div>
+            <div style="font-size:10.5px;color:var(--ink-700);line-height:1.6;">歩行前後に 2 秒以上の静止区間が含まれていない可能性があります。phyphox
+              を起動してから数秒待って歩き始めてください。</div>
+          </div>
+
+          <div style="background:#FEF2F2;border-left:3px solid #EF4444;border-radius:0 6px 6px 0;padding:9px 11px;">
+            <div style="font-size:11px;font-weight:700;color:#B91C1C;margin-bottom:4px;">❓ 波形が乱れていてリズムが不規則</div>
+            <div style="font-size:10.5px;color:var(--ink-700);line-height:1.6;">
+              スマートフォンの固定が不十分な場合があります。ウエストポーチのジッパーをしっかり締め、端末が揺れないよう再計測してください。</div>
+          </div>
+        </div>
+
+        <!-- Column 2: GAS / System issues -->
+        <div style="flex:1;display:flex;flex-direction:column;gap:8px;">
+          <div
+            style="font-size:10px;font-weight:700;color:var(--blue-700);letter-spacing:.06em;border-bottom:2px solid var(--blue-200);padding-bottom:5px;margin-bottom:2px;">
+            システム・GAS 関連</div>
+
+          <div style="background:#FFF7ED;border-left:3px solid #F59E0B;border-radius:0 6px 6px 0;padding:9px 11px;">
+            <div style="font-size:11px;font-weight:700;color:#92400E;margin-bottom:4px;">❓ GAS のデプロイ URL を開くとエラー</div>
+            <div style="font-size:10.5px;color:var(--ink-700);line-height:1.6;">「デプロイを管理」から新しいデプロイを作成し直してください。古いデプロイ URL
+              は無効になることがあります。</div>
+          </div>
+
+          <div style="background:#FFF7ED;border-left:3px solid #F59E0B;border-radius:0 6px 6px 0;padding:9px 11px;">
+            <div style="font-size:11px;font-weight:700;color:#92400E;margin-bottom:4px;">❓ 「このアプリは確認されていません」と表示</div>
+            <div style="font-size:10.5px;color:var(--ink-700);line-height:1.6;">
+              「詳細」→「(プロジェクト名)に移動（安全でない可能性があります）」をクリックしてください。自作スクリプト固有の仕様で、正常な動作です。</div>
+          </div>
+
+          <div style="background:#FFF7ED;border-left:3px solid #F59E0B;border-radius:0 6px 6px 0;padding:9px 11px;">
+            <div style="font-size:11px;font-weight:700;color:#92400E;margin-bottom:4px;">❓ レポートの PDF 出力で色が出ない</div>
+            <div style="font-size:10.5px;color:var(--ink-700);line-height:1.6;">
+              印刷ダイアログの詳細設定で「<strong>背景のグラフィック</strong>」を有効にしてから保存してください（Chrome・Edge・Safari 共通）。</div>
+          </div>
+        </div>
+
+        <!-- Column 3: Quick links + version info -->
+        <div style="flex:1;display:flex;flex-direction:column;gap:8px;">
+          <div
+            style="font-size:10px;font-weight:700;color:var(--blue-700);letter-spacing:.06em;border-bottom:2px solid var(--blue-200);padding-bottom:5px;margin-bottom:2px;">
+            その他 &amp; 仕様情報</div>
+
+          <div style="background:#FEF2F2;border-left:3px solid #EF4444;border-radius:0 6px 6px 0;padding:9px 11px;">
+            <div style="font-size:11px;font-weight:700;color:#B91C1C;margin-bottom:4px;">❓ スコアが毎回少し異なる</div>
+            <div style="font-size:10.5px;color:var(--ink-700);line-height:1.6;">
+              歩行区間の自動検出範囲が毎回わずかに変わるためです。一定条件で計測すれば再現性は十分に確保されます。</div>
+          </div>
+
+          <div
+            style="background:var(--blue-050);border:1px solid var(--blue-200);border-radius:6px;padding:10px 12px;flex:1;">
+            <div style="font-size:10px;font-weight:700;color:var(--blue-700);margin-bottom:8px;">システム仕様まとめ</div>
+            <table style="font-size:10px;">
+              <tbody>
+                <tr>
+                  <td style="padding:3px 0;color:var(--ink-500);width:100px;">バージョン</td>
+                  <td style="padding:3px 0;font-weight:700;color:var(--ink-900);">v6</td>
+                </tr>
+                <tr>
+                  <td style="padding:3px 0;color:var(--ink-500);">動作環境</td>
+                  <td style="padding:3px 0;font-weight:700;color:var(--ink-900);">Chrome / Safari / Edge</td>
+                </tr>
+                <tr>
+                  <td style="padding:3px 0;color:var(--ink-500);">計測アプリ</td>
+                  <td style="padding:3px 0;font-weight:700;color:var(--ink-900);">phyphox（無料）</td>
+                </tr>
+                <tr>
+                  <td style="padding:3px 0;color:var(--ink-500);">基準値</td>
+                  <td style="padding:3px 0;font-weight:700;color:var(--ink-900);">Mobbs et al. 2025</td>
+                </tr>
+                <tr>
+                  <td style="padding:3px 0;color:var(--ink-500);">個人情報</td>
+                  <td style="padding:3px 0;font-weight:700;color:#166534;">外部送信なし</td>
+                </tr>
+                <tr>
+                  <td style="padding:3px 0;color:var(--ink-500);">解析時間</td>
+                  <td style="padding:3px 0;font-weight:700;color:var(--ink-900);">2〜5 秒</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div style="background:var(--blue-900);border-radius:8px;padding:12px 14px;text-align:center;">
+            <div style="font-size:11px;font-weight:700;color:#fff;margin-bottom:4px;">ご不明な点は担当者まで</div>
+            <div style="font-size:10px;color:var(--blue-300);line-height:1.6;">このマニュアルの最新版は<br>GAS のデプロイ URL から参照できます
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+      <div class="sftr">
+        <span>歩行年齢テスト計測システム v6 — 使用マニュアル</span>
+        <span>16 / 16</span>
+      </div>
+    </div>
   </div><!-- /slides -->
 
 

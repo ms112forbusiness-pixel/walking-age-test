@@ -1,5 +1,5 @@
 // ============================================================
-// 歩行年齢テスト診断システム v6 — Google Apps Script サーバー側コード
+// 歩行年齢テスト計測システム v6 — Google Apps Script サーバー側コード
 // ============================================================
 // 【デプロイ手順】
 //   1. このファイル(Code.gs)をApps Scriptプロジェクトに貼付
@@ -12,7 +12,7 @@
 // HTMLページを配信
 function doGet(e) {
   return HtmlService.createHtmlOutputFromFile('index')
-    .setTitle('歩行年齢テスト診断システム v6')
+    .setTitle('歩行年齢テスト計測システム v6')
     .addMetaTag('viewport', 'width=device-width, initial-scale=1')
     .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
 }
