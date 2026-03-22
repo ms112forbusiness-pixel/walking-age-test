@@ -35,11 +35,17 @@ exports.handler = async (event) => {
     'www.asics.com',
     'shop.asics.com',
   ];
+  // phyphox WiFiリモート取得用プライベートIPを許可（192.168.x.x / 10.x.x.x / 172.16–31.x.x）
+  function isPrivateIP(host) {
+    return /^192\.168\.\d{1,3}\.\d{1,3}$/.test(host)
+      || /^10\.\d{1,3}\.\d{1,3}\.\d{1,3}$/.test(host)
+      || /^172\.(1[6-9]|2\d|3[01])\.\d{1,3}\.\d{1,3}$/.test(host);
+  }
   let reqHost;
   try { reqHost = new URL(url).hostname; } catch(e) {
     return { statusCode: 400, headers, body: JSON.stringify({ error: 'invalid url' }) };
   }
-  if (!ALLOWED_DOMAINS.some(d => reqHost === d || reqHost.endsWith('.' + d))) {
+  if (!ALLOWED_DOMAINS.some(d => reqHost === d || reqHost.endsWith('.' + d)) && !isPrivateIP(reqHost)) {
     return { statusCode: 403, headers, body: JSON.stringify({ error: 'domain not allowed' }) };
   }
 

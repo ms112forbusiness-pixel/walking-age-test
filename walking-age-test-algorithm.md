@@ -68,7 +68,7 @@ phyphox「Linear Acceleration」エクスポート CSV
 ### 1.4 ピーク検出（動的閾値）
 
 ```
-最小間隔: max(1, floor(fs × 0.3))  サンプル  [= 300 ms 相当]
+最小間隔: round(fs × 0.3)  サンプル  [= 300 ms 相当]
 動的閾値: abs(signal) の 40パーセンタイル
 
 アルゴリズム:
@@ -82,7 +82,7 @@ phyphox「Linear Acceleration」エクスポート CSV
 ### 1.5 定常区間抽出
 
 ```
-trim = max(2, floor(peaks.length × 0.2))
+trim = max(2, round(peaks.length × 0.2))
 
 steadyPeaks = peaks.slice(trim, peaks.length - trim)
 
@@ -115,7 +115,9 @@ CV   = SD / Mean × 100  [%]
 | 注意 | 4.0–8.0 % | 恐怖性歩行・軽度認知障害・神経疾患の影響を検討 |
 | 要精査 | ≥ 8.0 % | 高度の不規則歩行。多職種評価を推奨。 |
 
-**根拠**: Hausdorff JM et al. Arch Phys Med Rehabil 2001;82(8):1050-1056（前向きコホート, Level II）; BMC Geriatrics 2022 アンブレラレビュー
+**根拠**: Hausdorff JM et al. Arch Phys Med Rehabil 2001;82(8):1050-1056（前向きコホート, Level II — 歩行変動性が転倒の独立予測因子であることを実証）。CV 4.0% の閾値は Beauchet et al. 2003 および BMC Geriatrics 2022 アンブレラレビュー等の後続研究により臨床コンセンサスとして一般化された値
+
+**介入アドバイス連携**: `selectAdvice()` (ADVICE_DB自動選択) では CV > 4.0% で `rhythmImpaired` 判定。`renderInterventionAdvice()` (Page 2 地域在住向け) では CV ≥ 5.0% で追加アラート表示。閾値が異なるのは意図的設計（Page 2 は地域PT向けの高い閾値）。
 
 ---
 
@@ -168,6 +170,8 @@ Walk Ratio = Step Length [m] / Step Frequency [Hz]
 
 **根拠**: Sekiya & Nagasaki, Gait Posture 1998（不変性の実証; 原典単位 mm/(steps/min)≈6.5, 本システムはm/Hz換算の参考範囲）; Plotnik et al. J Neurol Sci 2011
 
+> **アドバイス選択との閾値差異:** 臨床判定の正常範囲は 0.35–0.45 m/Hz だが、ADVICE_DB の自動選択（`assessInterventionProfile()`）では `inefficientGait` 判定に 0.38–0.42 m/Hz のより厳密な閾値を使用する。これは運動アドバイスの早期介入を促すための意図的な設計であり、臨床判定の閾値とは目的が異なる。
+
 ---
 
 ### 2.4 RMS 加速度（体幹動揺強度）
@@ -193,11 +197,17 @@ RMS = √( Σ signal[k]² / N )  [m/s²]
 ## 3. 歩行速度・歩幅・ケイデンスの算出
 
 ```
-計測距離: D = walkDist [m]  （ユーザー設定: 5 / 10 / 20 m、デフォルト 10 m）
+計測距離: D = walkDist [m]  （プリセット: 5 / 10 / 20 m、デフォルト 10 m。1–100 m の範囲で任意値入力も可能）
 
 歩行速度 [m/s]:
-  allPeakTime = t[peaks.last] - t[peaks.first]  （全ピーク区間の経過時間）
-  speed = D / allPeakTime
+  [Mode B: 距離入力ベース（身長未入力時）]
+  totalSteps  = peaks.length - 1                                   （全ステップ数）
+  steadySteps = steadyPeaks.length - 1                             （定常区間ステップ数）
+  steadyTime  = t[steadyPeaks.last] - t[steadyPeaks.first]        （定常区間の経過時間）
+  steadyDist  = D × (steadySteps / totalSteps)                    （定常区間推定距離）
+  speed = steadyDist / steadyTime
+  fallback: allPeakTime = t[peaks.last] - t[peaks.first]
+            speed = D / allPeakTime  （定常区間が不十分な場合）
   ※ 有効範囲: 0.3 < speed < 3.0 m/s の場合のみ採用
 
 ステップ数 n = steadyPeaks.length - 1
@@ -211,7 +221,7 @@ RMS = √( Σ signal[k]² / N )  [m/s²]
          = speed × meanST
 ```
 
-> **歩行距離変更時の再計算（recalcSpeedFromDist）**: ユーザーが walkDist を変更すると、保存済みの `_allPeakTime` から速度・歩幅を自動再計算する。`_allPeakTime` が未取得（CSV未読込）の場合は再計算をスキップする。
+> **歩行距離変更時の再計算（recalcSpeedFromDist）**: ユーザーが walkDist を変更すると、保存済みの `_steadyTime` / `_steadySteps` / `_totalSteps` から速度・歩幅を自動再計算する。定常区間データが未取得（CSV未読込）の場合は再計算をスキップする。
 
 ---
 
@@ -278,9 +288,9 @@ RMS = √( Σ signal[k]² / N )  [m/s²]
 ### 4.1 規範値テーブル（NORM）
 
 **出典（複数文献参照による合成規範値テーブル）**:
-- Bohannon RW, Andrews AW. Physiotherapy 2011;97(3):182-189（メタ分析, N=23,111, 20研究統合）— 主要参照
-- Hollman JH et al. Gait Posture 2011;34(1):111-118（高齢者規範値, N=118）
-- Mobbs RJ et al. Sensors 2025;25(2):581（IMUベース, N=280解析対象, 胸骨装着・50m歩行）
+- Bohannon RW, Andrews AW. Physiotherapy 2011;97(3):182-189（メタ分析, N=23,111, 41研究統合）— 主要参照
+- Hollman JH et al. Gait Posture 2011;34(1):111-118（高齢者規範値, N=294）
+- Mobbs RJ et al. Sensors 2025;25(2):581（IMUベース, N=313, 胸骨装着・50m歩行）
 - Schwesig R et al. Gait Posture 2011;33(4):673-678（IMUベース, N=1,860, 5-100歳）
 
 ※ 各年齢ブラケットの値は上記文献を参考に構成した合成規範値であり、単一文献からの直接引用ではない。
@@ -290,7 +300,7 @@ RMS = √( Σ signal[k]² / N )  [m/s²]
 
 年齢ブラケット: 20, 25, 30, … , 80, 85, 90 歳（5歳刻み）
 ※ 原典文献は10歳刻みのため、5歳刻みの中間値は線形補間で生成。85歳・90歳は80歳からの外挿推定。
-※ Mobbs 2025の解析対象はN=280（313名中33名を除外）。装着位置は胸骨角（sternal angle）、本システムの腰部装着とは条件が異なる。
+※ Mobbs 2025のN=313は最終解析対象数（Abstract・Results双方で「313 normative subjects」と明記）。装着位置は胸骨角（sternal angle）、本システムの腰部装着とは条件が異なる。
 
 ```
 男性 抜粋:
@@ -499,6 +509,8 @@ function pick(arr, offset) {
 | `SI_WARN` | 5.0 % | SI 注意閾値 |
 | `WR_NORMAL_LO` | 0.35 m/Hz（参考値） | Walk Ratio 正常下限 |
 | `WR_NORMAL_HI` | 0.45 m/Hz（参考値） | Walk Ratio 正常上限 |
+| `WR_ADVICE_LO` | 0.38 m/Hz | ADVICE_DB 選択用 inefficientGait 下限 |
+| `WR_ADVICE_HI` | 0.42 m/Hz | ADVICE_DB 選択用 inefficientGait 上限 |
 | `RMS_LOW` | 0.50 m/s² | RMS 低値閾値 |
 | `RMS_HIGH` | 2.50 m/s² | RMS 高値閾値 |
 
@@ -544,6 +556,7 @@ function assessWalkingProfile() {
 | Q5 = `auto` かつ 0.8–1.0 m/s | `low` | AWGS 2019 |
 | Q5 = `auto` かつ 1.0–1.2 m/s | `moderate` | 標準活動量 |
 | Q5 = `auto` かつ ≥ 1.2 m/s | `high` | Studenski 2011 — 高機能群 |
+| Q5 = `auto` かつ speed ≤ 0 | `unknown` | 速度データ未入力。`ACT_IDX` 未定義のため `?? 1`（low相当）でフォールバック |
 
 ---
 
@@ -698,7 +711,10 @@ ACT_COMPAT マトリクスから互換度を取得し `round(compat/100 × 20)` 
 | SI | > 10.0% | archSupport | +10 |
 | SI | 5.0–10.0% | archSupport | +5 |
 
-**次元 5: パーソナライズ設問 (max ~83)**
+**次元 5: パーソナライズ設問 (max 73–103)**
+
+> Q3 の最大スコアは選択値により 15–30 に変動する（bunion/flat: +15 各、both: +30、wide 4E/5E: +20）。
+> Q1 severe(23) + Q2 防水(20) + Q3 both(30) + Q4 zipper(15) + Q6 sporty(15) = 103 が理論上の上限。
 
 | 設問 | 条件 | スコア | 備考 |
 |------|------|--------|------|
@@ -753,7 +769,7 @@ ACT_COMPAT マトリクスから互換度を取得し `round(compat/100 × 20)` 
 基本: 40 点（性別 20 + 活動量 20）
 
 + 速度帯別最大:
-  < 0.8 m/s: +28  (stability 12 + cushion 8 + easyOn 8)
+  < 0.8 m/s: +20 (stability 12 + cushion 8) + easyOn 条件付き +8 (fasten=any 時のみ)
   0.8–1.0:   +13  (stability 8 + cushion 5)
   1.0–1.2:   +12  (rocker 8 + cushion 4)
   ≥ 1.2:     +18  (rocker 10 + lightweight 8)
