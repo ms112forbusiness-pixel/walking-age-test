@@ -802,9 +802,9 @@ Web Speech Synthesis APIを使用。localStorage キー `walkingAgeVoiceEnabled`
 | 略称 | 文献 | 用途 |
 |------|------|------|
 | Mobbs 2025 | Mobbs et al. *Sensors* 2025;25:581 (N=313) | 規準値テーブル（速度・歩幅・ケイデンス） |
-| Fritz 2009 | Fritz S, Lusardi M. *Phys Ther J* 2009 | 速度 0.8 m/s 転倒リスク閾値・歩行年齢重み |
+| Fritz 2009 | Fritz S, Lusardi M. *J Geriatr Phys Ther* 2009;32(2):46 | 速度 0.8 m/s 転倒リスク閾値・歩行年齢重み |
 | AWGS 2019 | Chen LK et al. *J Am Med Dir Assoc* 2020;21(3):300-307 | 速度 1.0 m/s サルコペニアスクリーニング |
-| AWGS 2025 | Nature Aging 2025, PMID:41188603 | 速度の予後指標としての再定義 |
+| AWGS 2025 | Nature Aging 2025, PMID:41188603 | 速度の予後指標としての再定義（参考文献・コード内未使用） |
 | Studenski 2011 | Studenski S et al. *JAMA* 2011;305(1):50-58 (N=34,485, Level I-II) | 速度 1.2 m/s 高機能群・生命予後 |
 | Quach 2011 | Quach L et al. *J Am Geriatr Soc* 2011;59(6):1069-1073 | 低歩行速度と転倒リスクの非線形関係 |
 | Cesari 2005 | Cesari M et al. *J Gerontol A* 2005 | 地域在住高齢者の生活機能分類 |
@@ -813,7 +813,7 @@ Web Speech Synthesis APIを使用。localStorage キー `walkingAgeVoiceEnabled`
 | BMC Geriatrics 2022 | BMC Geriatrics アンブレラレビュー 2022 | Step Time CV のアンブレラエビデンス |
 | Robinson 1987 | Robinson et al. *J Manipulative Physiol Ther* 1987;10(4):172-176 | Symmetry Index (SI) 計算式の原典 |
 | Patterson 2010 | Patterson KK et al. *Gait Posture* 2010 | SI 5% / 10% 判定閾値 |
-| Sekiya 1998 | Sekiya N, Nagasaki H. *Gait Posture* 1998 | Walk Ratio 0.38–0.42 m/Hz 不変性（本システム実装閾値は 0.35–0.45 m/Hz） |
+| Sekiya 1998 | Sekiya N, Nagasaki H. *Gait Posture* 1998 | Walk Ratio 不変性の原典（原単位: mm/(steps/min)≈6.5。本システム: 臨床判定 0.35–0.45 m/Hz, アドバイス 0.38–0.42 m/Hz） |
 | Plotnik 2011 | Plotnik M et al. *J Neurol Sci* 2011 | Walk Ratio 神経疾患との関連 |
 | Moe-Nilssen 2004 | Moe-Nilssen R, Helbostad JL. *J Biomech* 2004 | 体幹 RMS 加速度の方法論 |
 | Tao 2012 | Tao W et al. *Sensors* 2012;12(2):2255-2283 | 慣性センサー歩行計測のレビュー |

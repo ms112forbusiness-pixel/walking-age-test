@@ -1817,7 +1817,7 @@
         // shoe questionnaire
         shoeQKnee: 'none',   // 'none' | 'mild' | 'severe'
         shoeQRain: false,    // boolean
-        shoeQFoot: 'none',   // 'none' | 'bunion' | 'flat' | 'both'
+        shoeQFoot: 'none',   // 'none' | 'bunion' | 'flat' | 'both' | 'wide'
         shoeQFasten: 'any',  // 'any' | 'lace' | 'velcro' | 'zipper'
         shoeQPurpose: 'auto',  // 'auto' | 'daily' | 'walking' | 'active'
         shoeQDesign: 'any',    // 'any' | 'sporty' | 'smart'
@@ -4833,8 +4833,8 @@
             renderPage4Shoes();
             statusEl.textContent = `✓ ${shoes.length} 件の靴データを読み込みました`;
             showNotif(`靴データ ${shoes.length} 件を読み込みました`);
-            const page3 = document.getElementById('page4-shoes');
-            if (page3) setTimeout(() => page3.scrollIntoView({ behavior: 'smooth', block: 'start' }), 200);
+            const shoePage = document.getElementById('page4-shoes');
+            if (shoePage) setTimeout(() => shoePage.scrollIntoView({ behavior: 'smooth', block: 'start' }), 200);
           } catch (err) {
             statusEl.textContent = '✗ エラー: ' + err.message;
             showNotif(err.message, true);
@@ -4902,21 +4902,21 @@
         // ---- シューズモード トグル ----
         function setShoeMode(active) {
           const section = document.getElementById('shoe-url-section');
-          const page3 = document.getElementById('page4-shoes');
+          const shoePage = document.getElementById('page4-shoes');
           const btn = document.getElementById('btn-shoe-mode');
           const badge = document.getElementById('shoe-mode-badge');
           if (active) {
             section.classList.remove('hidden');
-            page3.classList.remove('hidden');
+            shoePage.classList.remove('hidden');
             btn.style.backgroundColor = '#2563eb';
             btn.style.color = '#ffffff';
             btn.style.borderColor = '#2563eb';
             badge.textContent = 'ON';
             badge.className = 'inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-black bg-white text-blue-600 leading-none';
-            setTimeout(() => page3.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50);
+            setTimeout(() => shoePage.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50);
           } else {
             section.classList.add('hidden');
-            page3.classList.add('hidden');
+            shoePage.classList.add('hidden');
             btn.style.backgroundColor = '';
             btn.style.color = '';
             btn.style.borderColor = '';
@@ -4998,18 +4998,7 @@
           S.shoeQRain = e.target.checked;
           if (window._shoeData && window._shoeData.length) renderPage4Shoes();
         });
-        document.querySelectorAll('input[name="q-foot"]').forEach(el => {
-          el.addEventListener('change', () => {
-            S.shoeQFoot = el.value;
-            if (window._shoeData && window._shoeData.length) renderPage4Shoes();
-          });
-        });
-        document.querySelectorAll('input[name="q-fasten"]').forEach(el => {
-          el.addEventListener('change', () => {
-            S.shoeQFasten = el.value;
-            if (window._shoeData && window._shoeData.length) renderPage4Shoes();
-          });
-        });
+
 
 
         // 保存済みスプレッドシートURLを復元
