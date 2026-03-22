@@ -1,10 +1,14 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ja">
 
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>歩行年齢テスト計測システム v6</title>
+  <title>歩行年齢テスト計測システム v7</title>
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#1e3a8a">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
@@ -134,6 +138,7 @@
     .score-text {
       background: linear-gradient(135deg, #fbbf24, #f59e0b);
       -webkit-background-clip: text;
+      background-clip: text;
       -webkit-text-fill-color: transparent;
     }
 
@@ -398,10 +403,48 @@
       background: #fee2e2;
       color: #991b1b;
     }
+
   </style>
 </head>
 
 <body class="h-screen flex flex-col">
+
+
+  <!-- ── 履歴モーダル ── -->
+  <div id="history-modal" class="hidden" style="position:fixed;inset:0;z-index:900;background:rgba(15,23,42,0.8);backdrop-filter:blur(8px);display:none;align-items:flex-start;justify-content:center;padding:24px 16px;overflow-y:auto;">
+    <div style="background:#fff;border-radius:16px;box-shadow:0 20px 60px rgba(0,0,0,0.3);width:min(720px,100%);padding:28px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
+        <div style="font-size:16px;font-weight:900;color:#0f172a;">📋 計測履歴</div>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <button id="btn-history-csv-export"
+            style="padding:6px 14px;background:#f1f5f9;border:1px solid #e2e8f0;border-radius:8px;font-size:11px;font-weight:700;color:#475569;cursor:pointer;">
+            CSVダウンロード
+          </button>
+          <button id="btn-history-close"
+            style="background:none;border:none;font-size:20px;color:#94a3b8;cursor:pointer;padding:2px 6px;border-radius:6px;">✕</button>
+        </div>
+      </div>
+      <div id="history-modal-body" style="overflow-x:auto;">
+        <table style="width:100%;border-collapse:collapse;font-size:12px;">
+          <thead>
+            <tr style="color:#64748b;border-bottom:2px solid #e2e8f0;">
+              <th style="text-align:left;padding:6px 8px;font-weight:700;">日付</th>
+              <th style="text-align:left;padding:6px 8px;font-weight:700;">氏名</th>
+              <th style="text-align:right;padding:6px 8px;font-weight:700;">速度</th>
+              <th style="text-align:right;padding:6px 8px;font-weight:700;">スコア</th>
+              <th style="text-align:right;padding:6px 8px;font-weight:700;">歩行年齢</th>
+              <th style="text-align:center;padding:6px 8px;font-weight:700;">削除</th>
+            </tr>
+          </thead>
+          <tbody id="history-modal-tbody"></tbody>
+        </table>
+        <div id="history-modal-empty" class="hidden" style="text-align:center;color:#94a3b8;font-size:13px;padding:32px 0;">
+          履歴はまだありません
+        </div>
+      </div>
+    </div>
+  </div>
+
 
 
   <!-- Drag overlay -->
@@ -457,19 +500,33 @@
         <path d="M16 17h4" />
         <path d="M4 13h4" />
       </svg>
-      歩行年齢テスト<span class="text-slate-400 text-xs font-normal ml-2 hidden sm:inline">計測システム v6</span>
+      歩行年齢テスト<span class="text-slate-400 text-xs font-normal ml-2 hidden sm:inline">計測システム v7</span>
     </div>
     <div class="flex items-center gap-2">
-      <button id="btn-expert-mode"
+      <button id="btn-community-mode"
         class="px-3 py-1.5 bg-white border border-slate-200 text-slate-600 rounded-lg font-bold text-xs hover:bg-slate-50 transition-all flex items-center gap-1.5 shadow-sm"
-        title="専門家向け詳細データを表示/非表示">
+        title="地域在住者向け評価レポートを表示/非表示">
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+          <circle cx="9" cy="7" r="4"/>
+          <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+          <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+        </svg>
+        <span class="hidden sm:inline">地域在住向け</span>
+        <span id="community-mode-badge"
+          class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-black bg-slate-100 text-slate-500 leading-none">OFF</span>
+      </button>
+      <button id="btn-clinical-mode"
+        class="px-3 py-1.5 bg-white border border-slate-200 text-slate-600 rounded-lg font-bold text-xs hover:bg-slate-50 transition-all flex items-center gap-1.5 shadow-sm"
+        title="臨床向け詳細データを表示/非表示">
         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
           stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
           <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
         </svg>
-        <span class="hidden sm:inline">専門家モード</span>
-        <span id="expert-mode-badge"
+        <span class="hidden sm:inline">臨床向け</span>
+        <span id="clinical-mode-badge"
           class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-black bg-slate-100 text-slate-500 leading-none">OFF</span>
       </button>
       <button id="btn-shoe-mode"
@@ -483,6 +540,26 @@
         <span class="hidden sm:inline">シューズレコメンド</span>
         <span id="shoe-mode-badge"
           class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-black bg-slate-100 text-slate-500 leading-none">OFF</span>
+      </button>
+      <button id="btn-advice-mode"
+        class="px-3 py-1.5 bg-white border border-slate-200 text-slate-600 rounded-lg font-bold text-xs hover:bg-slate-50 transition-all flex items-center gap-1.5 shadow-sm"
+        title="詳細アドバイスページを表示/非表示">
+        <span>🏃</span>
+        <span class="hidden sm:inline">詳細アドバイス</span>
+        <span id="advice-mode-badge"
+          class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-black bg-slate-100 text-slate-500 leading-none">OFF</span>
+      </button>
+      <button id="btn-guide"
+        class="px-3 py-1.5 bg-white border border-slate-200 text-slate-600 rounded-lg font-bold text-xs hover:bg-slate-50 transition-all flex items-center gap-1.5 shadow-sm"
+        title="計測ガイドを表示">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        <span class="hidden sm:inline">ガイド</span>
+      </button>
+      <button id="btn-voice"
+        class="px-3 py-1.5 bg-white border border-slate-200 text-slate-600 rounded-lg font-bold text-xs hover:bg-slate-50 transition-all flex items-center gap-1.5 shadow-sm"
+        title="音声フィードバック ON/OFF">
+        <span id="voice-icon">🔇</span>
+        <span class="hidden sm:inline">音声</span>
       </button>
       <button id="btn-print"
         class="px-3 py-1.5 bg-white border border-slate-200 text-slate-600 rounded-lg font-bold text-xs hover:bg-slate-50 transition-all flex items-center gap-1.5 shadow-sm">
@@ -577,7 +654,7 @@
         </section>
 
 
-        <!-- CSV読み込み -->
+        <!-- 計測データ取得 -->
         <section class="bg-slate-50 p-4 rounded-xl border border-slate-100">
           <div class="flex items-center gap-2 mb-2 pb-2 border-b border-slate-200">
             <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none"
@@ -588,66 +665,217 @@
               <path d="M8 14h8" />
               <path d="M8 10h4" />
             </svg>
-            <h3 class="text-sm font-bold text-slate-800">計測データ読み込み (phyphox CSV)</h3>
+            <h3 class="text-sm font-bold text-slate-800">計測データ取得</h3>
           </div>
-          <p class="text-[11px] text-slate-500 mb-3 leading-relaxed">phyphox「Linear Acceleration（重力を除いた運動加速度）」でエクスポートした
-            CSVを読み込みます。<br>列: <span class="font-mono bg-white px-1 rounded border border-slate-200">Time, Linear
-              Acceleration x, y, z</span></p>
-          <div class="flex flex-col gap-2">
-            <input type="file" id="csvInput" accept=".csv" class="hidden">
-            <button id="btn-csv"
-              class="w-full py-2.5 bg-white border-2 border-dashed border-blue-300 text-blue-600 rounded-lg font-bold text-sm hover:bg-blue-50 hover:border-blue-400 transition-all flex items-center justify-center gap-2">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <polyline points="16 16 12 12 8 16" />
-                <line x1="12" x2="12" y1="12" y2="21" />
-                <path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3" />
-              </svg>
-              CSVを選択 / ドロップ / ペースト
+
+          <!-- モードタブ -->
+          <div class="flex gap-0.5 mb-3 bg-slate-200/70 p-0.5 rounded-lg">
+            <button id="tab-direct"
+              class="flex-1 py-1.5 rounded-md text-[11px] font-bold bg-white text-blue-600 shadow-sm transition-all flex items-center justify-center gap-1">
+              📱 直接計測
             </button>
-            <div id="csv-status" class="text-[11px] text-center text-slate-400 hidden"></div>
-            <button id="btn-export-csv" disabled
-              class="w-full py-2 bg-slate-100 border border-slate-200 text-slate-500 rounded-lg font-bold text-[11px] flex items-center justify-center gap-1.5 opacity-50 cursor-not-allowed">
-              <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none"
-                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <polyline points="8 17 12 21 16 17" />
-                <line x1="12" x2="12" y1="12" y2="21" />
-                <path d="M20.88 18.09A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.11" />
-              </svg>
-              抽出データ(CSV)をエクスポート
+            <button id="tab-phyphox"
+              class="flex-1 py-1.5 rounded-md text-[11px] font-bold text-slate-500 transition-all flex items-center justify-center gap-1 hover:text-slate-700">
+              📄 phyphox / CSV
             </button>
-            <!-- phyphox WiFi Remote -->
-            <div class="phyphox-section">
-              <p class="text-[11px] font-bold text-slate-600 mb-1.5 flex items-center gap-1">
-                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none"
-                  stroke="#6366f1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M5 12.55a11 11 0 0 1 14.08 0" />
-                  <path d="M1.42 9a16 16 0 0 1 21.16 0" />
-                  <path d="M8.53 16.11a6 6 0 0 1 6.95 0" />
-                  <circle cx="12" cy="20" r="1" fill="#6366f1" />
-                </svg>
-                phyphox WiFi リモート取得
-              </p>
-              <div class="flex gap-1.5">
-                <input type="text" id="phyphox-ip" placeholder="192.168.x.x"
-                  class="finput flex-1 text-[11px] py-1.5 font-mono">
-                <button id="btn-phyphox-fetch"
-                  class="px-3 py-1.5 bg-indigo-600 text-white rounded-lg font-bold text-[11px] hover:bg-indigo-700 transition-colors whitespace-nowrap flex items-center gap-1">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none"
-                    stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                    <polyline points="23 4 23 10 17 10" />
-                    <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" />
-                  </svg>
-                  取得
+            <button id="tab-batch"
+              class="flex-1 py-1.5 rounded-md text-[11px] font-bold text-slate-500 transition-all flex items-center justify-center gap-1 hover:text-slate-700">
+              📊 バッチ
+            </button>
+          </div>
+
+          <!-- ── 直接計測パネル（デフォルト表示）── -->
+          <div id="panel-direct">
+            <p class="text-[11px] text-slate-500 mb-3 leading-relaxed">
+              スマホブラウザで<strong class="text-slate-700">10m直線を歩きながら</strong>計測します。<br>
+              HTTPS環境・Android Chrome または iOS Safari 13+ が必要です。
+            </p>
+            <button id="btn-direct-start"
+              class="w-full py-2.5 bg-blue-600 text-white rounded-lg font-bold text-sm hover:bg-blue-700 active:scale-95 transition-all flex items-center justify-center gap-2">
+              <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <polygon points="5 3 19 12 5 21 5 3" />
+              </svg>
+              計測を開始する
+            </button>
+            <!-- 計測中UI -->
+            <div id="direct-measure-panel" class="hidden mt-3">
+              <div class="bg-white rounded-xl border border-blue-200 p-3">
+                <div class="flex items-center justify-between mb-2.5">
+                  <div class="text-center flex-1">
+                    <div class="text-[9px] font-bold text-slate-400 mb-0.5">経過時間</div>
+                    <div id="direct-timer" class="text-[26px] font-mono font-black text-slate-800 leading-none">00:00</div>
+                  </div>
+                  <div class="w-px h-8 bg-slate-200 mx-2"></div>
+                  <div class="text-center flex-1">
+                    <div class="text-[9px] font-bold text-slate-400 mb-0.5">サンプル数</div>
+                    <div id="direct-sample-count" class="text-[26px] font-mono font-black text-blue-600 leading-none">0</div>
+                  </div>
+                </div>
+                <div class="w-full bg-slate-100 rounded-full h-1.5 mb-1.5 overflow-hidden">
+                  <div id="direct-progress" class="h-full bg-blue-500 rounded-full transition-all duration-500" style="width:0%"></div>
+                </div>
+                <canvas id="wave-canvas" width="600" height="120"
+                  style="width:100%;height:120px;display:block;background:#0F172A;border:1px solid #1E293B;border-radius:8px;margin-bottom:6px;"></canvas>
+                <p id="direct-hint" class="text-[9.5px] text-center text-slate-400 mb-2.5">15秒以上歩くと停止できます</p>
+                <button id="btn-direct-stop" disabled
+                  class="w-full py-2 rounded-lg font-bold text-sm transition-all bg-slate-200 text-slate-400 cursor-not-allowed">
+                  停止して分析
                 </button>
               </div>
-              <p class="text-[10px] text-slate-400 mt-1">スマホとPCが同じWiFiに接続されていることを確認してください</p>
             </div>
-            <button id="btn-demo"
-              class="text-xs text-slate-400 hover:text-blue-600 underline underline-offset-4 decoration-slate-300 mt-1 transition-colors">
-              サンプルデータでテスト
-            </button>
           </div>
+
+          <!-- ── phyphox/CSVパネル（デフォルト非表示）── -->
+          <div id="panel-phyphox" class="hidden">
+            <p class="text-[11px] text-slate-500 mb-3 leading-relaxed">phyphox「Linear Acceleration（重力を除いた運動加速度）」でエクスポートした
+              CSVを読み込みます。<br>列: <span class="font-mono bg-white px-1 rounded border border-slate-200">Time, Linear
+                Acceleration x, y, z</span></p>
+            <div class="flex flex-col gap-2">
+              <input type="file" id="csvInput" accept=".csv" class="hidden">
+              <button id="btn-csv"
+                class="w-full py-2.5 bg-white border-2 border-dashed border-blue-300 text-blue-600 rounded-lg font-bold text-sm hover:bg-blue-50 hover:border-blue-400 transition-all flex items-center justify-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="16 16 12 12 8 16" />
+                  <line x1="12" x2="12" y1="12" y2="21" />
+                  <path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3" />
+                </svg>
+                CSVを選択 / ドロップ / ペースト
+              </button>
+              <button id="btn-export-csv" disabled
+                class="w-full py-2 bg-slate-100 border border-slate-200 text-slate-500 rounded-lg font-bold text-[11px] flex items-center justify-center gap-1.5 opacity-50 cursor-not-allowed">
+                <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="8 17 12 21 16 17" />
+                  <line x1="12" x2="12" y1="12" y2="21" />
+                  <path d="M20.88 18.09A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.11" />
+                </svg>
+                抽出データ(CSV)をエクスポート
+              </button>
+              <!-- phyphox WiFi Remote -->
+              <div class="phyphox-section">
+                <p class="text-[11px] font-bold text-slate-600 mb-1.5 flex items-center gap-1">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none"
+                    stroke="#6366f1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M5 12.55a11 11 0 0 1 14.08 0" />
+                    <path d="M1.42 9a16 16 0 0 1 21.16 0" />
+                    <path d="M8.53 16.11a6 6 0 0 1 6.95 0" />
+                    <circle cx="12" cy="20" r="1" fill="#6366f1" />
+                  </svg>
+                  phyphox WiFi リモート取得
+                </p>
+                <div class="flex gap-1.5">
+                  <input type="text" id="phyphox-ip" placeholder="192.168.x.x"
+                    class="finput flex-1 text-[11px] py-1.5 font-mono">
+                  <button id="btn-phyphox-fetch"
+                    class="px-3 py-1.5 bg-indigo-600 text-white rounded-lg font-bold text-[11px] hover:bg-indigo-700 transition-colors whitespace-nowrap flex items-center gap-1">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none"
+                      stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                      <polyline points="23 4 23 10 17 10" />
+                      <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" />
+                    </svg>
+                    取得
+                  </button>
+                </div>
+                <p class="text-[10px] text-slate-400 mt-1">スマホとPCが同じWiFiに接続されていることを確認してください</p>
+              </div>
+              <button id="btn-demo"
+                class="text-xs text-slate-400 hover:text-blue-600 underline underline-offset-4 decoration-slate-300 mt-1 transition-colors">
+                サンプルデータでテスト
+              </button>
+            </div>
+          </div>
+
+          <!-- ── バッチパネル ── -->
+          <div id="panel-batch" class="hidden">
+            <p class="text-[11px] font-black text-slate-600 mb-3">📊 バッチCSV一括処理</p>
+
+            <!-- 対象者情報CSV -->
+            <div class="mb-3">
+              <label class="text-[10px] font-bold text-slate-500 block mb-1">対象者情報CSV（任意）</label>
+              <label class="flex items-center gap-2 cursor-pointer">
+                <span class="px-3 py-1.5 bg-slate-100 border border-slate-200 rounded-lg text-[11px] font-bold text-slate-600 hover:bg-slate-200 transition-all whitespace-nowrap">ファイル選択</span>
+                <input id="batch-subject-file" type="file" accept=".csv" class="hidden">
+                <span id="batch-subject-name" class="text-[10px] text-slate-400 truncate">未選択</span>
+              </label>
+              <p class="text-[9.5px] text-slate-400 mt-1">列: filename, userName, gender, age, height, userId（ヘッダー必須）</p>
+            </div>
+
+            <!-- 加速度CSV（複数選択 + ドロップゾーン） -->
+            <div class="mb-3">
+              <label class="text-[10px] font-bold text-slate-500 block mb-1">加速度CSV（複数選択可・最大50件）</label>
+              <div id="batch-dropzone"
+                class="border-2 border-dashed border-slate-300 rounded-xl p-4 text-center cursor-pointer hover:border-blue-400 hover:bg-blue-50/30 transition-all">
+                <div class="text-xl mb-1">📂</div>
+                <p class="text-[11px] font-bold text-slate-500">クリックまたはCSVをここにドロップ</p>
+                <p id="batch-files-label" class="text-[10px] text-slate-400 mt-1">未選択</p>
+                <input id="batch-accel-files" type="file" multiple accept=".csv" class="hidden">
+              </div>
+            </div>
+
+            <!-- デフォルト値 -->
+            <div class="flex gap-2 mb-3">
+              <div class="flex-1">
+                <label class="text-[10px] font-bold text-slate-500 block mb-1">性別（デフォルト）</label>
+                <select id="batch-gender" class="finput !py-1 !text-xs w-full">
+                  <option value="male">男性</option>
+                  <option value="female">女性</option>
+                </select>
+              </div>
+              <div class="w-16">
+                <label class="text-[10px] font-bold text-slate-500 block mb-1">年齢</label>
+                <input id="batch-age" type="number" min="20" max="100" value="65" class="finput !py-1 !text-xs w-full text-right">
+              </div>
+              <div class="w-20">
+                <label class="text-[10px] font-bold text-slate-500 block mb-1">歩行距離(m)</label>
+                <input id="batch-dist" type="number" min="1" max="100" step="0.5" value="10" class="finput !py-1 !text-xs w-full text-right">
+              </div>
+            </div>
+
+            <!-- 実行ボタン -->
+            <button id="btn-batch-run"
+              class="w-full py-2 bg-blue-600 text-white rounded-lg font-bold text-xs hover:bg-blue-700 active:scale-95 transition-all mb-3">
+              ▶ 一括解析を実行
+            </button>
+
+            <!-- 結果エリア -->
+            <div id="batch-result-area" class="hidden">
+              <div id="batch-result-summary" class="text-[11px] text-slate-600 font-bold mb-2"></div>
+              <div style="max-height:240px;overflow-y:auto;" class="rounded-xl border border-slate-200 mb-3">
+                <table class="w-full text-[10px]" style="border-collapse:collapse;">
+                  <thead class="sticky top-0 bg-slate-100">
+                    <tr class="text-slate-500">
+                      <th class="px-2 py-1.5 text-left">#</th>
+                      <th class="px-2 py-1.5 text-left">ファイル名</th>
+                      <th class="px-2 py-1.5 text-left">氏名</th>
+                      <th class="px-2 py-1.5 text-right">年齢</th>
+                      <th class="px-2 py-1.5 text-right">速度</th>
+                      <th class="px-2 py-1.5 text-right">歩幅</th>
+                      <th class="px-2 py-1.5 text-right">テンポ</th>
+                      <th class="px-2 py-1.5 text-right">スコア</th>
+                      <th class="px-2 py-1.5 text-right">歩行年齢</th>
+                      <th class="px-2 py-1.5 text-left">エラー</th>
+                    </tr>
+                  </thead>
+                  <tbody id="batch-result-tbody"></tbody>
+                </table>
+              </div>
+              <div class="flex gap-2">
+                <button id="btn-batch-export"
+                  class="flex-1 py-1.5 bg-slate-100 border border-slate-200 text-slate-600 rounded-lg font-bold text-xs hover:bg-slate-200 transition-all">
+                  📥 結果をCSVエクスポート
+                </button>
+                <button id="btn-batch-save-db"
+                  class="flex-1 py-1.5 bg-emerald-100 border border-emerald-200 text-emerald-700 rounded-lg font-bold text-xs hover:bg-emerald-200 transition-all">
+                  📥 全員分を履歴DBに保存
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- 共通ステータス -->
+          <div id="csv-status" class="text-[11px] text-center text-slate-400 hidden mt-2"></div>
         </section>
 
 
@@ -668,6 +896,18 @@
             </svg>
             測定値の調整（手動補正）
           </h3>
+          <div class="mb-3">
+            <label class="text-[11px] font-bold text-slate-500 pl-0.5 block mb-1.5">歩行距離 <span class="text-[10px] font-normal text-slate-400">m</span></label>
+            <div class="flex items-center gap-2">
+              <div class="flex gap-1">
+                <button id="btn-dist-5"  class="px-2.5 py-1 rounded-lg border text-xs font-bold bg-white border-slate-200 text-slate-600 hover:bg-slate-50 transition-colors">5m</button>
+                <button id="btn-dist-10" class="px-2.5 py-1 rounded-lg border text-xs font-bold bg-blue-600 border-blue-600 text-white transition-colors">10m</button>
+                <button id="btn-dist-20" class="px-2.5 py-1 rounded-lg border text-xs font-bold bg-white border-slate-200 text-slate-600 hover:bg-slate-50 transition-colors">20m</button>
+              </div>
+              <input id="input-walk-dist" type="number" min="1" max="100" step="0.5" value="10"
+                class="finput !w-24 text-right font-mono !py-1 !px-2 !text-sm">
+            </div>
+          </div>
           <div class="space-y-2">
             <div
               class="flex items-center justify-between bg-white p-2.5 rounded-lg border border-slate-200 hover:border-blue-200 transition-colors">
@@ -697,6 +937,16 @@
 
         <hr class="border-slate-100">
 
+        <!-- 履歴ボタン -->
+        <section class="px-0 pt-0 pb-0">
+          <button id="btn-history"
+            class="w-full py-2 bg-slate-100 border border-slate-200 text-slate-600 rounded-lg font-bold text-xs hover:bg-slate-200 transition-all flex items-center justify-center gap-1.5 mt-3 mb-1">
+            📋 過去の計測履歴
+          </button>
+        </section>
+
+        <hr class="border-slate-100">
+
 
         <!-- コメント -->
         <section class="pb-8">
@@ -715,6 +965,20 @@
           </div>
         </section>
 
+
+        <!-- ★ 運動アドバイス入力セクション (初期非表示) -->
+        <section id="advice-input-section" class="pb-6 border-t border-slate-100 pt-4 hidden">
+          <h3 class="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2 mb-3">
+            <span>🏃</span> 運動アドバイス
+          </h3>
+          <div id="advice-checklist" class="mb-2"></div>
+          <div class="text-right mb-2">
+            <a href="#" id="advice-reset" class="text-[10px] text-blue-500 hover:underline">🔄 リセット（自動選択に戻す）</a>
+          </div>
+          <label class="text-[10px] font-bold text-slate-500 pl-0.5 block mb-1">追加アドバイス（自由記述）</label>
+          <textarea id="advice-custom" placeholder="追加のアドバイスを自由に記入..." rows="2"
+            class="finput !text-[11px] resize-y leading-relaxed"></textarea>
+        </section>
 
         <!-- ★ 靴URL入力セクション (初期非表示) -->
         <section id="shoe-url-section" class="pb-6 border-t border-slate-100 pt-4 hidden">
@@ -802,13 +1066,13 @@
               </label>
             </div>
 
-            <!-- Q3: 外反母趾・扁平足 -->
+            <!-- Q3: 足の悩み -->
             <div class="mb-2">
-              <p class="text-[9.5px] font-bold text-slate-600 mb-1.5">Q3. 足の悩みはありますか？</p>
+              <p class="text-[9.5px] font-bold text-slate-600 mb-1.5">Q3. 足の悩み・特徴はありますか？</p>
               <div class="grid grid-cols-2 gap-1">
                 <label class="flex items-center gap-1 cursor-pointer">
                   <input type="radio" name="q-foot" value="none" checked class="accent-blue-600">
-                  <span class="text-[10px] text-slate-600">なし</span>
+                  <span class="text-[10px] text-slate-600">特になし</span>
                 </label>
                 <label class="flex items-center gap-1 cursor-pointer">
                   <input type="radio" name="q-foot" value="bunion" class="accent-blue-600">
@@ -820,16 +1084,20 @@
                 </label>
                 <label class="flex items-center gap-1 cursor-pointer">
                   <input type="radio" name="q-foot" value="both" class="accent-rose-500">
-                  <span class="text-[10px] text-slate-600">両方あり</span>
+                  <span class="text-[10px] text-slate-600">外反母趾＋扁平足</span>
+                </label>
+                <label class="flex items-center gap-1 cursor-pointer col-span-2">
+                  <input type="radio" name="q-foot" value="wide" class="accent-blue-600">
+                  <span class="text-[10px] text-slate-600">幅広・甲高</span>
                 </label>
               </div>
             </div>
           </div>
 
           <!-- Q4: 着脱方法 -->
-          <div class="mb-2">
+          <div class="mb-3">
             <p class="text-[9.5px] font-bold text-slate-600 mb-1.5">Q4. 靴の着脱方法は？</p>
-            <div class="grid grid-cols-2 gap-1">
+            <div class="grid grid-cols-2 gap-1 mb-2">
               <label class="flex items-center gap-1 cursor-pointer">
                 <input type="radio" name="q-fasten" value="any" checked class="accent-blue-600">
                 <span class="text-[10px] text-slate-600">こだわらない</span>
@@ -845,6 +1113,69 @@
               <label class="flex items-center gap-1 cursor-pointer">
                 <input type="radio" name="q-fasten" value="zipper" class="accent-blue-600">
                 <span class="text-[10px] text-slate-600">サイドジッパー</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Q5: 使用シーン・目的 -->
+          <div class="mb-2">
+            <p class="text-[9.5px] font-bold text-slate-600 mb-1.5">Q5. 主な使用目的は？</p>
+            <div class="flex flex-col gap-1.5">
+              <label class="flex items-start gap-1.5 cursor-pointer">
+                <input type="radio" name="q-purpose" value="auto" checked class="accent-blue-600 mt-0.5">
+                <div class="flex flex-col">
+                  <span class="text-[10px] font-bold text-slate-700">自動判定（推奨）</span>
+                  <span class="text-[8.5px] text-slate-500">歩行速度から最適な用途を自動で推定します</span>
+                </div>
+              </label>
+              <label class="flex items-start gap-1.5 cursor-pointer">
+                <input type="radio" name="q-purpose" value="daily" class="accent-blue-600 mt-0.5">
+                <div class="flex flex-col">
+                  <span class="text-[10px] font-bold text-slate-700">日常のお出かけ・買い物</span>
+                  <span class="text-[8.5px] text-slate-500">履きやすさ、疲れにくさ重視</span>
+                </div>
+              </label>
+              <label class="flex items-start gap-1.5 cursor-pointer">
+                <input type="radio" name="q-purpose" value="walking" class="accent-blue-600 mt-0.5">
+                <div class="flex flex-col">
+                  <span class="text-[10px] font-bold text-slate-700">ウォーキング・散歩</span>
+                  <span class="text-[8.5px] text-slate-500">クッション性、歩幅サポート重視</span>
+                </div>
+              </label>
+              <label class="flex items-start gap-1.5 cursor-pointer">
+                <input type="radio" name="q-purpose" value="active" class="accent-blue-600 mt-0.5">
+                <div class="flex flex-col">
+                  <span class="text-[10px] font-bold text-slate-700">アクティブ・旅行・フィットネス</span>
+                  <span class="text-[8.5px] text-slate-500">軽量性、反発力、軽快な歩行サポート重視</span>
+                </div>
+              </label>
+            </div>
+          </div>
+
+          <!-- Q6: デザイン・着用シーン -->
+          <div class="mb-2">
+            <p class="text-[9.5px] font-bold text-slate-600 mb-1.5">Q6. 好みのデザインや着用シーンは？</p>
+            <div class="flex flex-col gap-1.5">
+              <label class="flex items-start gap-1.5 cursor-pointer">
+                <input type="radio" name="q-design" value="any" checked class="accent-blue-600 mt-0.5">
+                <div class="flex flex-col">
+                  <span class="text-[10px] font-bold text-slate-700">こだわらない</span>
+                  <span class="text-[8.5px] text-slate-500">機能性を最優先で推奨します</span>
+                </div>
+              </label>
+              <label class="flex items-start gap-1.5 cursor-pointer">
+                <input type="radio" name="q-design" value="sporty" class="accent-blue-600 mt-0.5">
+                <div class="flex flex-col">
+                  <span class="text-[10px] font-bold text-slate-700">スポーティ・運動用</span>
+                  <span class="text-[8.5px] text-slate-500">メッシュ素材・通気性重視のスポーティなデザイン</span>
+                </div>
+              </label>
+              <label class="flex items-start gap-1.5 cursor-pointer">
+                <input type="radio" name="q-design" value="smart" class="accent-blue-600 mt-0.5">
+                <div class="flex flex-col">
+                  <span class="text-[10px] font-bold text-slate-700">キレイめ・お仕事用</span>
+                  <span class="text-[8.5px] text-slate-500">天然皮革・合皮など上品でスマートなデザイン</span>
+                </div>
               </label>
             </div>
           </div>
@@ -1000,8 +1331,9 @@
                   </div>
 
 
+
                   <!-- コメント -->
-                  <div class="bg-blue-50 rounded-2xl p-5 border border-blue-100 relative mt-1 shrink-0">
+                  <div class="bg-blue-50 rounded-2xl p-5 border border-blue-100 relative flex-1">
                     <div
                       class="absolute top-0 left-5 -translate-y-1/2 bg-white px-3 py-0.5 rounded-full border border-blue-100 text-blue-600 font-bold text-xs flex items-center gap-1 shadow-sm">
                       <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none"
@@ -1019,7 +1351,7 @@
                 <!-- Footer -->
                 <div
                   class="absolute bottom-5 left-9 right-9 flex justify-between items-center border-t border-slate-100 pt-3 text-[10px] font-bold text-slate-400">
-                  <div>Walking Age Test Report v6.0 — Page 1</div>
+                  <div>Walking Age Test Report v7.0 — Page 1</div>
                   <div>担当者: <span data-v="evaluator"
                       class="ml-2 px-6 border-b border-slate-300 text-slate-700 text-xs font-serif italic"></span></div>
                 </div>
@@ -1027,14 +1359,76 @@
             </div>
 
 
-            <!-- ★ Page 2: 専門家向け -->
+            <!-- ★ Page 1.5: 詳細アドバイス -->
+            <div class="pdf-page hidden" data-page="0a" id="page15-advice">
+              <div class="flex flex-col h-full p-9 relative">
+                <div class="border-b-2 border-orange-600 pb-3 mb-4">
+                  <h2 class="text-xl font-serif font-bold text-orange-800 tracking-wider">🏃 推奨介入・運動アドバイス</h2>
+                  <p class="text-xs text-slate-500 font-mono mt-0.5">Exercise Prescription — Page 1.5 / <span data-v="userName"></span> / <span data-v="reportDate"></span></p>
+                </div>
+                <div id="page15-advice-cards" class="flex-1 overflow-hidden"></div>
+                <div class="absolute bottom-5 left-9 right-9 flex justify-between items-center border-t border-slate-100 pt-3 text-[10px] font-bold text-slate-400">
+                  <div>Walking Age Test Report v7.0 — Page 1.5</div>
+                  <div>担当者: <span data-v="evaluator" class="ml-2 px-6 border-b border-slate-300 text-slate-700 text-xs font-serif italic"></span></div>
+                </div>
+              </div>
+            </div>
+
+
+            <!-- ★ Page 2: 地域在住者向け -->
+            <div class="pdf-page hidden" data-page="1a" id="page2-community">
+              <div class="flex flex-col h-full p-9 relative">
+
+                <div class="border-b-2 border-emerald-700 pb-3 mb-4">
+                  <h2 class="text-xl font-serif font-bold text-emerald-800 tracking-wider">歩行分析 地域在住者向け評価レポート</h2>
+                  <p class="text-xs text-slate-500 font-mono mt-0.5">Community Gait Screening — Page 2 / <span data-v="userName"></span> / <span data-v="reportDate"></span></p>
+                </div>
+
+                <!-- Section 1: 転倒・生活機能リスク判定（信号機） -->
+                <div class="mb-4 shrink-0">
+                  <h3 class="text-xs font-black text-slate-700 border-l-4 border-rose-500 pl-2 mb-2 tracking-wide">1. 転倒・生活機能リスク判定</h3>
+                  <p class="text-[10px] text-slate-400 mb-2">歩行速度カットオフ基準: Studenski et al. JAMA 2011 (N=34,485); Sherrington et al. Cochrane 2019</p>
+                  <div id="p2c-traffic" class="grid grid-cols-3 gap-2.5"></div>
+                </div>
+
+                <!-- Section 2: フレイル・サルコペニア スクリーニング (AWGS 2019) -->
+                <div class="mb-4 shrink-0">
+                  <h3 class="text-xs font-black text-slate-700 border-l-4 border-amber-500 pl-2 mb-2 tracking-wide">2. フレイル・サルコペニア スクリーニング</h3>
+                  <p class="text-[10px] text-slate-400 mb-2">Chen et al. JCSM 2020 (AWGS 2019) / Lusardi et al. Phys Ther 2003 (ケイデンス) / Mobbs et al. Sensors 2025 (歩行年齢)</p>
+                  <div id="p2c-frailty" class="grid grid-cols-3 gap-2.5"></div>
+                </div>
+
+                <!-- Section 3: 歩行の質 — 地域評価指標 -->
+                <div class="mb-4 shrink-0">
+                  <h3 class="text-xs font-black text-slate-700 border-l-4 border-indigo-500 pl-2 mb-2 tracking-wide">3. 歩行の質（地域評価指標）</h3>
+                  <p class="text-[10px] text-slate-400 mb-2">Mobbs et al. Sensors 2025 基準値 / Maki 1997 (CV予測転倒)</p>
+                  <div id="p2c-biomech" class="grid grid-cols-3 gap-2.5"></div>
+                </div>
+
+                <!-- Section 4: 推奨される介入・運動アドバイス -->
+                <div class="flex-1 min-h-0">
+                  <h3 class="text-xs font-black text-slate-700 border-l-4 border-emerald-500 pl-2 mb-2 tracking-wide">4. 推奨介入・運動アドバイス</h3>
+                  <p class="text-[10px] text-slate-400 mb-2">Sherrington et al. Cochrane 2019（転倒予防）/ 厚生労働省 運動基準 2013</p>
+                  <div id="p2c-advice" class="grid grid-cols-2 gap-2"></div>
+                </div>
+
+                <!-- Footer -->
+                <div class="absolute bottom-5 left-9 right-9 flex justify-between items-center border-t border-slate-100 pt-3 text-[10px] font-bold text-slate-400">
+                  <div>Walking Age Test Report v7.0 — Page 2（地域在住者向け）</div>
+                  <div>担当者: <span data-v="evaluator" class="ml-2 px-6 border-b border-slate-300 text-slate-700 text-xs font-serif italic"></span></div>
+                </div>
+              </div>
+            </div>
+
+
+            <!-- ★ Page 3: 臨床向け -->
             <div class="pdf-page hidden" data-page="1" id="page2-expert">
               <div class="flex flex-col h-full p-9 relative">
 
 
                 <div class="border-b-2 border-slate-800 pb-3 mb-5">
-                  <h2 class="text-xl font-serif font-bold text-slate-800 tracking-wider">歩行分析 詳細データ（専門家向け）</h2>
-                  <p class="text-xs text-slate-500 font-mono mt-0.5">Clinical Gait Analysis — Page 2 / <span
+                  <h2 class="text-xl font-serif font-bold text-slate-800 tracking-wider">歩行分析 臨床向け詳細データ</h2>
+                  <p class="text-xs text-slate-500 font-mono mt-0.5">Clinical Gait Analysis — Page 3 / <span
                       data-v="userName"></span> / <span data-v="reportDate"></span></p>
                 </div>
 
@@ -1087,7 +1481,7 @@
                   <div class="flex justify-between px-0.5 shrink-0">
                     <p class="text-[8px] text-slate-400">X軸: 時間(s) / Y軸: PCA主軸加速度(m/s²) / <span
                         class="text-blue-500 font-bold">●</span>: ピーク / <span class="font-bold">薄青帯</span>: 定常区間</p>
-                    <p class="text-[8px] text-slate-400 text-right">BPF 0.7–6.0 Hz (zero-phase) + PCA</p>
+                    <p class="text-[8px] text-slate-400 text-right">BPF 0.5–6.0 Hz (zero-phase) + PCA</p>
                   </div>
                   <!-- アルゴリズム注（波形の直下、shrink-0で固定高さ / mb-9でフッターとの重複防止） -->
                   <div
@@ -1095,15 +1489,14 @@
                     <h4 class="font-black text-slate-600 mb-0.5 text-[7.5px]">解析基準・主要エビデンス出典</h4>
                     <div class="grid grid-cols-3 gap-x-3 gap-y-0">
                       <div><strong class="text-slate-700">歩行速度:</strong> AWGS 2019 (Chen LK, JAMDA 2020;21:300) &lt;1.0
-                        m/s / 旧基準2014 &lt;0.8 m/s / AWGS 2025 (Nature Aging, PMID:41188603) 速度を予後指標として再定義。Studenski JAMA
+                        m/s / 旧基準2014 &lt;0.8 m/s — 転倒リスク閾値として World Guidelines for Falls Prevention 2022 でも採用。Studenski JAMA
                         2011;305:50 (N=34,485; Level I-II)。</div>
-                      <div><strong class="text-slate-700">Walk Ratio / CV / SI:</strong> WR=step_length/step_freq(Hz)
-                        (Sekiya 1998; Plotnik 2011)。CV &gt;4%で転倒リスク高 (Hausdorff 2001, Level II; Beauchet 2003)。SI
-                        Robinson式(1987); Patterson 2010はSymmetry Ratio推奨。</div>
-                      <div><strong class="text-slate-700">RMS / 基準値 / 歩行年齢:</strong> RMS: Moe-Nilssen 2004（参考値）。基準値:
-                        Mobbs et al. Sensors 2025;25:581 (N=313, 胸骨・50m;
-                        腰部・10m歩行とはバイアスあり)。歩行年齢=加重Zスコア二乗和最小年齢(速度45%・歩幅40%・テンポ15%)。Fritz & Lusardi 2009。</div>
+                      <div><strong class="text-slate-700">Walk Ratio / CV / SI:</strong> WR=step_length/step_freq(Hz), 原典(Sekiya 1998)はmm/(steps/min)≈6.5, 本値はm/Hz換算参考範囲 (Plotnik 2011)。CV &gt;4%で転倒リスク高 (Hausdorff APMRehabil 2001;82:1050, Level II)。SI
+                        Robinson式(1987); 奇偶ステップを左右代理として算出（正確な左右同定は非対応）。</div>
+                      <div><strong class="text-slate-700">RMS / 基準値 / 歩行年齢:</strong> RMS: Moe-Nilssen 2004（装着位置・PCA方向で値が変わる参考指標）。基準値:
+                        Mobbs et al. Sensors 2025;25:581 (N=313, 胸骨・50m; 腰部・10m歩行では速度が約5-8%低めに推定される傾向あり)。歩行年齢=加重Zスコア二乗和最小年齢(速度45%・歩幅40%・テンポ15%, 隣接ブラケット線形補間)。Fritz &amp; Lusardi, J Geriatr Phys Ther 2009;32(2):46.</div>
                     </div>
+                    <div id="p2-estimation-mode" class="text-right font-mono text-[7px] text-slate-400 mt-0.5"></div>
                   </div>
                 </div>
 
@@ -1111,14 +1504,14 @@
                 <!-- Footer p2 -->
                 <div
                   class="absolute bottom-5 left-9 right-9 flex justify-between border-t border-slate-100 pt-3 text-[10px] font-bold text-slate-400">
-                  <div>Walking Age Test Report v6.0 — Page 2</div>
+                  <div>Walking Age Test Report v7.0 — Page 3 (臨床向け)</div>
                   <div>ID: <span data-v="userId" class="font-mono"></span></div>
                 </div>
               </div>
             </div>
 
 
-            <!-- ★ Page 3: 靴レコメンド (初期非表示) -->
+            <!-- ★ Page 4: 靴レコメンド (初期非表示) -->
             <div class="pdf-page hidden" data-page="2" id="page3-shoes">
               <div class="flex flex-col h-full p-9 relative">
 
@@ -1138,7 +1531,7 @@
                 <!-- Footer p3 -->
                 <div
                   class="absolute bottom-5 left-9 right-9 flex justify-between border-t border-slate-100 pt-3 text-[10px] font-bold text-slate-400">
-                  <div>Walking Age Test Report v6.0 — Page 3</div>
+                  <div>Walking Age Test Report v7.0 — Page 4</div>
                   <div>担当者: <span data-v="evaluator"
                       class="ml-2 px-6 border-b border-slate-300 text-slate-700 text-xs font-serif italic"></span></div>
                 </div>
@@ -1189,9 +1582,13 @@
 
 
       // ============================================================
-      //  NORMATIVE DATA — Mobbs et al. Sensors 2025 (approximate)
+      //  NORMATIVE DATA — Composite reference table
+      //  Sources: Bohannon & Andrews, Physiotherapy 2011;97(3):182-189 (meta, N=23,111);
+      //           Hollman et al. Gait Posture 2011; Mobbs et al. Sensors 2025 (N=280);
+      //           Schwesig et al. Gait Posture 2011 (N=1,860)
       //  [speed_mu, speed_sig, stride_mu, stride_sig, cadence_mu, cadence_sig]
-      //  注: 胸骨装着・50m歩行ベース。腰部・10m歩行では一定のバイアスあり。
+      //  注: 5歳刻みは10歳区間からの線形補間。85/90歳は外挿推定。
+      //  注: 原典は胸骨装着・50m歩行ベース。腰部・10m歩行では一定のバイアスあり。
       // ============================================================
       const NORM = {
         male: {
@@ -1202,6 +1599,8 @@
           60: [1.24, 0.22, 0.67, 0.11, 109, 10], 65: [1.17, 0.23, 0.64, 0.12, 108, 10],
           70: [1.09, 0.24, 0.60, 0.12, 107, 11], 75: [1.01, 0.25, 0.56, 0.13, 106, 11],
           80: [0.91, 0.26, 0.51, 0.14, 104, 12],
+          85: [0.82, 0.27, 0.46, 0.15, 102, 13],
+          90: [0.73, 0.28, 0.41, 0.16, 100, 14],
         },
         female: {
           20: [1.40, 0.17, 0.73, 0.09, 115, 9], 25: [1.39, 0.17, 0.72, 0.09, 116, 9],
@@ -1211,11 +1610,179 @@
           60: [1.14, 0.22, 0.57, 0.11, 118, 11], 65: [1.07, 0.23, 0.54, 0.12, 118, 11],
           70: [0.99, 0.24, 0.50, 0.12, 118, 12], 75: [0.90, 0.25, 0.46, 0.13, 117, 12],
           80: [0.81, 0.26, 0.41, 0.14, 115, 13],
+          85: [0.72, 0.27, 0.37, 0.15, 113, 14],
+          90: [0.63, 0.28, 0.33, 0.16, 111, 15],
         }
       };
 
 
       const NORM_AGES = Object.keys(NORM.male).map(Number);
+
+
+      // ============================================================
+      //  ADVICE DATABASE — エビデンスベース運動アドバイス 32件
+      // ============================================================
+      const ADVICE_DB = [
+        // ── BALANCE ──────────────────────────────────────────────
+        { id:'BAL-01', category:'BALANCE', title:'片脚立ちトレーニング', target:'静的バランス能力の向上',
+          prescription:{ frequency:'毎日', duration:'左右各30秒×3セット', intensity:'壁や椅子の背に手を添えて開始', progression:'安定→閉眼→不安定面(クッション上)' },
+          howTo:'椅子の背に片手を添え、片足を床から5cm浮かせる。膝は軽く曲げてよい。30秒保持を目標に左右交互に行う。',
+          safetyNote:'転倒防止のため、必ず支持物のそばで実施してください。',
+          evidence:{ source:'Sherrington C et al. Cochrane 2019;CD012424', level:'Level I', finding:'運動で転倒率23%減少(RaR 0.77, 95%CI 0.71-0.83)' },
+          conditions:['fallRisk','trunkInstability','elderly'] },
+        { id:'BAL-02', category:'BALANCE', title:'タンデム歩行（つぎ足歩行）', target:'動的バランス・歩行安定性の向上',
+          prescription:{ frequency:'毎日', duration:'10m×3往復', intensity:'直線テープ上を踵とつま先をつけて歩く', progression:'速度を上げて漸進' },
+          howTo:'床にテープで直線を引き、片足の踵をもう片足のつま先につけながら一直線上を歩く。視線は前方2-3mに置く。',
+          safetyNote:'最初は壁沿いで実施してください。',
+          evidence:{ source:'Lesinski M et al. Sports Med 2015;45(12):1721', level:'Level I', finding:'バランス訓練は静的・動的バランスを有意に改善' },
+          conditions:['fallRisk','rhythmImpaired'] },
+        { id:'BAL-03', category:'BALANCE', title:'ステップ反応訓練', target:'反応的バランス・つまずき回復能力の向上',
+          prescription:{ frequency:'週3回', duration:'前後左右各方向10回×2セット', intensity:'合図に素早く1歩踏み出す', progression:'スピードを上げて漸進' },
+          howTo:'両足を揃えて立ち、合図に合わせて指定方向に素早く1歩を踏み出してから元の位置に戻る。前後左右を交互に練習する。',
+          safetyNote:'周囲に障害物がない広い場所で行ってください。',
+          evidence:{ source:'Okubo Y et al. Br J Sports Med 2017;51(7):586', level:'Level I', finding:'ステップ訓練で転倒約50%減少' },
+          conditions:['fallRisk','elderly'] },
+        { id:'BAL-04', category:'BALANCE', title:'太極拳ベースの動的バランス運動', target:'動的バランス・重心制御の向上',
+          prescription:{ frequency:'週2-3回', duration:'30-40分', intensity:'ゆっくりとした重心移動と片脚保持', progression:'グループ参加推奨' },
+          howTo:'ゆっくりとした連続動作で体重を左右に移しながら片脚で保持する。地域の太極拳教室や動画を活用してもよい。',
+          evidence:{ source:'Huang ZG et al. BMJ Open 2017;7:e013661', level:'Level I', finding:'太極拳で高齢者の転倒を有意に予防' },
+          conditions:['fallRisk','elderly'] },
+        { id:'BAL-05', category:'BALANCE', title:'ヒールレイズ＋トゥレイズ', target:'足関節周囲筋力・立位バランスの向上',
+          prescription:{ frequency:'毎日', duration:'各20回×2セット', intensity:'壁に手をつき踵上げ・つま先上げを交互', progression:'片足で実施して漸進' },
+          howTo:'壁に両手をつき、ゆっくりと踵を上げてつま先立ちになり3秒保持。次につま先を上げて踵立ちになり3秒保持。交互に繰り返す。',
+          evidence:{ source:'Tricco AC et al. JAMA 2017;318(17):1687', level:'Level I', finding:'運動単独で転倒・外傷性転倒リスク低下' },
+          conditions:['shufflingGait','trunkInstability','elderly'] },
+        { id:'BAL-06', category:'BALANCE', title:'段差昇降トレーニング', target:'下肢筋力・バランスの複合的向上',
+          prescription:{ frequency:'週3回', duration:'10-15cm台で昇降20回×2セット', intensity:'手すり付き環境で開始', progression:'台の高さを上げて漸進' },
+          howTo:'10-15cmの安定した台に片足を乗せ、体重を移して台の上に立つ。反対の足で降りる。左右の足を交互に使う。',
+          safetyNote:'手すりや壁のそばで行い、台がずれないよう固定してください。',
+          evidence:{ source:'Sherrington C et al. Cochrane 2019;CD012424', level:'Level I', finding:'バランス+機能的訓練を含む運動が最も効果的' },
+          conditions:['fallRisk','deconditioning'] },
+        // ── STRENGTH ─────────────────────────────────────────────
+        { id:'STR-01', category:'STRENGTH', title:'スクワット（椅子タッチ）', target:'下肢筋力(大腿四頭筋・殿筋)の向上',
+          prescription:{ frequency:'週2-3回', duration:'8-12回×2-3セット', intensity:'椅子座面にお尻が触れたら立ち上がる', progression:'ダンベル保持で漸進' },
+          howTo:'椅子の前に立ち、両手を前に伸ばしてゆっくり腰を下ろす。お尻が座面に軽く触れたらそのまま立ち上がる。膝がつま先より前に出すぎないよう注意。',
+          evidence:{ source:'Liu CJ, Latham NK. Cochrane 2009;CD002759', level:'Level I', finding:'漸進的抵抗訓練は高齢者の身体機能を有意に改善' },
+          conditions:['frailSuspect','fallRisk','deconditioning'] },
+        { id:'STR-02', category:'STRENGTH', title:'カーフレイズ（踵上げ・筋力強化版）', target:'下腿三頭筋の筋力向上・蹴り出し力の改善',
+          prescription:{ frequency:'週3回', duration:'15回×3セット', intensity:'壁に手をつき両足で実施', progression:'片足立ちへ漸進' },
+          howTo:'壁に両手をつき、ゆっくりと最大限踵を上げて2秒保持し、ゆっくり下ろす。両足で安定したら片足ずつ行う。',
+          evidence:{ source:'Tricco AC et al. JAMA 2017;318(17):1687', level:'Level I', finding:'筋力訓練を含む運動介入が転倒予防に有効' },
+          conditions:['shufflingGait','fallRisk','frailSuspect'] },
+        { id:'STR-03', category:'STRENGTH', title:'膝伸展運動（椅子座位）', target:'大腿四頭筋の筋力向上',
+          prescription:{ frequency:'週2-3回', duration:'10回×3セット', intensity:'足首に0.5-1kg重りを付ける', progression:'漸進的に増量・最終伸展位3秒保持' },
+          howTo:'椅子に深く座り、片足をゆっくりまっすぐ前に伸ばし、膝が完全に伸びたところで3秒保持。ゆっくり下ろして交互に行う。',
+          evidence:{ source:'Cadore EL et al. Aging Dis 2014;5(3):183', level:'Level II', finding:'フレイル高齢者における筋力・持久力訓練の処方指針' },
+          conditions:['frailSuspect','elderly'] },
+        { id:'STR-04', category:'STRENGTH', title:'横歩き（サイドステップ）', target:'中殿筋・外転筋群の強化・側方安定性の向上',
+          prescription:{ frequency:'毎日', duration:'左右各10m×2往復', intensity:'軽く膝を曲げた姿勢で横移動', progression:'ゴムバンドを膝上に巻いて負荷増' },
+          howTo:'軽く膝を曲げた姿勢で横方向にステップを踏む。体が上下に揺れないよう腰の高さを一定に保つ。左右同じ距離を行う。',
+          evidence:{ source:'Sherrington C et al. Cochrane 2019;CD012424', level:'Level I', finding:'バランス+筋力の複合訓練で転倒率低下' },
+          conditions:['asymmetry','fallRisk'] },
+        { id:'STR-05', category:'STRENGTH', title:'ブリッジ運動（殿部挙上）', target:'殿筋群・体幹筋力の向上',
+          prescription:{ frequency:'週3回', duration:'10回×3セット(保持5秒)', intensity:'仰臥位で腰を持ち上げる', progression:'片脚ブリッジへ漸進' },
+          howTo:'仰向けに寝て膝を立て、おへそを天井に向けるように腰を持ち上げる。肩から膝まで一直線になったら5秒保持し、ゆっくり下ろす。',
+          evidence:{ source:'Cadore EL et al. Aging Dis 2014;5(3):183', level:'Level II', finding:'体幹・殿筋群の筋力改善が歩行安定性に寄与' },
+          conditions:['trunkInstability','inefficientGait'] },
+        { id:'STR-06', category:'STRENGTH', title:'つま先歩き＋踵歩き', target:'足関節周囲筋群の強化',
+          prescription:{ frequency:'毎日', duration:'各10m×2往復', intensity:'交互に実施', progression:'壁沿いで安全確保' },
+          howTo:'つま先立ちのまま10m歩き、折り返して今度は踵だけで10m歩く。これを2往復繰り返す。',
+          safetyNote:'バランスを崩しやすいので、壁に手が届く場所で行ってください。',
+          evidence:{ source:'Granacher U et al. Gerontology 2013;59(2):105', level:'Level II', finding:'足関節筋力向上がバランス・歩行改善に寄与' },
+          conditions:['shufflingGait','elderly'] },
+        // ── ENDURANCE ────────────────────────────────────────────
+        { id:'END-01', category:'ENDURANCE', title:'インターバルウォーキング', target:'心肺機能・筋力の複合的向上',
+          prescription:{ frequency:'週3-5回', duration:'速歩3分+ゆっくり3分を5-10セット', intensity:'速歩はBorg13-14(ややきつい)', progression:'セット数を増やして漸進' },
+          howTo:'3分間のやや速い歩行と3分間のゆっくり歩行を交互に繰り返す。速歩の目安は「会話はできるがやや息が上がる」程度。',
+          evidence:{ source:'Nemoto K et al. Mayo Clin Proc 2007;82(7):803', level:'Level II', finding:'高強度インターバル歩行で筋力・VO2max・血圧を有意に改善' },
+          conditions:['deconditioning','frailSuspect'] },
+        { id:'END-02', category:'ENDURANCE', title:'1日8,000歩の歩数目標', target:'日常活動量の増加・全死亡リスクの低減',
+          prescription:{ frequency:'毎日', duration:'歩数計で計測・週10%ずつ増加', intensity:'現状の歩数+10%から開始', progression:'最終目標8,000歩/日' },
+          howTo:'スマートフォンの歩数計アプリで毎日の歩数を記録する。まず現在の平均歩数を1週間記録し、翌週から10%ずつ増やしていく。',
+          evidence:{ source:'Saint-Maurice PF et al. JAMA 2020;323(12):1151', level:'Level II', finding:'8,000歩/日で全死亡リスク51%低下(HR 0.49 vs 4,000歩)' },
+          conditions:['deconditioning','highFunction'] },
+        { id:'END-03', category:'ENDURANCE', title:'ノルディックウォーキング', target:'全身持久力・体幹安定性の向上',
+          prescription:{ frequency:'週3回', duration:'30-40分', intensity:'専用ポール使用で上肢も参加', progression:'距離・速度を漸増' },
+          howTo:'ノルディックウォーキング用のポールを両手に持ち、歩行に合わせて交互にポールを突きながら歩く。腕を大きく振り上半身も使うことで全身運動になる。',
+          evidence:{ source:'Tschentscher M et al. Am J Prev Med 2013;44(1):76', level:'Level II', finding:'通常歩行より酸素消費量・心肺機能改善が大きい' },
+          conditions:['deconditioning','trunkInstability'] },
+        { id:'END-04', category:'ENDURANCE', title:'段階的歩行距離延伸', target:'歩行持久性の向上',
+          prescription:{ frequency:'毎日', duration:'現在の歩行距離+10%/週', intensity:'無理のない範囲で漸増', progression:'途中休憩を入れてよい' },
+          howTo:'今歩いている距離を基準に、毎週少しずつ距離を延ばす。疲労や痛みが出たら無理せず休憩し、翌日に調整する。',
+          evidence:{ source:'WHO Guidelines on Physical Activity 2020', level:'Level IV', finding:'65歳以上:中等度有酸素150-300分/週推奨' },
+          conditions:['frailSuspect','elderly'] },
+        { id:'END-05', category:'ENDURANCE', title:'散歩＋ベンチ休憩プログラム', target:'低体力者の安全な活動量確保',
+          prescription:{ frequency:'毎日', duration:'5分歩行+1-2分休憩を繰り返し合計20分', intensity:'ベンチが点在するルートを選ぶ', progression:'歩行時間を延ばして漸進' },
+          howTo:'近所の公園や商店街など、ベンチが点在するルートを選ぶ。5分歩いたらベンチで1-2分休憩し、息が整ったら再び歩く。',
+          evidence:{ source:'WHO Guidelines on Physical Activity 2020', level:'Level IV', finding:'少量の活動でも座位時間の減少が健康利益をもたらす' },
+          conditions:['fallRisk','elderly'] },
+        { id:'END-06', category:'ENDURANCE', title:'速歩チャレンジ', target:'歩行速度の維持・さらなる向上',
+          prescription:{ frequency:'週2-3回', duration:'速歩10分×3セット(間に2分休憩)', intensity:'ややきつい(Borg13-14)程度', progression:'速度を上げて漸進' },
+          howTo:'準備体操の後、普段より速いペースで10分間歩く。2分間ゆっくり歩いて休憩し、再び速歩を繰り返す。',
+          evidence:{ source:'Studenski S et al. JAMA 2011;305(1):50', level:'Level I-II', finding:'歩行速度0.1m/s向上ごとに生存率約12%改善(N=34,485)' },
+          conditions:['deconditioning','highFunction'] },
+        // ── GAIT_QUALITY ─────────────────────────────────────────
+        { id:'GQ-01', category:'GAIT_QUALITY', title:'メトロノーム歩行（リズム外部キュー訓練）', target:'歩行リズムの安定化',
+          prescription:{ frequency:'週2-3回', duration:'20分', intensity:'スマホのメトロノームをケイデンスに設定', progression:'テンポを2-5%ずつ上げて漸進' },
+          howTo:'スマートフォンのメトロノームアプリを現在のケイデンス(歩/分)に合わせて設定し、イヤホンで聴きながらリズムに合わせて歩く。',
+          evidence:{ source:'Ghai S et al. Aging Dis 2018;9(5):901', level:'Level I', finding:'リズム聴覚刺激は高齢者の速度・ケイデンス・歩幅を有意に改善' },
+          conditions:['rhythmImpaired'] },
+        { id:'GQ-02', category:'GAIT_QUALITY', title:'大股歩き練習', target:'歩幅の拡大・歩行効率の改善',
+          prescription:{ frequency:'週3回', duration:'10m×5往復', intensity:'60-70cm間隔のテープマークを踏むように歩く', progression:'間隔を広げて漸進' },
+          howTo:'床に60-70cm間隔でテープを貼り、そのマークを踏むように意識して歩く。腕を大きく振り、踵から着地してつま先で蹴り出すことを意識する。',
+          evidence:{ source:'Watt JR et al. Gait Posture 2011;34(1):111', level:'Level III', finding:'歩幅の意識的拡大がウォークレシオ改善に寄与' },
+          conditions:['inefficientGait','frailSuspect'] },
+        { id:'GQ-03', category:'GAIT_QUALITY', title:'体幹安定化歩行ドリル', target:'歩行中の体幹動揺の軽減',
+          prescription:{ frequency:'週3回', duration:'10m×5往復', intensity:'おへそを正面に向ける意識+腕を自然に振る', progression:'速度を上げて漸進' },
+          howTo:'歩行時に「おへそを正面に向けたまま歩く」と意識する。肩の力を抜き、腕は自然に前後に振る。頭が左右に揺れないよう遠くを見て歩く。',
+          evidence:{ source:'Granacher U et al. Gerontology 2013;59(2):105', level:'Level II', finding:'体幹筋トレーニングが歩行時の体幹動揺を軽減' },
+          conditions:['trunkInstability','inefficientGait'] },
+        { id:'GQ-04', category:'GAIT_QUALITY', title:'障害物またぎ歩行', target:'つまずき回避能力・下肢クリアランスの向上',
+          prescription:{ frequency:'週3回', duration:'5-10cmの障害物を2m間隔に配置し10往復', intensity:'膝を高く上げて歩く', progression:'障害物の高さを上げて漸進' },
+          howTo:'スポンジブロックや空き箱(5-10cm高さ)を2m間隔で3-5個並べ、一つずつまたいで歩く。膝を高く上げ、つま先が引っかからないよう意識する。',
+          safetyNote:'軽い素材(スポンジ等)を使い、引っかかっても転倒しにくい環境で行ってください。',
+          evidence:{ source:'Weerdesteyn V et al. Brain 2004;127(Pt 9):2014', level:'Level III', finding:'障害物回避訓練は転倒回避能力を有意に改善' },
+          conditions:['shufflingGait','fallRisk'] },
+        { id:'GQ-05', category:'GAIT_QUALITY', title:'左右対称歩行練習（鏡使用）', target:'左右の歩行パターンの均等化',
+          prescription:{ frequency:'週2-3回', duration:'全身鏡の前で10m歩行を繰り返す', intensity:'左右の腕振り・足の出し方を視覚確認', progression:'動画撮影でセルフチェックも可' },
+          howTo:'全身が映る鏡に向かって歩き、左右の腕の振り幅・足の出し方・体の傾きが均等かを確認する。偏りがあれば意識的に修正する。',
+          evidence:{ source:'Patterson KK et al. Gait Posture 2010;31(2):229', level:'Level III', finding:'対称性改善が歩行効率と安全性に寄与' },
+          conditions:['asymmetry'] },
+        { id:'GQ-06', category:'GAIT_QUALITY', title:'二重課題歩行（数え歩き）', target:'認知-運動の同時処理能力の向上',
+          prescription:{ frequency:'週2回', duration:'10m×3往復', intensity:'歩きながら100から3ずつ引き算', progression:'課題の難度を上げて漸進' },
+          howTo:'10mの直線を歩きながら、100から3ずつ引き算する(100, 97, 94…)。計算に集中しすぎて歩行が乱れないよう、両方にバランスよく注意を向ける。',
+          evidence:{ source:'Plummer P et al. Phys Ther 2015;95(1):116', level:'Level II', finding:'デュアルタスク訓練が認知-運動干渉を軽減し転倒リスク低下' },
+          conditions:['rhythmImpaired','elderly'] },
+        // ── FLEXIBILITY ──────────────────────────────────────────
+        { id:'FLX-01', category:'FLEXIBILITY', title:'下肢ストレッチ（大腿四頭筋・ハムストリングス・腓腹筋）', target:'下肢の柔軟性維持・関節可動域の確保',
+          prescription:{ frequency:'毎日', duration:'各筋群30秒保持×2回', intensity:'痛みのない範囲で実施', progression:'入浴後など体が温まった状態で行う' },
+          howTo:'【大腿四頭筋】壁に手をつき片足の甲を持ち踵をお尻に引き寄せ30秒保持。【ハムストリングス】椅子に浅く座り片足を伸ばして前屈30秒保持。【腓腹筋】壁に手をつき後足の踵を床につけ30秒保持。',
+          evidence:{ source:'Page P. Int J Sports Phys Ther 2012;7(1):109', level:'Level IV', finding:'ストレッチングの科学的根拠と実践指針' },
+          conditions:['elderly','inefficientGait'] },
+        { id:'FLX-02', category:'FLEXIBILITY', title:'足関節背屈ストレッチ（壁押し）', target:'足関節背屈可動域の改善・歩幅の確保',
+          prescription:{ frequency:'毎日', duration:'30秒保持×3回(左右各)', intensity:'壁に手をつきアキレス腱を伸ばす', progression:'膝を曲げた状態でも実施(ヒラメ筋)' },
+          howTo:'壁に両手をつき片足を後方に大きく引く。後ろ足の踵を床につけたまま前足の膝を曲げ、ふくらはぎの伸びを感じたら30秒保持する。',
+          evidence:{ source:'Menz HB et al. J Am Podiatr Med Assoc 2006;96(4):293', level:'Level III', finding:'足関節可動域制限が歩幅減少・転倒リスクと関連' },
+          conditions:['shufflingGait','inefficientGait'] },
+        { id:'FLX-03', category:'FLEXIBILITY', title:'股関節屈筋群ストレッチ', target:'股関節伸展可動域の改善・歩幅の確保',
+          prescription:{ frequency:'毎日', duration:'30秒保持×2回(左右各)', intensity:'ベッド端で仰臥位・立位ランジ姿勢でも可', progression:'可動域を広げて漸進' },
+          howTo:'ベッドの端に仰向けに寝て、片膝を両手で胸に引き寄せる。反対の脚をベッドの端から下ろし、太ももの前面の伸びを感じたら30秒保持する。',
+          evidence:{ source:'Kerrigan DC et al. Arch Phys Med Rehabil 2001;82(1):26', level:'Level III', finding:'股関節伸展制限が高齢者の歩幅減少の主因' },
+          conditions:['inefficientGait','elderly'] },
+        { id:'FLX-04', category:'FLEXIBILITY', title:'胸椎回旋ストレッチ', target:'体幹回旋可動域の維持・歩行時の腕振り改善',
+          prescription:{ frequency:'毎日', duration:'左右各20秒×3回', intensity:'椅子座位で体幹をゆっくり左右に回旋', progression:'呼吸を止めない' },
+          howTo:'椅子に座り、両手を胸の前で交差させる。息を吐きながらゆっくり上半身を右に回旋し20秒保持。反対側も同様に行う。骨盤は動かさず胸から上だけを回す。',
+          evidence:{ source:'Granacher U et al. Gerontology 2013;59(2):105', level:'Level II', finding:'体幹可動性がバランス・歩行安定性に寄与' },
+          conditions:['trunkInstability','asymmetry'] },
+      ];
+
+      const ADVICE_COLORS = {
+        BALANCE:      { color:'#3B82F6', bg:'#EFF6FF', icon:'⚖️' },
+        STRENGTH:     { color:'#22C55E', bg:'#F0FDF4', icon:'💪' },
+        ENDURANCE:    { color:'#F59E0B', bg:'#FFFBEB', icon:'❤️' },
+        GAIT_QUALITY: { color:'#8B5CF6', bg:'#F5F3FF', icon:'👣' },
+        FLEXIBILITY:  { color:'#EC4899', bg:'#FDF2F8', icon:'🧘' },
+      };
 
 
       // ============================================================
@@ -1231,9 +1798,12 @@
         speedVal: 1.18,
         strideVal: 0.65,
         cadenceVal: 108,
+        walkDist: 10,
         comment: '',
         evaluator: '理学療法士 ___________',
         isCommentEdited: false,
+        isAdviceEdited: false,
+        adviceCustom: '',
         // computed
         walkingAge: '--',
         totalScore: '--',
@@ -1256,6 +1826,14 @@
         steadyPeaks: [],
         fs: 100,
         exportRows: null,
+        _allPeakTime: null,
+        _steadyTime: null,
+        _totalSteps: null,
+        _steadySteps: null,
+        _ipResult: null,
+        _estimationMode: 'DIST',
+        _calibrationAlpha: null,
+        _calibrationWarning: false,
       };
 
 
@@ -1307,8 +1885,8 @@
       }
 
 
-      /** Bandpass filter: 0.7–6.0 Hz zero-phase Butterworth */
-      function bandpassFilter(data, fs, lo = 0.7, hi = 6.0) {
+      /** Bandpass filter: 0.5–6.0 Hz zero-phase Butterworth */
+      function bandpassFilter(data, fs, lo = 0.5, hi = 6.0) {
         const lpFlt = butter2LP(hi, fs);
         const hpFlt = butter2HP(lo, fs);
         let y = filtfilt(data, lpFlt);
@@ -1382,10 +1960,11 @@
         const std = Math.sqrt(intervals.reduce((a, b) => a + (b - mean) ** 2, 0) / intervals.length);
         const cv = (std / mean) * 100;
         // Symmetry index (odd vs even step intervals — Robinson 1987 formula)
-        const odd = intervals.filter((_, i) => i % 2 === 0);
-        const even = intervals.filter((_, i) => i % 2 === 1);
-        const oddM = odd.reduce((a, b) => a + b, 0) / odd.length;
-        const evenM = even.reduce((a, b) => a + b, 0) / even.length;
+        // evenIdx = index 0,2,4,... (歩行開始足), oddIdx = index 1,3,5,... (反対足)
+        const evenIdx = intervals.filter((_, i) => i % 2 === 0);
+        const oddIdx = intervals.filter((_, i) => i % 2 === 1);
+        const oddM = evenIdx.reduce((a, b) => a + b, 0) / evenIdx.length;
+        const evenM = oddIdx.reduce((a, b) => a + b, 0) / oddIdx.length;
         const si = Math.abs(oddM - evenM) / mean * 100;
         const cadence = 60 / mean;
         // RMS acceleration of steady-state window (体幹動揺強度)
@@ -1398,6 +1977,88 @@
           }
         }
         return { cv, si, cadence, rms, mean };
+      }
+
+
+      // ============================================================
+      //  INVERTED PENDULUM STEP LENGTH ESTIMATION
+      // ============================================================
+
+
+      /** Trochanteric height ≈ 53% of standing height (Winter 1990) — returns metres, or null if height is invalid */
+      function estimateLegLength() {
+        const h = parseFloat(S.height);
+        if (!h || h < 50 || h > 250) return null;
+        return h * 0.53 / 100;
+      }
+
+
+      /**
+       * Estimate per-step step lengths using the Inverted Pendulum (IP) model.
+       * Zijlstra & Hof, Gait Posture 2003;18(2):59–67
+       * SL = K × 2 × √(2Lh – h²), K = 1.25, L = leg length (m), h = CoM vertical excursion per step (m)
+       * h is obtained by double integration of the BPF-filtered vertical (PCA principal) acceleration per step.
+       */
+      function estimateStepLengthsIP(signal, peaks, fs) {
+        const K = 1.25; // correction factor (Winter 1990)
+        const L = estimateLegLength();
+        if (L === null) return { stepLengths: [], meanSL: null, hValues: [], ok: false };
+        const dt = 1 / fs;
+        const stepLengths = [];
+        const hValues = [];
+        if (peaks.length < 3) return { stepLengths, meanSL: null, hValues, ok: false };
+
+        for (let i = 0; i < peaks.length - 1; i++) {
+          const i0 = peaks[i], i1 = peaks[i + 1];
+          if (i1 <= i0) continue;
+          const seg = Array.from(signal).slice(i0, i1 + 1);
+          if (seg.length < 4) continue;
+
+          // Remove mean (safety: BPF already removes DC)
+          const mean = seg.reduce((s, v) => s + v, 0) / seg.length;
+          const a = seg.map(v => v - mean);
+
+          // 1st integration (trapezoid) → velocity
+          const vel = [0];
+          for (let j = 1; j < a.length; j++) vel.push(vel[j - 1] + (a[j - 1] + a[j]) * dt / 2);
+
+          // Detrend velocity (linear drift removal)
+          const vSlope = (vel[vel.length - 1] - vel[0]) / (vel.length - 1);
+          const velDt = vel.map((v, j) => v - vSlope * j);
+
+          // 2nd integration (trapezoid) → displacement
+          const disp = [0];
+          for (let j = 1; j < velDt.length; j++) disp.push(disp[j - 1] + (velDt[j - 1] + velDt[j]) * dt / 2);
+
+          // Detrend displacement
+          const dSlope = (disp[disp.length - 1] - disp[0]) / (disp.length - 1);
+          const dispDt = disp.map((v, j) => v - dSlope * j);
+
+          // h = peak-to-peak range of vertical displacement
+          const h = Math.max(...dispDt) - Math.min(...dispDt);
+          hValues.push(h);
+
+          const arg = 2 * L * h - h * h;
+          if (arg > 0) stepLengths.push(K * 2 * Math.sqrt(arg));
+        }
+
+        if (stepLengths.length < 3) return { stepLengths, meanSL: null, hValues, ok: false };
+
+        // 有効ステップ率チェック（有効 step / 全 step 間隔 > 70%）
+        const validRate = stepLengths.length / (peaks.length - 1);
+        if (validRate < 0.7) return { stepLengths, meanSL: null, hValues, ok: false };
+
+        // h値収束チェック（CV < 30%）— 低速歩行での積分ドリフト検出
+        if (hValues.length >= 3) {
+          const hMean = hValues.reduce((s, v) => s + v, 0) / hValues.length;
+          const hStd = Math.sqrt(hValues.reduce((s, v) => s + (v - hMean) ** 2, 0) / hValues.length);
+          const hCV = hMean > 0 ? (hStd / hMean) * 100 : 999;
+          if (hCV > 30) return { stepLengths, meanSL: null, hValues, ok: false };
+        }
+
+        const meanSL = stepLengths.reduce((s, v) => s + v, 0) / stepLengths.length;
+        const ok = meanSL > 0.2 && meanSL < 1.5;
+        return { stepLengths, meanSL: ok ? meanSL : null, hValues, ok };
       }
 
 
@@ -1430,19 +2091,47 @@
         return { text: '低下', cls: 'badge-lw' };
       }
 
+      /** Z-score → パーセンタイル（正規分布近似 Abramowitz & Stegun）*/
+      function zToPercentile(z) {
+        function erf(x) {
+          const a1=0.254829592,a2=-0.284496736,a3=1.421413741,a4=-1.453152027,a5=1.061405429,p=0.3275911;
+          const sign = x >= 0 ? 1 : -1; x = Math.abs(x);
+          const t = 1.0 / (1.0 + p * x);
+          return sign * (1.0 - (((((a5*t+a4)*t)+a3)*t+a2)*t+a1)*t*Math.exp(-x*x));
+        }
+        return Math.max(1, Math.min(99, Math.round(50 * (1 + erf(z / Math.SQRT2)))));
+      }
+
 
       function estimateWalkingAge(speed, stride, cadence, gender) {
         const tbl = NORM[gender] || NORM.male;
-        let bestAge = NORM_AGES[0], bestW = Infinity;
-        for (const age of NORM_AGES) {
+        const costs = NORM_AGES.map(age => {
           const r = tbl[age];
           const zs = zScore(speed, r[0], r[1]);
           const zst = zScore(stride, r[2], r[3]);
           const zc = zScore(cadence, r[4], r[5]);
-          const w = 0.45 * zs ** 2 + 0.40 * zst ** 2 + 0.15 * zc ** 2;
-          if (w < bestW) { bestW = w; bestAge = +age; }
+          return { age: +age, cost: 0.45 * zs ** 2 + 0.40 * zst ** 2 + 0.15 * zc ** 2 };
+        });
+        let bestIdx = 0;
+        for (let i = 1; i < costs.length; i++) {
+          if (costs[i].cost < costs[bestIdx].cost) bestIdx = i;
         }
-        return bestAge;
+        // 隣接ブラケットとの線形補間
+        const best = costs[bestIdx];
+        let neighbor = null;
+        if (bestIdx > 0 && bestIdx < costs.length - 1) {
+          neighbor = costs[bestIdx - 1].cost < costs[bestIdx + 1].cost
+            ? costs[bestIdx - 1] : costs[bestIdx + 1];
+        } else if (bestIdx > 0) {
+          neighbor = costs[bestIdx - 1];
+        } else if (bestIdx < costs.length - 1) {
+          neighbor = costs[bestIdx + 1];
+        }
+        if (neighbor && (best.cost + neighbor.cost) > 0) {
+          const w = best.cost / (best.cost + neighbor.cost);
+          return Math.round(best.age * (1 - w) + neighbor.age * w);
+        }
+        return best.age;
       }
 
 
@@ -1506,20 +2195,16 @@
       }
 
 
-      function processCSV(text) {
-        const raw = parsePhyphoxCSV(text);
-        const n = raw.t.length;
-
-
+      function _processCoreData(t, xs, ys, zs) {
         // Estimate fs
-        const dt = raw.t.slice(1).map((v, i) => v - raw.t[i]);
+        const dt = t.slice(1).map((v, i) => v - t[i]);
         const medDt = [...dt].sort((a, b) => a - b)[Math.floor(dt.length / 2)];
         const fs = Math.round(1 / medDt);
         S.fs = Math.max(10, Math.min(1000, fs));
 
 
         // PCA projection
-        const proj = pca3(raw.xs, raw.ys, raw.zs);
+        const proj = pca3(xs, ys, zs);
 
 
         // Bandpass filter
@@ -1532,7 +2217,7 @@
         const signal = Array.from(filtered).map(v => v * flipSign);
 
 
-        S.plotData = raw.t.map((t, i) => ({ t, y: signal[i] }));
+        S.plotData = t.map((tv, i) => ({ t: tv, y: signal[i] }));
 
 
         // Peak detection
@@ -1548,32 +2233,82 @@
         S.bioMeanStepTime = bio.mean;
 
 
-        // Speed: estimate from total time of all peaks
+        // allPeakTime — used as fallback (Mode B: DIST)
         const allPeakTime = S.peaks.length > 1
-          ? (raw.t[S.peaks[S.peaks.length - 1]] - raw.t[S.peaks[0]])
+          ? (t[S.peaks[S.peaks.length - 1]] - t[S.peaks[0]])
           : null;
-        const autoSpeed = allPeakTime && allPeakTime > 0 ? 10 / allPeakTime : null;
-
+        S._allPeakTime = allPeakTime;
+        // 定常区間ベース速度算出用パラメータを保存
+        S._totalSteps = S.peaks.length - 1;
+        S._steadySteps = S.steadyPeaks.length - 1;
+        S._steadyTime = S.steadyPeaks.length > 1
+          ? (t[S.steadyPeaks[S.steadyPeaks.length - 1]] - t[S.steadyPeaks[0]])
+          : null;
 
         // Cadence from steady peaks
         if (bio.cadence && bio.cadence > 50 && bio.cadence < 200) {
           S.cadenceVal = Math.round(bio.cadence);
         }
-        if (autoSpeed && autoSpeed > 0.3 && autoSpeed < 3.0) {
-          S.speedVal = Math.round(autoSpeed * 100) / 100;
-          // Derive step length
-          S.strideVal = Math.round((S.speedVal / (S.cadenceVal / 60)) * 100) / 100;
+
+        // Step length & speed — Mode A: Inverted Pendulum; Mode B: DIST fallback
+        const ipResult = estimateStepLengthsIP(signal, S.steadyPeaks, S.fs);
+        S._ipResult = ipResult;
+        if (ipResult.ok) {
+          // Mode A: IP model
+          S.strideVal = Math.round(ipResult.meanSL * 100) / 100;
+          S.speedVal  = Math.round(S.strideVal * (S.cadenceVal / 60) * 100) / 100;
+          // Optional calibration with known walk distance
+          if (S.walkDist > 0 && ipResult.stepLengths.length > 0) {
+            const estTotalDist = ipResult.stepLengths.reduce((s, v) => s + v, 0);
+            const alpha = S.walkDist / estTotalDist;
+            S._calibrationAlpha = alpha;
+            S._calibrationWarning = Math.abs(alpha - 1) > 0.3;
+            if (!S._calibrationWarning) {
+              S.strideVal = Math.round(S.strideVal * alpha * 100) / 100;
+              S.speedVal  = Math.round(S.speedVal  * alpha * 100) / 100;
+              S._estimationMode = 'IP+CAL';
+            } else {
+              S._estimationMode = 'IP';
+            }
+          } else {
+            S._calibrationAlpha = null;
+            S._calibrationWarning = false;
+            S._estimationMode = 'IP';
+          }
         } else {
+          // Mode B: 定常区間ベース速度算出（全ピーク区間にフォールバック）
+          S._ipResult = null;
+          S._calibrationAlpha = null;
+          S._calibrationWarning = false;
+          S._estimationMode = 'DIST';
+          const steadyDist = S._totalSteps > 0 ? S.walkDist * (S._steadySteps / S._totalSteps) : null;
+          const autoSpeed = S._steadyTime && S._steadyTime > 0 && steadyDist
+            ? steadyDist / S._steadyTime
+            : (allPeakTime && allPeakTime > 0 ? S.walkDist / allPeakTime : null);
+          if (autoSpeed && autoSpeed > 0.3 && autoSpeed < 3.0) {
+            S.speedVal = Math.round(autoSpeed * 100) / 100;
+          }
           S.strideVal = Math.round((S.speedVal / (S.cadenceVal / 60)) * 100) / 100;
         }
 
 
         // Export data
         S.exportRows = S.steadyPeaks.map((pi, i) => {
-          const t = raw.t[pi], y = signal[pi];
-          const dt_s = i > 0 ? (raw.t[pi] - raw.t[S.steadyPeaks[i - 1]]) : null;
-          return [i + 1, t.toFixed(4), y.toFixed(4), dt_s ? dt_s.toFixed(4) : ''];
+          const tv = t[pi], y = signal[pi];
+          const dt_s = i > 0 ? (t[pi] - t[S.steadyPeaks[i - 1]]) : null;
+          return [i + 1, tv.toFixed(4), y.toFixed(4), dt_s ? dt_s.toFixed(4) : ''];
         });
+      }
+
+
+      function processRawArrays(t, xs, ys, zs) {
+        _processCoreData(t, xs, ys, zs);
+      }
+
+
+      function processCSV(text) {
+        const raw = parsePhyphoxCSV(text);
+        _processCoreData(raw.t, raw.xs, raw.ys, raw.zs);
       }
 
 
@@ -1599,8 +2334,121 @@
         let csv = 'Time (s),Linear Acceleration x (m/s^2),Linear Acceleration y (m/s^2),Linear Acceleration z (m/s^2)\n';
         for (let i = 0; i < n; i++) csv += `${t[i].toFixed(4)},${xs[i].toFixed(4)},${ys[i].toFixed(4)},${zs[i].toFixed(4)}\n`;
         processCSV(csv);
-        S.speedVal = 1.18; S.strideVal = 0.65; S.cadenceVal = 108;
+        S.speedVal = +(1.18 * S.walkDist / 10).toFixed(2); S.strideVal = 0.65; S.cadenceVal = 108; S._estimationMode = 'DEMO'; S._ipResult = null; S._calibrationAlpha = null; S._calibrationWarning = false;
         // bioRMS/bioMeanStepTime are set by processCSV via calcBioMetrics
+        S._allPeakTime = S.peaks.length > 1 ? (S.plotData[S.peaks[S.peaks.length - 1]].t - S.plotData[S.peaks[0]].t) : null;
+      }
+
+
+      // ============================================================
+      //  HISTORY (IndexedDB)
+      // ============================================================
+      const HISTORY_DB_NAME = 'WalkingAgeHistoryDB';
+      const HISTORY_DB_VER  = 1;
+      const HISTORY_STORE   = 'results';
+
+      function openHistoryDB() {
+        return new Promise((resolve, reject) => {
+          const req = indexedDB.open(HISTORY_DB_NAME, HISTORY_DB_VER);
+          req.onupgradeneeded = (e) => {
+            const db = e.target.result;
+            if (!db.objectStoreNames.contains(HISTORY_STORE)) {
+              const store = db.createObjectStore(HISTORY_STORE, { keyPath: 'id' });
+              store.createIndex('userId',    'userId',    { unique: false });
+              store.createIndex('userName',  'userName',  { unique: false });
+              store.createIndex('timestamp', 'timestamp', { unique: true  });
+            }
+          };
+          req.onsuccess = (e) => resolve(e.target.result);
+          req.onerror   = (e) => reject(e.target.error);
+        });
+      }
+
+      async function saveResult() {
+        const record = {
+          id:          `${S.userId || 'anon'}_${Date.now()}`,
+          userId:      S.userId      || '',
+          userName:    S.userName    || '',
+          gender:      S.gender,
+          age:         S.age,
+          height:      S.height,
+          reportDate:  S.reportDate  || '',
+          timestamp:   Date.now(),
+          speedVal:    S.speedVal,
+          strideVal:   S.strideVal,
+          cadenceVal:  S.cadenceVal,
+          walkDist:    S.walkDist,
+          totalScore:  S.totalScore   ?? null,
+          speedScore:  S.speedScore   ?? null,
+          strideScore: S.strideScore  ?? null,
+          cadenceScore:S.cadenceScore ?? null,
+          walkingAge:  S.walkingAge   ?? null,
+          bioCV:       S.bioCV        ?? null,
+          bioSI:       S.bioSI        ?? null,
+          bioWR:       S.bioWR        ?? null,
+          bioRMS:      S.bioRMS       ?? null,
+          speedZ:      S.speedZ       ?? null,
+          strideZ:     S.strideZ      ?? null,
+          cadenceZ:    S.cadenceZ     ?? null,
+        };
+        try {
+          const db = await openHistoryDB();
+          await new Promise((resolve, reject) => {
+            const tx = db.transaction(HISTORY_STORE, 'readwrite');
+            tx.objectStore(HISTORY_STORE).add(record);
+            tx.oncomplete = resolve;
+            tx.onerror    = (e) => reject(e.target.error);
+          });
+        } catch (err) {
+          showNotif('履歴保存エラー: ' + err.message, true);
+          throw err;
+        }
+      }
+
+      function getHistory(userId) {
+        return openHistoryDB().then(db => new Promise((resolve, reject) => {
+          const tx    = db.transaction(HISTORY_STORE, 'readonly');
+          const store = tx.objectStore(HISTORY_STORE);
+          const req   = (userId && userId.trim())
+            ? store.index('userId').getAll(userId)
+            : store.getAll();
+          req.onsuccess = (e) => resolve(
+            e.target.result.sort((a, b) => b.timestamp - a.timestamp)
+          );
+          req.onerror   = (e) => reject(e.target.error);
+        }));
+      }
+
+      function deleteResult(id) {
+        return openHistoryDB().then(db => new Promise((resolve, reject) => {
+          const tx = db.transaction(HISTORY_STORE, 'readwrite');
+          tx.objectStore(HISTORY_STORE).delete(id);
+          tx.oncomplete = resolve;
+          tx.onerror    = (e) => reject(e.target.error);
+        }));
+      }
+
+      // ============================================================
+      //  VOICE FEEDBACK (Web Speech Synthesis API)
+      // ============================================================
+      function announceText(text) {
+        if (localStorage.getItem('walkingAgeVoiceEnabled') !== 'true') return;
+        if (!window.speechSynthesis) return;
+        speechSynthesis.cancel();
+        const utter = new SpeechSynthesisUtterance(text);
+        utter.lang = 'ja-JP';
+        speechSynthesis.speak(utter);
+      }
+      // 結果読み上げ — cancel せずキューに続けて再生（announceText の直後に呼ぶ）
+      function announceResult() {
+        if (localStorage.getItem('walkingAgeVoiceEnabled') !== 'true') return;
+        if (!window.speechSynthesis) return;
+        if (typeof S.walkingAge !== 'number' || typeof S.totalScore !== 'number') return;
+        const u = new SpeechSynthesisUtterance(
+          `歩行年齢は${S.walkingAge}歳、総合スコアは${Math.round(S.totalScore)}点です。`
+        );
+        u.lang = 'ja-JP';
+        speechSynthesis.speak(u);
       }
 
 
@@ -1861,29 +2709,266 @@
           { key: 'stride', label: '歩幅の広さ', val: `${S.strideVal.toFixed(2)} m`, score: S.strideScore, z: S.strideZ },
           { key: 'cadence', label: '歩くテンポ', val: `${Math.round(S.cadenceVal)} 歩/分`, score: S.cadenceScore, z: S.cadenceZ },
         ];
-        const header = `<div class="grid grid-cols-[2fr_1.2fr_1.4fr_1fr] items-center px-3 pb-1.5 border-b border-slate-100 mb-1">
+        const header = `<div class="grid grid-cols-[2fr_1.1fr_1.2fr_1.6fr] items-center px-3 pb-1.5 border-b border-slate-100 mb-1">
     <div class="text-[9px] font-bold text-slate-400 uppercase tracking-wide">項目</div>
     <div class="text-[9px] font-bold text-slate-400 uppercase tracking-wide text-center">測定値</div>
     <div class="text-[9px] font-bold text-slate-400 uppercase tracking-wide text-center">スコア</div>
-    <div class="text-[9px] font-bold text-slate-400 uppercase tracking-wide text-center">判定</div>
+    <div class="text-[9px] font-bold text-slate-400 uppercase tracking-wide text-center">同年代比 *</div>
   </div>`;
         const rows = items.map(item => {
           const lv = zToLabel(item.z);
+          const pct = zToPercentile(item.z);
           const barW = Math.min(100, Math.max(0, item.score));
           const barColor = item.score >= 60 ? '#22c55e' : item.score >= 40 ? '#f59e0b' : '#ef4444';
-          return `<div class="grid grid-cols-[2fr_1.2fr_1.4fr_1fr] items-center px-3 py-2 hover:bg-slate-50 transition-colors rounded-lg">
+          const topPct = 100 - pct;
+          const pctLabel = pct >= 50 ? `上位 ${topPct <= 5 ? '5%以内' : topPct + '%前後'}` : `下位 ${pct}%前後`;
+          const pctColor = pct >= 60 ? 'text-emerald-600' : pct >= 40 ? 'text-slate-500' : 'text-rose-500';
+          return `<div class="grid grid-cols-[2fr_1.1fr_1.2fr_1.6fr] items-center px-3 py-2 hover:bg-slate-50 transition-colors rounded-lg">
       <div class="text-xs font-bold text-slate-700">${item.label}</div>
       <div class="text-center font-mono font-black text-slate-800 text-sm leading-none">${item.val}</div>
       <div class="text-center px-1">
-        <div class="relative h-1.5 bg-slate-100 rounded-full overflow-hidden mx-auto" style="max-width:72px">
+        <div class="relative h-1.5 bg-slate-100 rounded-full overflow-hidden mx-auto" style="max-width:64px">
           <div class="absolute inset-y-0 left-0 rounded-full" style="width:${barW}%;background:${barColor};"></div>
         </div>
         <div class="text-[10px] font-bold text-slate-500 mt-0.5 text-center">${item.score}点</div>
       </div>
-      <div class="text-center"><span class="badge ${lv.cls}">${lv.text}</span></div>
+      <div class="text-center">
+        <span class="badge ${lv.cls}">${lv.text}</span>
+        <div class="text-[9px] font-bold mt-0.5 ${pctColor}">${pctLabel}</div>
+      </div>
     </div>`;
         }).join('');
-        el.innerHTML = header + rows;
+        const footnote = `<div class="px-3 pt-1 border-t border-slate-100 mt-1">
+    <p class="text-[8px] text-slate-400 leading-tight">* 同年代・同性別との比較（Mobbs et al. Sensors 2025; Studenski et al. JAMA 2011 N=34,485）</p>
+  </div>`;
+        el.innerHTML = header + rows + footnote;
+      }
+
+
+      // ============================================================
+      //  PAGE 2a RENDERING — 地域在住者向け
+      // ============================================================
+
+      function renderCommunityPage() {
+        renderTrafficLightCards();
+        renderFrailtyCards();
+        renderCommunityGaitQuality();
+        renderInterventionAdvice();
+      }
+
+      // Section 1: 転倒・生活機能リスク判定（信号機カード）
+      // 基準: Studenski JAMA 2011 / Sherrington Cochrane 2019
+      function renderTrafficLightCards() {
+        const el = document.getElementById('p2c-traffic');
+        if (!el) return;
+        const sp = S.speedVal;
+
+        const items = [
+          {
+            label: '転倒リスク・地域活動',
+            icon: '⚠️',
+            ref: 'Sherrington et al. Cochrane 2019; Studenski et al. JAMA 2011',
+            good: sp >= 1.0,
+            warn: sp >= 0.8 && sp < 1.0,
+            value: `${sp.toFixed(2)} m/s`,
+            goodMsg: '低リスク — 地域活動に支障なし（速度 ≥ 1.0 m/s）',
+            warnMsg: '中リスク — 一部活動に支障の可能性（0.8–1.0 m/s）',
+            badMsg: '高リスク — 転倒予防プログラム・介護予防介入を推奨（< 0.8 m/s）',
+          },
+          {
+            label: '余命・健康寿命',
+            icon: '💚',
+            ref: 'Studenski et al. JAMA 2011 (N=34,485)',
+            good: sp >= 1.0,
+            warn: sp >= 0.8 && sp < 1.0,
+            value: `${sp.toFixed(2)} m/s`,
+            goodMsg: '平均以上の余命期待値',
+            warnMsg: '平均的な余命期待値',
+            badMsg: '平均以下の余命期待値 — 医療・介護連携を検討',
+          },
+          {
+            label: '歩幅（ストライド長）',
+            icon: '👟',
+            ref: 'Mobbs et al. Sensors 2025（年齢・性別別基準値）',
+            good: S.strideZ >= -0.5,
+            warn: S.strideZ >= -1.5 && S.strideZ < -0.5,
+            value: `${S.strideVal.toFixed(2)} m`,
+            goodMsg: '同年代平均以上 — 歩幅良好',
+            warnMsg: '同年代より短め — 歩幅改善を検討',
+            badMsg: '同年代比かなり短め — 下肢筋力・歩幅訓練を推奨',
+          },
+        ];
+
+        el.innerHTML = items.map(item => {
+          const color = item.good ? 'emerald' : item.warn ? 'amber' : 'rose';
+          const msg = item.good ? item.goodMsg : item.warn ? item.warnMsg : item.badMsg;
+          const dot = item.good ? '🟢' : item.warn ? '🟡' : '🔴';
+          return `<div class="rounded-xl border border-${color}-200 bg-${color}-50 p-3">
+            <div class="flex items-center justify-between mb-1">
+              <span class="text-xs font-black text-${color}-800">${item.icon} ${item.label}</span>
+              <span class="text-lg font-black text-${color}-700">${item.value}</span>
+            </div>
+            <div class="text-[11px] font-bold text-${color}-700 mb-1">${dot} ${msg}</div>
+            <div class="text-[9px] text-slate-400 leading-tight">出典: ${item.ref}</div>
+          </div>`;
+        }).join('');
+      }
+
+      // Section 2: フレイル・サルコペニア スクリーニング (AWGS 2019 準拠)
+      function renderFrailtyCards() {
+        const el = document.getElementById('p2c-frailty');
+        if (!el) return;
+        const sp = S.speedVal;
+        const ca = S.cadenceVal;  // 歩/分
+        const score = typeof S.totalScore === 'number' ? S.totalScore : null;
+        const wAge = typeof S.walkingAge === 'number' ? S.walkingAge : null;
+        const age = S.age || 0;
+
+        // AWGS 2019: 歩行速度カットオフ 1.0 m/s
+        // ケイデンス: 高齢者正常範囲 100–120 歩/分 (Lusardi et al. PTJ 2003)
+        const ageDiff = wAge !== null ? age - wAge : null;
+
+        const cards = [
+          {
+            title: '歩行速度（AWGS 2019）',
+            value: `${sp.toFixed(2)} m/s`,
+            cut: 'カットオフ: 1.0 m/s',
+            ok: sp >= 1.0,
+            okLabel: 'スクリーニング陰性',
+            ngLabel: 'サルコペニア疑い — 筋力・筋量評価を推奨',
+            ref: 'Chen et al. JCSM 2020 (AWGS 2019)',
+          },
+          {
+            title: 'ケイデンス（歩行テンポ）',
+            value: ca ? `${Math.round(ca)} 歩/分` : '—',
+            cut: '正常範囲: 100–120 歩/分',
+            ok: ca !== null && ca >= 100,
+            okLabel: '正常範囲 — 歩行テンポ良好',
+            ngLabel: ca !== null ? 'テンポ低下 — 下肢筋力・バランス評価を推奨' : 'データ不足',
+            ref: 'Lusardi et al. Phys Ther 2003; Mbourou et al. 2003',
+          },
+          {
+            title: '歩行年齢スコア',
+            value: wAge !== null ? `${wAge} 歳` : '—',
+            cut: `実年齢: ${age} 歳`,
+            ok: ageDiff !== null && ageDiff >= 0,
+            okLabel: ageDiff !== null ? (ageDiff === 0 ? '実年齢と同等' : `実年齢より ${ageDiff} 歳若い`) : '—',
+            ngLabel: ageDiff !== null ? `実年齢より ${-ageDiff} 歳高い — 歩行能力改善プログラムを検討` : 'データ不足',
+            ref: 'Mobbs et al. Sensors 2025',
+          },
+        ];
+
+        el.innerHTML = cards.map(c => {
+          const color = c.ok ? 'emerald' : 'rose';
+          return `<div class="rounded-xl border border-${color}-200 bg-${color}-50 p-3 flex flex-col gap-1">
+            <div class="text-[10px] font-black text-slate-600 uppercase tracking-wide">${c.title}</div>
+            <div class="text-2xl font-black text-${color}-700">${c.value}</div>
+            <div class="text-[10px] text-slate-400">${c.cut}</div>
+            <div class="text-[11px] font-bold text-${color}-700 mt-1">${c.ok ? '✅ ' + c.okLabel : '⚠️ ' + c.ngLabel}</div>
+            <div class="text-[9px] text-slate-400 mt-auto leading-tight">出典: ${c.ref}</div>
+          </div>`;
+        }).join('');
+      }
+
+      // Section 3: 歩行の質 — 地域評価指標（シンプルカード）
+      function renderCommunityGaitQuality() {
+        const el = document.getElementById('p2c-biomech');
+        if (!el) return;
+        const sp = S.speedVal;
+        const cv = S.bioCV;
+        const si = S.bioSI;
+        const pct = zToPercentile(S.speedZ);
+
+        const cards = [
+          {
+            label: '歩くスピード',
+            en: 'Walking Speed',
+            val: `${sp.toFixed(2)} m/s`,
+            sub: `同年代 上位 ${Math.max(1, 100 - pct)}%`,
+            color: pct >= 60 ? 'emerald' : pct >= 40 ? 'slate' : 'rose',
+            tip: 'スピードは健康寿命・余命と直結する最重要指標です（Studenski JAMA 2011）',
+          },
+          {
+            label: 'リズムの安定性',
+            en: 'Stride Variability (CV)',
+            val: cv !== null ? `${cv.toFixed(1)} %` : '—',
+            sub: cv === null ? 'データ不足' : cv < 3 ? '安定' : cv < 5 ? 'やや不安定' : '不安定',
+            color: cv === null ? 'slate' : cv < 3 ? 'emerald' : cv < 5 ? 'amber' : 'rose',
+            tip: 'CVは歩行の一定性を示します。転倒予測に有用（Hausdorff 2001）',
+          },
+          {
+            label: '左右の対称性',
+            en: 'Symmetry Index (SI)',
+            val: si !== null ? `${si.toFixed(1)} %` : '—',
+            sub: si === null ? 'データ不足' : si < 3 ? '非常に良好' : si < 5 ? '良好' : '左右差あり',
+            color: si === null ? 'slate' : si < 3 ? 'emerald' : si < 5 ? 'amber' : 'rose',
+            tip: 'SIは左右の歩行バランスを示します。3%未満が優良、5%未満が正常範囲',
+          },
+        ];
+
+        el.innerHTML = cards.map(c => `
+          <div class="rounded-xl border border-${c.color}-200 bg-${c.color}-50 p-3 flex flex-col">
+            <div class="text-[10px] font-black text-slate-500 uppercase tracking-wide mb-0.5">${c.en}</div>
+            <div class="text-xs font-black text-slate-700 mb-1">${c.label}</div>
+            <div class="text-2xl font-black text-${c.color}-700 mb-1">${c.val}</div>
+            <div class="text-[11px] font-bold text-${c.color}-600 mb-2">${c.sub}</div>
+            <div class="text-[9px] text-slate-400 leading-tight mt-auto">${c.tip}</div>
+          </div>`).join('');
+      }
+
+      // Section 4: 推奨介入・運動アドバイス（速度ティア別）
+      // 根拠: Sherrington et al. Cochrane 2019 / 厚生労働省 運動基準 2013
+      function renderInterventionAdvice() {
+        const el = document.getElementById('p2c-advice');
+        if (!el) return;
+        const sp = S.speedVal;
+        const cv = S.bioCV;
+
+        // 速度ティアに応じたアドバイスセット
+        let tier, tierLabel, tierColor, advices;
+        if (sp >= 1.2) {
+          tier = 'A'; tierLabel = '良好（≥ 1.2 m/s）'; tierColor = 'emerald';
+          advices = [
+            { icon: '🏃', title: '有酸素運動の継続', body: '週150分以上の中強度有酸素運動を維持。ウォーキング・サイクリング・水泳が推奨。（WHO身体活動ガイドライン 2020）' },
+            { icon: '💪', title: '筋力トレーニング', body: '週2回以上の抵抗運動でサルコペニア予防。スクワット・階段昇降が効果的。（AWGS 2019）' },
+            { icon: '⚖️', title: 'バランス運動', body: 'タンデム歩行・片足立ち訓練で転倒リスクをさらに低減。（Sherrington Cochrane 2019）' },
+            { icon: '✅', title: '現状維持と定期評価', body: '6か月ごとに歩行速度を再測定し、良好な状態を維持できているか確認してください。' },
+          ];
+        } else if (sp >= 0.8) {
+          tier = 'B'; tierLabel = '要注意（0.8–1.2 m/s）'; tierColor = 'amber';
+          advices = [
+            { icon: '🦵', title: '下肢筋力強化（優先）', body: 'スクワット・踵上げ・チューブ運動を週3回以上。大腿四頭筋の強化が歩行速度改善に直結。（AWGS 2019）' },
+            { icon: '⚖️', title: 'バランス・転倒予防', body: 'タイチー（太極拳）または集団バランス体操を週2回以上実施。転倒リスクを23%低減。（Sherrington 2019）' },
+            { icon: '🚶', title: 'ウォーキング習慣化', body: '1回15〜30分のウォーキングを週4回以上。できれば坂道や不整地を含めると効果的。' },
+            { icon: '🥗', title: '栄養サポート', body: 'タンパク質 1.2 g/kg/日以上を目標に。乳製品・魚・豆類を積極摂取。ビタミンDも補充を検討。' },
+          ];
+        } else {
+          tier = 'C'; tierLabel = '要介入（< 0.8 m/s）'; tierColor = 'rose';
+          advices = [
+            { icon: '🏥', title: '医療・リハビリへの紹介', body: '歩行速度 0.8 m/s 未満はサルコペニア・フレイルの高リスク。主治医またはリハビリ専門職への紹介を推奨。（AWGS 2019）' },
+            { icon: '🦵', title: '個別運動プログラム', body: '理学療法士による個別評価のもと、漸進的な下肢筋力・バランス訓練を実施。転倒リスクを最優先で管理。' },
+            { icon: '🤝', title: '多職種連携', body: '介護支援専門員・管理栄養士・医師との連携で包括的な介入計画を立案。介護予防事業の活用も検討。' },
+            { icon: '📋', title: '3か月ごとの再評価', body: '介入効果を確認するため短い間隔での歩行速度再測定を推奨。改善が見られない場合はプログラムを見直し。' },
+          ];
+        }
+
+        // CV が高い場合の追加注意
+        const cvAlert = cv !== null && cv >= 5.0
+          ? `<div class="col-span-2 rounded-lg bg-rose-50 border border-rose-200 px-3 py-2 text-[11px] text-rose-700 font-bold">
+               ⚠️ リズム変動（CV ${cv.toFixed(1)}%）が高値です — 歩行リズム訓練（メトロノーム歩行・リズム音楽）を追加してください
+             </div>`
+          : '';
+
+        el.innerHTML = `
+          <div class="col-span-2 flex items-center gap-2 mb-1">
+            <span class="text-xs font-black text-${tierColor}-700 bg-${tierColor}-100 rounded-full px-3 py-0.5">Tier ${tier}: ${tierLabel}</span>
+          </div>
+          ${advices.map(a => `
+            <div class="rounded-xl border border-slate-200 bg-white p-3">
+              <div class="text-sm font-black text-slate-700 mb-1">${a.icon} ${a.title}</div>
+              <div class="text-[11px] text-slate-600 leading-relaxed">${a.body}</div>
+            </div>`).join('')}
+          ${cvAlert}`;
       }
 
 
@@ -1895,6 +2980,21 @@
         renderBiomechanics();
         renderZTable();
         renderWaveform();
+        // Estimation mode label
+        const modeEl = document.getElementById('p2-estimation-mode');
+        if (modeEl) {
+          const m = S._estimationMode || 'DIST';
+          const alpha = S._calibrationAlpha;
+          const labels = {
+            'IP':     '推定モード: 逆振子モデル (IP)',
+            'IP+CAL': `推定モード: 逆振子 + 距離較正 (IP+CAL) α=${alpha != null ? alpha.toFixed(2) : '?'}`,
+            'DIST':   '推定モード: 距離÷時間 (DIST)',
+            'DEMO':   '推定モード: デモデータ (DEMO)',
+          };
+          let text = labels[m] || m;
+          if (S._calibrationWarning) text += ' ⚠ 較正値が±30%超のため未適用';
+          modeEl.textContent = text;
+        }
       }
 
 
@@ -1921,10 +3021,18 @@
           // questionnaire
           knee: S.shoeQKnee || 'none',
           rain: S.shoeQRain || false,
-          foot: S.shoeQFoot || 'none',
-          fasten: S.shoeQFasten || 'any',
+          foot: S.shoeQFoot || 'none', // none, bunion, flat, both, wide
+          fasten: S.shoeQFasten || 'any', // any, velcro, zipper, lace, boa
+          purpose: S.shoeQPurpose || 'auto', // auto, daily, walking, active
+          design: S.shoeQDesign || 'any', // any, sporty, smart
           gender: S.gender || 'male',
           activityLevel: (() => {
+            // If user explicitly chose a purpose, override automatic velocity grading
+            if (S.shoeQPurpose === 'daily') return 'low';
+            if (S.shoeQPurpose === 'walking') return 'moderate';
+            if (S.shoeQPurpose === 'active') return 'high';
+
+            // Otherwise default to automatic grading by speed
             const sp = typeof S.speedVal === 'number' ? S.speedVal : 0;
             if (sp <= 0) return 'unknown';
             if (sp < 0.8) return 'verylow';
@@ -1943,35 +3051,39 @@
       // feature キーワードマップ（シューズ → 構造化属性）
       const SHOE_KMAP = {
         activity: {
-          high:     ['スポーツ', 'フィットネス', 'ランニング', 'FlyteFoam', 'フルイドライド', 'エネルギーセービング'],
+          high: ['スポーツ', 'フィットネス', 'ランニング', 'FlyteFoam', 'フルイドライド', 'エネルギーセービング'],
           moderate: ['ウォーキング', 'walking', 'ロッカー', 'ガイダンスライン', 'グルーヴ設計', '屈曲性'],
-          low:      ['クッション', 'GEL', 'fuzeGEL', '衝撃吸収', '快適'],
-          verylow:  ['シニア', '高齢', 'マジックテープ', 'ベルクロ', 'BOA', 'サイドジッパー', 'ワンタッチ'],
+          low: ['クッション', 'GEL', 'fuzeGEL', '衝撃吸収', '快適'],
+          verylow: ['シニア', '高齢', 'マジックテープ', 'ベルクロ', 'BOA', 'サイドジッパー', 'ワンタッチ'],
         },
         gender: {
-          male:   ['メンズ'],
+          male: ['メンズ'],
           female: ['レディース'],
         },
         flags: {
-          stability:   ['安定性', 'ガイドレール', 'モーションコントロール', 'メディアルサポート', 'デュアルデンシティ'],
-          cushion:     ['クッション', 'GEL', 'fuzeGEL', '衝撃吸収', 'FlyteFoam'],
-          wideWidth:   ['3E幅', '4E幅', '幅広', 'ワイドフィット', 'ワイドトゥ', '外反母趾対応', 'スクエアトゥ'],
-          archSupport: ['アーチサポート', 'OrthoLite', 'メディアルサポート', 'インソール', '扁平足対応'],
-          waterproof:  ['防水', 'GORE-TEX', 'ゴアテックス', '撥水', '耐水'],
-          easyOn:      ['マジックテープ', 'ベルクロ', 'BOAフィット', 'サイドジッパー', 'ワンタッチ', 'ファスナー'],
-          rocker:      ['ロッカー', 'グルーヴ設計', 'ガイダンスライン'],
-          lightweight: ['軽量', 'ライト'],
-          lace:        ['レースアップ', '靴紐'],
+          stability: ['安定性', 'ガイドレール', 'モーションコントロール', 'メディアルサポート', 'デュアルデンシティ', 'MCCS', 'バランスサポート', 'ヒールカウンター'],
+          cushion: ['クッション', 'GEL', 'fuzeGEL', '衝撃吸収', 'FlyteFoam', 'P-GEL', 'T-GEL', 'SPEVA'],
+          wideWidth: ['3E幅', '4E幅', '5E幅', '幅広', 'ワイドフィット', 'ワイドトゥ', '外反母趾対応', 'スクエアトゥ', '幅広フィット'],
+          archSupport: ['アーチサポート', 'OrthoLite', 'メディアルサポート', 'インソール', '扁平足対応', 'アーチサポートベルト', '3D成型インソール'],
+          waterproof: ['防水', 'GORE-TEX', 'ゴアテックス', '撥水', '耐水', '合皮', '合成皮革', '防水透湿'],
+          easyOn: ['マジックテープ', 'ベルクロ', 'BOAフィット', 'サイドジッパー', 'ワンタッチ', 'ファスナー', 'スリップオン', 'ゴムひも'],
+          rocker: ['ロッカー', 'グルーヴ設計', 'ガイダンスライン', 'ロッカーソール', 'エナジーセービング', '省エネ機能', '省エネ設計'],
+          lightweight: ['軽量', 'ライト', '軽量クッション'],
+          lace: ['レースアップ', '靴紐'],
+          sportyDesign: ['メッシュ', 'ニット', 'ラッセルメッシュ', 'ニットメッシュ', '運動特化', 'モノソックアッパー'],
+          smartDesign: ['天然皮革', '人工皮革', '合成皮革', '本革', 'プレミアム', 'スマートデザイン', 'ビジネスカジュアル', 'コートスニーカー', '人工皮革ストレッチ'],
+          antiTrip: ['つまずき防止', 'グルーヴチェンジ'],
+          odorControl: ['消臭機能', 'MOFF', '消臭繊維'],
         },
       };
 
       // 活動量互換マトリクス: ACT_COMPAT[shoeLevel][userIdx] → 互換度(0–100)
       // userIdx: 0=verylow, 1=low, 2=moderate, 3=high
       const ACT_COMPAT = {
-        verylow:  [100,  60,  30,   5],
-        low:      [ 70, 100,  70,  40],
-        moderate: [ 30,  70, 100,  70],
-        high:     [  5,  30,  60, 100],
+        verylow: [100, 60, 30, 5],
+        low: [70, 100, 70, 40],
+        moderate: [30, 70, 100, 70],
+        high: [5, 30, 60, 100],
       };
       const ACT_IDX = { verylow: 0, low: 1, moderate: 2, high: 3 };
 
@@ -1982,14 +3094,14 @@
         const has = (ws) => ws.some(w => lower.includes(w.toLowerCase()));
         // 活動量スコアリング
         let act = 1;
-        if (has(SHOE_KMAP.activity.high))     act += 3;
+        if (has(SHOE_KMAP.activity.high)) act += 3;
         if (has(SHOE_KMAP.activity.moderate)) act += 2;
-        if (has(SHOE_KMAP.activity.low))      act += 1;
-        if (has(SHOE_KMAP.activity.verylow))  act -= 1;
+        if (has(SHOE_KMAP.activity.low)) act += 1;
+        if (has(SHOE_KMAP.activity.verylow)) act -= 1;
         const activityLevel = act >= 5 ? 'high' : act >= 4 ? 'moderate' : act >= 2 ? 'low' : 'verylow';
         // 性別判定
         let gender = 'unisex';
-        if (has(SHOE_KMAP.gender.male))   gender = 'male';
+        if (has(SHOE_KMAP.gender.male)) gender = 'male';
         if (has(SHOE_KMAP.gender.female)) gender = 'female';
         // 機能フラグ
         const flags = {};
@@ -1997,29 +3109,61 @@
         return { activityLevel, gender, flags };
       }
 
+      // ── シリーズ検出テーブル（商品名・説明からASICSシリーズを特定）─────────
+      const SERIES_KMAP = {
+        ridewalk: ['ゲルライドウォーク', 'GEL-RIDEWALK', 'RIDEWALK'],
+        fieldwalker: ['フィールドウォーカー', 'FIELDWALKER'],
+        fastwalk: ['ゲルファストウォーク', 'GEL-FASTWALK', 'FASTWALK'],
+        lasiro: ['ゲルラシーロ', 'GEL-LASIRO', 'LASIRO'],
+        hadashi: ['ハダシウォーカー', 'HADASHIWALKER'],
+        funwalker: ['ゲルファンウォーカー', 'GEL-FUNWALKER', 'FUNWALKER'],
+        lifewalk: ['ライフウォーカー', 'LIFE WALKER', 'LIFEWALKER'],
+        kneesup: ['ニーズアップ', 'KNEESUP'],
+      };
+
+      function detectSeries(shoe) {
+        const text = [shoe.name || '', shoe.description || '', ...(shoe.features || [])].join(' ');
+        for (const [series, keywords] of Object.entries(SERIES_KMAP)) {
+          if (keywords.some(kw => text.includes(kw))) return series;
+        }
+        return 'other';
+      }
+
       // ユーザーニーズラベル生成（プロファイルサマリー「推奨特性」表示用）
       function getUserNeedsLabels(p) {
         const needs = [];
         const add = (label, priority) => needs.push({ label, priority });
         const sp = p.sp;
-        if (sp > 0 && sp < 0.8)      { add('高安定性（転倒予防）', 'critical'); add('クッション', 'high'); }
+
+        // User specific explicit intent takes precedence
+        if (p.purpose === 'daily') add('日常街歩き最適化', 'high');
+        else if (p.purpose === 'walking') add('ウォーキング最適化', 'high');
+        else if (p.purpose === 'active') add('アクティブ・運動・旅行', 'high');
+
+        if (sp > 0 && sp < 0.8) { add('高安定性（転倒予防）', 'critical'); add('クッション', 'high'); }
         else if (sp > 0 && sp < 1.0) { add('安定サポート', 'high'); add('クッション', 'medium'); }
-        else if (sp >= 1.2)          { add('ロッカー推進', 'medium'); add('軽量', 'medium'); }
-        else if (sp >= 1.0)          { add('ロッカー推進', 'low'); }
-        if (p.cv !== null && p.cv > 8.0)      add('高安定性（リズム改善）', 'critical');
+        else if (sp >= 1.2) { add('ロッカー推進', 'medium'); add('軽量', 'medium'); }
+        else if (sp >= 1.0) { add('ロッカー推進', 'low'); }
+        if (p.cv !== null && p.cv > 8.0) add('高安定性（リズム改善）', 'critical');
         else if (p.cv !== null && p.cv > 4.0) add('安定性（リズム支持）', 'medium');
-        if (p.si !== null && p.si > 10.0)     add('アーチ・左右補正', 'high');
+        if (p.si !== null && p.si > 10.0) add('アーチ・左右補正', 'high');
         else if (p.si !== null && p.si > 5.0) add('アーチサポート', 'medium');
-        if (p.knee === 'severe')         { add('O脚・膝関節サポート', 'critical'); add('膝衝撃吸収', 'high'); }
-        else if (p.knee === 'mild')      add('膝サポート', 'high');
-        if (p.rain)                      add('防水対応', 'high');
+        if (p.knee === 'severe') { add('O脚・膝関節サポート', 'critical'); add('膝衝撃吸収', 'high'); }
+        else if (p.knee === 'mild') add('膝サポート', 'high');
+        if (p.rain) add('防水対応', 'high');
         if (p.foot === 'bunion' || p.foot === 'both') add('幅広・外反母趾対応', 'critical');
-        if (p.foot === 'flat'   || p.foot === 'both') add('アーチサポート（扁平足）', 'critical');
-        if (p.fasten === 'velcro')       add('マジックテープ/BOA', 'high');
-        else if (p.fasten === 'zipper')  add('サイドジッパー', 'high');
-        else if (p.fasten === 'lace')    add('紐靴フィット', 'medium');
-        const actL = { verylow: '低ADL対応設計', low: '日常活動向け', moderate: 'ウォーキング向け', high: 'アクティブ向け' };
-        add(actL[p.activityLevel] || 'ウォーキング向け', 'medium');
+        if (p.foot === 'flat' || p.foot === 'both') add('アーチサポート（扁平足）', 'critical');
+        if (p.foot === 'wide') add('幅広・甲高ゆったり', 'high');
+        if (p.fasten === 'velcro') add('マジックテープ', 'high');
+        else if (p.fasten === 'zipper') add('サイドジッパー', 'high');
+        else if (p.fasten === 'lace') add('紐靴フィット', 'medium');
+        if (p.design === 'sporty') add('スポーティ素材', 'high');
+        else if (p.design === 'smart') add('キレイめデザイン', 'high');
+
+        if (p.purpose === 'auto') {
+          const actL = { verylow: '低ADL対応設計', low: '日常活動向け', moderate: 'ウォーキング向け', high: 'アクティブ向け' };
+          add(actL[p.activityLevel] || 'ウォーキング向け', 'medium');
+        }
         if (p.age >= 75) add('高齢者配慮（75+）', 'medium');
         return needs;
       }
@@ -2055,85 +3199,220 @@
         const sp = p.sp;
         if (sp > 0 && sp < 0.8) {
           if (cls.flags.stability) { score += 12; reasons.push({ label: '高安定性', reason: `歩行速度 ${sp.toFixed(2)} m/s — 転倒リスク閾値以下（Fritz 2009）`, term: '安定性' }); }
-          if (cls.flags.cushion)   { score +=  8; reasons.push({ label: 'クッション性', reason: '低速域での下肢衝撃緩和', term: 'GEL/クッション' }); }
+          if (cls.flags.cushion) { score += 8; reasons.push({ label: 'クッション性', reason: '低速域での下肢衝撃緩和', term: 'GEL/クッション' }); }
           if (cls.flags.easyOn && p.fasten === 'any') { score += 8; reasons.push({ label: '着脱容易（低ADL推奨）', reason: '低活動量域での着脱補助', term: 'easy-on' }); }
         } else if (sp > 0 && sp < 1.0) {
-          if (cls.flags.stability) { score +=  8; reasons.push({ label: '安定サポート', reason: `歩行速度 ${sp.toFixed(2)} m/s — AWGS2019 閾値以下`, term: '安定性' }); }
-          if (cls.flags.cushion)   { score +=  5; reasons.push({ label: 'クッション性', reason: '歩行衝撃の緩和', term: 'クッション' }); }
+          if (cls.flags.stability) { score += 8; reasons.push({ label: '安定サポート', reason: `歩行速度 ${sp.toFixed(2)} m/s — AWGS2019 閾値以下`, term: '安定性' }); }
+          if (cls.flags.cushion) { score += 5; reasons.push({ label: 'クッション性', reason: '歩行衝撃の緩和', term: 'クッション' }); }
         } else if (sp >= 1.0 && sp < 1.2) {
-          if (cls.flags.rocker)    { score +=  8; reasons.push({ label: 'ロッカー推進', reason: `歩行速度 ${sp.toFixed(2)} m/s — 効率的な推進補助`, term: 'ロッカー' }); }
-          if (cls.flags.cushion)   { score +=  4; reasons.push({ label: 'クッション性', reason: '歩行時の快適な衝撃吸収', term: 'クッション' }); }
+          if (cls.flags.rocker) { score += 8; reasons.push({ label: 'ロッカー推進', reason: `歩行速度 ${sp.toFixed(2)} m/s — 効率的な推進補助`, term: 'ロッカー' }); }
+          if (cls.flags.cushion) { score += 4; reasons.push({ label: 'クッション性', reason: '歩行時の快適な衝撃吸収', term: 'クッション' }); }
         } else if (sp >= 1.2) {
-          if (cls.flags.rocker)      { score += 10; reasons.push({ label: 'ロッカー高効率', reason: `歩行速度 ${sp.toFixed(2)} m/s — 高速ウォーキング推進力最大化`, term: 'ロッカー' }); }
-          if (cls.flags.lightweight) { score +=  8; reasons.push({ label: '軽量設計', reason: '高速域での疲労軽減', term: '軽量' }); }
+          if (cls.flags.rocker) { score += 10; reasons.push({ label: 'ロッカー高効率', reason: `歩行速度 ${sp.toFixed(2)} m/s — 高速ウォーキング推進力最大化`, term: 'ロッカー' }); }
+          if (cls.flags.lightweight) { score += 8; reasons.push({ label: '軽量設計', reason: '高速域での疲労軽減', term: '軽量' }); }
         }
 
         // ── 4. 歩行の質（バイオメカニクス）ニーズ (max 10) ──────────
         if (p.cv !== null && p.cv > 8.0) {
           if (cls.flags.stability) { score += 10; reasons.push({ label: '高安定性（リズム改善）', reason: `ステップ変動 CV ${p.cv.toFixed(1)}% — 高安定シューズ推奨`, term: '安定性' }); }
         } else if (p.cv !== null && p.cv > 4.0) {
-          if (cls.flags.stability) { score +=  5; reasons.push({ label: '安定性（リズム支持）', reason: `ステップ変動 CV ${p.cv.toFixed(1)}%`, term: '安定性' }); }
+          if (cls.flags.stability) { score += 5; reasons.push({ label: '安定性（リズム支持）', reason: `ステップ変動 CV ${p.cv.toFixed(1)}%`, term: '安定性' }); }
         }
         if (p.si !== null && p.si > 10.0) {
           if (cls.flags.archSupport) { score += 10; reasons.push({ label: 'アーチ・左右補正', reason: `対称性指数 SI ${p.si.toFixed(1)}% — 内外側制御が重要`, term: 'アーチサポート' }); }
         } else if (p.si !== null && p.si > 5.0) {
-          if (cls.flags.archSupport) { score +=  5; reasons.push({ label: 'アーチサポート', reason: `対称性指数 SI ${p.si.toFixed(1)}% — 左右バランス補助`, term: 'アーチ' }); }
+          if (cls.flags.archSupport) { score += 5; reasons.push({ label: 'アーチサポート', reason: `対称性指数 SI ${p.si.toFixed(1)}% — 左右バランス補助`, term: 'アーチ' }); }
         }
 
         // ── 5. 設問ニーズ ─────────────────────────────────────────
         // Q1: 膝・O脚
         if (p.knee === 'severe') {
           if (cls.flags.stability) { score += 15; reasons.push({ label: 'O脚・膝関節サポート', reason: '強い膝悩み — モーションコントロール・安定性', term: '安定性' }); }
-          if (cls.flags.cushion)   { score +=  8; reasons.push({ label: '膝衝撃吸収', reason: '膝関節への衝撃低減', term: 'クッション' }); }
+          if (cls.flags.cushion) { score += 8; reasons.push({ label: '膝衝撃吸収', reason: '膝関節への衝撃低減', term: 'クッション' }); }
         } else if (p.knee === 'mild') {
-          if (cls.flags.stability) { score +=  8; reasons.push({ label: '膝サポート', reason: '軽度の膝悩み — 安定性でサポート', term: '安定性' }); }
+          if (cls.flags.stability) { score += 8; reasons.push({ label: '膝サポート', reason: '軽度の膝悩み — 安定性でサポート', term: '安定性' }); }
         }
-        // Q2: 防水
+        // Q2: 防水（GORE-TEX → 合皮 → 一般防水 の順で優先）
         if (p.rain) {
-          if (cls.flags.waterproof)  { score += 15; reasons.push({ label: '防水対応', reason: '雨天使用希望 — 防水・耐水素材', term: '防水' }); }
-          else                       { score -=  5; }
+          const rainText = [shoe.name || '', shoe.description || '', ...(shoe.features || [])].join(' ');
+          const hasGoreTex = /GORE-TEX|ゴアテックス/i.test(rainText);
+          const hasSynthLeather = /合皮|合成皮革/i.test(rainText);
+          if (hasGoreTex) {
+            score += 20;
+            reasons.push({ label: 'GORE-TEX防水（最優先）', reason: '完全防水・蒸れにくいGORE-TEX素材採用。雨天での快適な歩行を実現。', term: 'GORE-TEX' });
+          } else if (hasSynthLeather) {
+            score += 15;
+            reasons.push({ label: '合皮素材（雨天対応）', reason: '合成皮革による優れた防水性と耐久性。雨天でも安心の素材。', term: '合皮' });
+          } else if (cls.flags.waterproof) {
+            score += 10;
+            reasons.push({ label: '防水対応', reason: '雨天使用希望 — 防水・耐水素材', term: '防水' });
+          } else {
+            score -= 5;
+          }
         }
         // Q3: 足形
         if (p.foot === 'bunion' || p.foot === 'both') {
-          if (cls.flags.wideWidth)   { score += 15; reasons.push({ label: '外反母趾対応', reason: 'ワイドトゥボックス・幅広設計', term: '幅広' }); }
-          else                       { score -=  8; }
+          if (cls.flags.wideWidth) { score += 15; reasons.push({ label: '外反母趾対応', reason: 'ワイドトゥボックス・幅広設計', term: '幅広' }); }
+          else { score -= 8; }
         }
         if (p.foot === 'flat' || p.foot === 'both') {
           if (cls.flags.archSupport) { score += 15; reasons.push({ label: '扁平足サポート', reason: 'アーチサポート・過回内制御', term: 'アーチサポート' }); }
-          else                       { score -=  5; }
+          else { score -= 5; }
+        }
+        if (p.foot === 'wide') {
+          if (cls.flags.wideWidth) {
+            // 超幅広（4E/5E）はさらにボーナス
+            const allText = [shoe.name || '', shoe.description || '', ...(shoe.features || [])].join(' ');
+            const extraWide = /4E幅|5E幅/.test(allText);
+            score += extraWide ? 20 : 15;
+            reasons.push({ label: extraWide ? '超幅広設計(4E/5E)' : '幅広・甲高ゆったり', reason: '足幅ゆとり構造で指先や甲の圧迫を軽減', term: '幅広' });
+          } else { score -= 10; }
         }
         // Q4: 着脱方法
         const shoeText = [shoe.name || '', ...(shoe.features || [])].join(' ').toLowerCase();
-        if (p.fasten === 'velcro') {
-          if (cls.flags.easyOn)    { score += 15; reasons.push({ label: 'マジックテープ/BOA', reason: '着脱方法の希望に合致', term: 'ベルクロ' }); }
-          else if (cls.flags.lace) { score -= 10; }
-        } else if (p.fasten === 'zipper') {
+        if (p.fasten === 'zipper') {
           if (/ジッパー|ファスナー/.test(shoeText)) { score += 15; reasons.push({ label: 'サイドジッパー', reason: '着脱方法の希望に合致', term: 'ジッパー' }); }
           else if (cls.flags.lace) { score -= 10; }
         } else if (p.fasten === 'lace') {
-          if (cls.flags.lace)   { score +=  8; reasons.push({ label: '紐靴フィット', reason: '細かいフィット調整が可能', term: 'レース' }); }
-          if (cls.flags.easyOn) { score -=  8; }
-        } else { // 'any'
-          if (p.activityLevel === 'verylow' && cls.flags.easyOn) {
+          if (cls.flags.lace) { score += 8; reasons.push({ label: '紐靴フィット', reason: '細かいフィット調整が可能', term: 'レース' }); }
+          if (cls.flags.easyOn && !cls.flags.lace) { score -= 8; }
+        } else { // 'any' or 'velcro' (velcro is prefiltered to lifewalker so scoring bonus is removed)
+          if (p.activityLevel === 'verylow' && p.fasten === 'any' && cls.flags.easyOn) {
             score += 10; reasons.push({ label: '着脱容易（自動推奨）', reason: '低活動量 — 着脱のしやすさを優先', term: 'easy-on' });
           }
+        }
+        // Q6: デザイン・着用シーン (max 15)
+        if (p.design === 'sporty') {
+          if (cls.flags.sportyDesign) { score += 15; reasons.push({ label: 'スポーティ素材', reason: 'メッシュ・ニット素材で通気性が高くスポーティな外観', term: 'メッシュ' }); }
+          else if (cls.flags.smartDesign) { score -= 8; }
+        } else if (p.design === 'smart') {
+          if (cls.flags.smartDesign) { score += 15; reasons.push({ label: 'キレイめデザイン', reason: '天然皮革・合皮の上品な外観でビジネスカジュアルにも', term: '皮革' }); }
+          else if (cls.flags.sportyDesign) { score -= 8; }
         }
 
         // ── 6. 年齢・ADL総合考慮 (max 8) ─────────────────────────
         if (p.age >= 75) {
-          if (cls.flags.easyOn)    { score += 5; reasons.push({ label: '高齢者配慮（75+）', reason: 'ADL維持に直結する着脱のしやすさ', term: 'シニア' }); }
+          if (cls.flags.easyOn) { score += 5; reasons.push({ label: '高齢者配慮（75+）', reason: 'ADL維持に直結する着脱のしやすさ', term: 'シニア' }); }
           if (cls.flags.wideWidth) { score += 3; }
         } else if (p.age >= 65) {
           if (cls.flags.wideWidth) { score += 3; reasons.push({ label: '足幅配慮（65+）', reason: '足幅ゆとりが快適性・安全性に重要', term: '幅広' }); }
         }
 
-        // ── 正規化 (0–100%) ────────────────────────────────────────
-        // max: gender(20)+activity(20)+speed(20)+bio(10)+q(53)+age(8) = 131
-        const MAX = 131;
-        const pct = Math.max(0, Math.min(100, Math.round((score / MAX) * 100)));
+        // ── 7. シリーズコンセプト適合スコア (max 15) ──────────────────
+        // ASICSシリーズの設計コンセプトとユーザー歩行プロファイルの整合性
+        const series = detectSeries(shoe);
+        const SERIES_PROFILE = {
+          ridewalk: { speedMin: 0.8, speedMax: 1.2, acts: ['low', 'moderate'], label: 'GEL-RIDEWALK', desc: 'エネルギーセービング快適ウォーキング設計。ふわり軽く歩き続けられる。' },
+          fieldwalker: { speedMin: 1.0, speedMax: 1.5, acts: ['moderate', 'high'], label: 'FIELDWALKER', desc: 'アウトドア・低山ハイキング向け設計。自然散策に適したライトハイキングシューズ。' },
+          fastwalk: { speedMin: 1.2, speedMax: 2.0, acts: ['high'], label: 'GEL-FASTWALK', desc: 'ファストウォーキングの爽快感を追求した高機能設計。' },
+          lasiro: { speedMin: 0.8, speedMax: 1.3, acts: ['low', 'moderate'], label: 'GEL-LASIRO', desc: 'ライフスタイル重視・自分らしさを楽しむカジュアルウォーキング設計。' },
+          hadashi: { speedMin: 1.0, speedMax: 1.5, acts: ['moderate', 'high'], label: 'HADASHIWALKER', desc: 'ハダシ感覚の履き心地を追求した軽量スポーティ設計。' },
+          funwalker: { speedMin: 0.5, speedMax: 1.0, acts: ['verylow', 'low'], label: 'GEL-FUNWALKER', desc: '足への負担を抑えたやわらかな履き心地。日常歩行快適設計。' },
+          lifewalk: { speedMin: 0.0, speedMax: 1.0, acts: ['verylow', 'low'], label: 'LIFEWAKER', desc: '運動・日常生活・お出かけを支えるヘルスサポート設計。' },
+          kneesup: { speedMin: 0.0, speedMax: 1.5, acts: ['verylow', 'low', 'moderate'], label: 'KNEESUP', desc: 'O脚・ひざ関節内反の負担軽減に特化した専用設計。' },
+        };
+        let seriesBonus = 0;
+        const sConc = SERIES_PROFILE[series];
+        if (sConc) {
+          // 速度帯適合 (max 8)
+          if (sp <= 0 || (sp >= sConc.speedMin && sp <= sConc.speedMax)) {
+            seriesBonus += 8;
+          } else {
+            const dist = sp < sConc.speedMin ? sConc.speedMin - sp : sp - sConc.speedMax;
+            if (dist < 0.3) seriesBonus += 3; // 近接帯は部分点
+          }
+          // 活動量適合 (max 7)
+          if (sConc.acts.includes(p.activityLevel)) seriesBonus += 7;
+          if (seriesBonus > 0) {
+            score += seriesBonus;
+            reasons.push({ label: sConc.label, reason: sConc.desc, term: series });
+          }
+        }
+
+        // ── 8. ニーズアップ 膝悩みボーナス (max 40) ─────────────────
+        // O脚・膝関節の悩みがある場合、KNEESUP専用設計への強い適合ボーナス
+        if (series === 'kneesup') {
+          if (p.knee === 'severe') {
+            score += 40;
+            reasons.push({ label: 'KNEESUP 強推奨', reason: 'O脚・ひざ関節内反の悩みに特化した唯一の専用設計。ひざへの負担を科学的に軽減します。', term: 'kneesup-severe' });
+          } else if (p.knee === 'mild') {
+            score += 25;
+            reasons.push({ label: 'KNEESUP 推奨', reason: '膝への負担を軽減するKNEESUP専用設計が適しています。', term: 'kneesup-mild' });
+          }
+        }
+
+        // ── 動的MAX正規化 ─────────────────────────────────────────
+        // このユーザーが理論上獲得できる最大点のみを分母にする
+        // → 条件に関係ない項目（膝悩みなし等）が分母を水増しして40%台に落ちる問題を解消
+        let dynamicMax = 40; // gender(20) + activity(20) は常時適用
+        // 歩行速度帯ごとに獲得可能な最大点
+        if (sp > 0 && sp < 0.8) dynamicMax += 28; // stability(12)+cushion(8)+easyOn(8)
+        else if (sp > 0 && sp < 1.0) dynamicMax += 13; // stability(8)+cushion(5)
+        else if (sp >= 1.0 && sp < 1.2) dynamicMax += 12; // rocker(8)+cushion(4)
+        else if (sp >= 1.2) dynamicMax += 18; // rocker(10)+lightweight(8)
+        // バイオ指標（CSVデータがある場合のみ加算）
+        if (p.cv !== null) dynamicMax += p.cv > 8.0 ? 10 : p.cv > 4.0 ? 5 : 0;
+        if (p.si !== null) dynamicMax += p.si > 10.0 ? 10 : p.si > 5.0 ? 5 : 0;
+        // 設問条件（ユーザーが該当する項目のみ加算）
+        if (p.knee === 'severe') dynamicMax += 23; // stability(15)+cushion(8)
+        else if (p.knee === 'mild') dynamicMax += 8;
+        if (p.rain) dynamicMax += 20;
+        if (p.foot === 'bunion' || p.foot === 'both') dynamicMax += 15;
+        if (p.foot === 'flat' || p.foot === 'both') dynamicMax += 15;
+        if (p.foot === 'wide') dynamicMax += 20; // 超幅広(4E/5E)ボーナス考慮
+        if (p.fasten === 'zipper') dynamicMax += 15;
+        else if (p.fasten === 'lace') dynamicMax += 8;
+        else if (p.activityLevel === 'verylow' && p.fasten === 'any') dynamicMax += 10; // 'any' + 低活動量 → 着脱自動推薦
+        // Q6: デザイン
+        if (p.design === 'sporty' || p.design === 'smart') dynamicMax += 15;
+        // 年齢配慮
+        if (p.age >= 75) dynamicMax += 8;  // easyOn(5)+wideWidth(3)
+        else if (p.age >= 65) dynamicMax += 3;  // wideWidth(3)
+        // シリーズコンセプト (常時 max 15: 速度帯8 + 活動量7)
+        dynamicMax += 15;
+        // ニーズアップ膝悩みボーナス（膝問題があるユーザーのみ分母に加算）
+        if (p.knee === 'severe') dynamicMax += 40;
+        else if (p.knee === 'mild') dynamicMax += 25;
+        dynamicMax = Math.max(dynamicMax, 1);
+        const pct = Math.max(0, Math.min(100, Math.round((score / dynamicMax) * 100)));
         return { score, pct, reasons };
       }
 
+
+      // ── シューズ事前フィルタリング（速度・着脱方法のハードフィルタ）───────
+      // ルール1: 歩行速度 ≤ 1.0 m/s → ライフウォーカーのみ（膝悩みがあっても同様）
+      // ルール2: 着脱方法指定あり → 合致するシューズのみを候補に絞る
+      function preFilterShoes(shoes, p) {
+        let filtered = shoes;
+
+        // ─ 速度 ≤ 0.9: ライフウォーカー強制（膝悩みの有無に関わらず）─
+        if (p.sp > 0 && p.sp <= 0.9) {
+          const speedFiltered = filtered.filter(shoe => detectSeries(shoe) === 'lifewalk');
+          if (speedFiltered.length) filtered = speedFiltered;
+        }
+
+        // ─ マジックテープ指定: ライフウォーカーのみに限定 (ニーズアップ推奨システムのため) ─
+        if (p.fasten === 'velcro') {
+          const velcroFiltered = filtered.filter(shoe => detectSeries(shoe) === 'lifewalk');
+          if (velcroFiltered.length) filtered = velcroFiltered;
+        }
+
+        // ─ 着脱方法指定: 合致するシューズのみを抽出 (マジックテープ以外) ─
+        if (p.fasten !== 'any' && p.fasten !== 'velcro') {
+          const fastenFiltered = filtered.filter(shoe => {
+            const cls = classifyShoe(shoe);
+            const txt = [shoe.name || '', shoe.description || '', ...(shoe.features || [])].join(' ').toLowerCase();
+            if (p.fasten === 'boa') return /boa|ダイヤル/i.test(txt);
+            if (p.fasten === 'zipper') return /ジッパー|ファスナー|zipper/i.test(txt);
+            // 'lace': 紐靴明示 または ベルクロ・ジッパーなし（標準紐靴）
+            if (p.fasten === 'lace') return cls.flags.lace || (!cls.flags.easyOn && !/ジッパー|ファスナー|boa|ダイヤル/i.test(txt));
+            return true;
+          });
+          if (fastenFiltered.length) filtered = fastenFiltered;
+        }
+
+        return filtered;
+      }
 
       // Page 3 描画（プロファイルサマリー + レコメンドカード）
       function renderPage3() {
@@ -2150,7 +3429,9 @@
 
         // ── 歩行プロファイルサマリー ─────────────────────────────
         const p = assessWalkingProfile();
-        const scored = shoes.map(shoe => {
+        // 速度・着脱方法によるハードフィルタを適用してから採点
+        const filteredShoes = preFilterShoes(shoes, p);
+        const scored = filteredShoes.map(shoe => {
           const { score, pct, reasons } = scoreShoeV2(shoe, p);
           return { ...shoe, score, pct, reasons };
         }).sort((a, b) => b.pct - a.pct);
@@ -2176,7 +3457,7 @@
         const cvColor = C(cvGrade, { '優良': 'border-emerald-200', '良好': 'border-emerald-200', '注意': 'border-amber-300', '要精査': 'border-rose-300' });
         const siGrade = p.si !== null ? G(p.si, [3, 5, 10], ['優良', '良好', '注意', '要精査']) : '—';
         const siColor = C(siGrade, { '優良': 'border-emerald-200', '良好': 'border-emerald-200', '注意': 'border-amber-300', '要精査': 'border-rose-300' });
-        const wrGrade = p.wr !== null ? (Math.abs(p.wr - 0.40) <= 0.02 ? '最適' : Math.abs(p.wr - 0.40) <= 0.06 ? '良好' : p.wr < 0.38 ? '低値' : '高値') : '—';
+        const wrGrade = p.wr !== null ? (Math.abs(p.wr - 0.40) <= 0.05 ? '最適' : Math.abs(p.wr - 0.40) <= 0.10 ? '良好' : p.wr < 0.35 ? '低値' : '高値') : '—';
         const wrColor = C(wrGrade, { '最適': 'border-emerald-200', '良好': 'border-emerald-200', '低値': 'border-amber-300', '高値': 'border-amber-300' });
         const rmsGrade = p.rms !== null ? G(p.rms, [0.5, 0.8, 1.5], ['低衝撃', '正常', '注意', '高衝撃']) : '—';
         const rmsColor = C(rmsGrade, { '低衝撃': 'border-blue-200', '正常': 'border-emerald-200', '注意': 'border-amber-300', '高衝撃': 'border-rose-300' });
@@ -2208,9 +3489,18 @@
             if (p.foot === 'bunion') qBadges.push('<span class="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-[7.5px] font-bold bg-purple-100 text-purple-700">👟 外反母趾</span>');
             else if (p.foot === 'flat') qBadges.push('<span class="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-[7.5px] font-bold bg-purple-100 text-purple-700">👟 扁平足</span>');
             else if (p.foot === 'both') qBadges.push('<span class="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-[7.5px] font-bold bg-rose-100 text-rose-700">👟 外反+扁平</span>');
+            else if (p.foot === 'wide') qBadges.push('<span class="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-[7.5px] font-bold bg-purple-100 text-purple-700">👟 幅広/甲高</span>');
+
             if (p.fasten === 'velcro') qBadges.push('<span class="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-[7.5px] font-bold bg-teal-100 text-teal-700">🔒 マジックテープ</span>');
             else if (p.fasten === 'zipper') qBadges.push('<span class="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-[7.5px] font-bold bg-teal-100 text-teal-700">🔒 サイドジッパー</span>');
             else if (p.fasten === 'lace') qBadges.push('<span class="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-[7.5px] font-bold bg-teal-100 text-teal-700">🔒 紐靴</span>');
+
+            if (p.purpose === 'daily') qBadges.push('<span class="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-[7.5px] font-bold bg-orange-100 text-orange-700">🎯 日常・買物</span>');
+            else if (p.purpose === 'walking') qBadges.push('<span class="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-[7.5px] font-bold bg-orange-100 text-orange-700">🎯 ウォーキング</span>');
+            else if (p.purpose === 'active') qBadges.push('<span class="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-[7.5px] font-bold bg-orange-100 text-orange-700">🎯 アクティブ</span>');
+            if (p.design === 'sporty') qBadges.push('<span class="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-[7.5px] font-bold bg-lime-100 text-lime-700">👟 スポーティ</span>');
+            else if (p.design === 'smart') qBadges.push('<span class="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-[7.5px] font-bold bg-violet-100 text-violet-700">👔 キレイめ</span>');
+
             const actMap = { verylow: ['⚡ 活動量：低', 'bg-slate-100 text-slate-600'], low: ['⚡ 活動量：やや低', 'bg-blue-100 text-blue-700'], moderate: ['⚡ 活動量：標準', 'bg-emerald-100 text-emerald-700'], high: ['⚡ 活動量：高', 'bg-green-100 text-green-700'] };
             if (actMap[p.activityLevel]) qBadges.push(`<span class="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-[7.5px] font-bold ${actMap[p.activityLevel][1]}">${actMap[p.activityLevel][0]}</span>`);
             return qBadges.length ? `<div class="flex flex-wrap gap-1 mb-1.5">${qBadges.join('')}</div>` : '';
@@ -2218,12 +3508,12 @@
       <div class="pt-1.5 border-t border-slate-200 flex flex-wrap gap-1 items-center">
         <span class="text-[7.5px] font-bold text-slate-400 shrink-0">推奨特性:</span>
         ${(() => {
-          const needs = getUserNeedsLabels(p);
-          if (!needs.length) return '<span class="text-[8px] text-slate-400">データ未入力（CSVを読み込んでください）</span>';
-          return needs.map(n =>
-            `<span class="inline-block px-1.5 py-0.5 rounded-full text-[7.5px] font-bold ${n.priority === 'critical' ? 'bg-rose-200 text-rose-800' : n.priority === 'high' ? 'bg-amber-100 text-amber-700' : 'bg-blue-100 text-blue-700'}">${n.label}</span>`
-          ).join('');
-        })()}
+            const needs = getUserNeedsLabels(p);
+            if (!needs.length) return '<span class="text-[8px] text-slate-400">データ未入力（CSVを読み込んでください）</span>';
+            return needs.map(n =>
+              `<span class="inline-block px-1.5 py-0.5 rounded-full text-[7.5px] font-bold ${n.priority === 'critical' ? 'bg-rose-200 text-rose-800' : n.priority === 'high' ? 'bg-amber-100 text-amber-700' : 'bg-blue-100 text-blue-700'}">${n.label}</span>`
+            ).join('');
+          })()}
       </div>
     </div>`;
 
@@ -2285,13 +3575,7 @@
         <p class="text-[13.5px] font-black text-slate-800 leading-snug line-clamp-2">${shoe.name || '商品名不明'}</p>
         <!-- 特徴タグ -->
         ${featTags ? `<div class="flex flex-wrap gap-1">${featTags}</div>` : ''}
-        <!-- 適合度バー -->
-        <div class="flex items-center gap-2">
-          <div class="flex-1 h-2.5 bg-slate-100 rounded-full overflow-hidden">
-            <div class="h-full ${barBg} rounded-full" style="width:${shoe.pct}%"></div>
-          </div>
-          <span class="text-[10.5px] font-black ${pctTx} shrink-0">適合度 ${shoe.pct}%</span>
-        </div>
+
         <!-- マッチ理由 -->
         <ul class="flex flex-col gap-1.5 flex-1 min-h-0">${reasonsHtml}</ul>
         <!-- 説明文スニペット -->
@@ -2318,6 +3602,8 @@
       }
 
 
+
+
       function renderClinicalRisk() {
         const el = document.getElementById('p2-clinical');
         if (!el) return;
@@ -2330,7 +3616,7 @@
             desc: sp < 0.8
               ? `${sp.toFixed(2)} m/s — 転倒・入院リスクが有意に上昇する閾値を下回ります。転倒予防プログラムおよび多職種評価を強く推奨。`
               : `${sp.toFixed(2)} m/s — 転倒ハイリスク閾値（0.8 m/s）をクリア。`,
-            sub: 'Fritz S, Lusardi M. PTJ 2009（< 0.8 m/s で転倒・生活機能低下リスク上昇）; Quach L et al. Arch Intern Med 2011;171(7):654（低歩行速度と入院リスクの用量反応関係）',
+            sub: 'Fritz S, Lusardi M. J Geriatr Phys Ther 2009;32(2):46（< 0.8 m/s で転倒・生活機能低下リスク上昇）; World Guidelines for Falls Prevention and Management 2022（0.8 m/s を転倒リスク閾値として採用）; Quach L et al. J Am Geriatr Soc 2011;59(6):1069-1073',
           },
           {
             label: 'サルコペニア・フレイル精査',
@@ -2339,7 +3625,7 @@
             desc: sp < 1.0
               ? `${sp.toFixed(2)} m/s — AWGS 2019 スクリーニング閾値未満。握力測定・筋量評価（DXA / BIA）を推奨。`
               : `${sp.toFixed(2)} m/s — AWGS 2019 閾値（1.0 m/s）をクリア。`,
-            sub: 'Chen LK et al. J Am Med Dir Assoc. 2020;21(3):300-307（AWGS 2019 現行推奨）/ AWGS 2025 (Nature Aging 2025, PMID:41188603) では速度は主に予後指標として再位置づけ',
+            sub: 'Chen LK et al. J Am Med Dir Assoc. 2020;21(3):300-307（AWGS 2019 現行推奨）。AWGS 2014 の旧閾値 0.8 m/s から 1.0 m/s に引き上げ',
           },
           {
             label: '社会参加・屋外自立歩行',
@@ -2348,7 +3634,7 @@
             desc: sp < 1.0
               ? `${sp.toFixed(2)} m/s — 横断歩道の安全通過や屋外活動に支障が生じる速度域。外出支援・歩行補助具の検討を。`
               : `${sp.toFixed(2)} m/s — 屋外自立歩行・社会参加に必要な速度水準をクリア。`,
-            sub: '日本交差点設計ガイドライン（高齢者対応: 1.0 m/s）; Cesari M et al. J Gerontol A 2005（地域在住高齢者の生活機能分類）',
+            sub: '道路構造令に基づく歩行者横断速度基準（高齢者対応: 1.0 m/s）; Cesari M et al. J Gerontol A 2005（地域在住高齢者の生活機能分類）',
           },
           {
             label: '良好な生命予後水準',
@@ -2383,7 +3669,7 @@
         const meanST = S.bioMeanStepTime; // seconds
 
 
-        const wrOk = wr != null && wr >= 0.38 && wr <= 0.42;
+        const wrOk = wr != null && wr >= 0.35 && wr <= 0.45;
         const cvOk = cv != null && cv < 4.0;
         const siOk = si != null && si < 5.0;
         // RMS: descriptive (no strict clinical cutoff established for waist-PCA)
@@ -2405,11 +3691,11 @@
         const cvGrade = grade4(cv, [2.0, 4.0, 8.0], ['優良', '正常', '注意', '要精査']);
         // SI: lower is better
         const siGrade = grade4(si, [3.0, 5.0, 10.0], ['優良', '正常', '注意', '要精査']);
-        // WR: range 0.38-0.42 is optimal — convert distance from 0.40 center
+        // WR: range 0.35-0.45 is optimal — convert distance from 0.40 center
         const wrDist = wr != null ? Math.abs(wr - 0.40) : null;
         const wrGrade = wrDist == null ? { label: 'N/A', cls: 'bg-slate-200 text-slate-500' }
-          : wrDist <= 0.02 ? { label: '正常', cls: 'bg-emerald-500 text-white' }
-            : wrDist <= 0.08 ? { label: '注意', cls: 'bg-amber-400 text-white' }
+          : wrDist <= 0.05 ? { label: '正常', cls: 'bg-emerald-500 text-white' }
+            : wrDist <= 0.10 ? { label: '注意', cls: 'bg-amber-400 text-white' }
               : { label: '要精査', cls: 'bg-rose-500 text-white' };
         // RMS: normal range 0.5-2.5
         const rmsGrade = rms == null ? { label: 'N/A', cls: 'bg-slate-200 text-slate-500' }
@@ -2427,7 +3713,7 @@
             ok: cv != null ? cvOk : null,
             status: cv == null ? 'CSVデータが必要' : cvOk ? 'リズム安定 — 転倒リスク低' : `リズム不安定 (${cv.toFixed(1)}%) — 転倒リスク上昇`,
             interp: cv == null ? '' : cv < 2.0 ? '非常に規則的なリズム。神経筋制御が良好。' : cv < 4.0 ? '正常範囲のリズム変動。' : cv < 8.0 ? '恐怖性歩行・軽度認知障害・神経疾患の影響を検討。' : '高度の不規則歩行。多職種評価を推奨。',
-            evidence: 'Hausdorff et al. Arch Phys Med Rehabil 2001（前向きコホート, Level II）; BMC Geriatrics 2022 アンブレラレビュー',
+            evidence: 'Hausdorff JM et al. Arch Phys Med Rehabil 2001;82(8):1050-1056（前向きコホート, Level II）; BMC Geriatrics 2022 アンブレラレビュー',
           },
           {
             title: '左右対称性',
@@ -2438,29 +3724,29 @@
             ok: si != null ? siOk : null,
             status: si == null ? 'CSVデータが必要' : siOk ? '対称性良好' : `非対称あり (${si.toFixed(1)}%) — 跛行・片側障害を検討`,
             interp: si == null ? '' : si < 3.0 ? '非常に良好な左右対称性。' : si < 5.0 ? '正常範囲の左右差。' : si < 10.0 ? '跛行・整形外科疾患・片麻痺の可能性。' : '顕著な左右非対称。筋骨格・神経系疾患を疑う。',
-            evidence: 'Robinson et al. Dev Med Child Neurol 1987（SI式の原典）; Patterson et al. Gait Posture 2010',
+            evidence: 'Robinson et al. J Manipulative Physiol Ther 1987;10(4):172-176（SI式の原典）。本システムは奇偶ステップを左右代理として使用（正確な左右脚同定は非対応）。Patterson 2010はSymmetry Ratioを推奨; 閾値は臨床コンセンサスに基づく参考値',
           },
           {
             title: '歩行制御効率',
             subtitle: 'Walk Ratio（歩行比）',
             val: wr != null ? wr.toFixed(3) + ' m/Hz' : (S.speedVal && S.cadenceVal ? (S.strideVal / (S.cadenceVal / 60)).toFixed(3) + ' m/Hz' : 'N/A'),
-            ref: '0.38 – 0.42 m/Hz',
+            ref: '0.35 – 0.45 m/Hz（参考値）',
             grade: wrGrade,
             ok: wr != null ? wrOk : null,
-            status: wr == null ? '速度・テンポを入力' : wrOk ? '正常 — 効率的な中枢神経制御' : wr < 0.38 ? `低値 (${wr.toFixed(3)}) — 小刻み・すり足傾向` : `高値 (${wr.toFixed(3)}) — 代償的大股歩行傾向`,
-            interp: wr == null ? '' : wr < 0.30 ? 'パーキンソン病様の小刻み歩行パターン。精査を推奨。' : wr < 0.38 ? '神経疾患・恐怖性歩行・廃用症候群の可能性。' : wr <= 0.42 ? '中枢神経による歩行制御が効率的に機能。' : '過度な大股歩き。筋力低下による代償歩行の可能性。',
-            evidence: 'Sekiya & Nagasaki, Gait Posture 1998（不変性の実証）; Plotnik et al. J Neurol Sci 2011',
+            status: wr == null ? '速度・テンポを入力' : wrOk ? '正常 — 効率的な中枢神経制御' : wr < 0.35 ? `低値 (${wr.toFixed(3)}) — 小刻み・すり足傾向` : `高値 (${wr.toFixed(3)}) — 代償的大股歩行傾向`,
+            interp: wr == null ? '' : wr < 0.28 ? 'パーキンソン病様の小刻み歩行パターン。精査を推奨。' : wr < 0.35 ? '神経疾患・恐怖性歩行・廃用症候群の可能性。' : wr <= 0.45 ? '中枢神経による歩行制御が効率的に機能。' : '過度な大股歩き。筋力低下による代償歩行の可能性。',
+            evidence: 'Sekiya &amp; Nagasaki, Gait Posture 1998（不変性の実証, 原典単位: mm/(steps/min)≈6.5）; Plotnik et al. J Neurol Sci 2011。本システムはm/Hz換算の参考範囲。',
           },
           {
             title: '体幹動揺強度',
             subtitle: 'RMS加速度（定常区間）',
             val: rms != null ? rms.toFixed(3) + ' m/s²' : 'N/A',
-            ref: '0.50 – 2.50 m/s²',
+            ref: '0.50 – 2.50 m/s²（参考値; 装着位置・PCA方向で変動）',
             grade: rmsGrade,
             ok: rms != null ? rmsOk : null,
             status: rms == null ? 'CSVデータが必要' : rmsLow ? `低値 (${rms.toFixed(3)}) — すり足様歩行の可能性` : rmsHigh ? `高値 (${rms.toFixed(3)}) — 体幹動揺大・衝撃吸収低下` : `正常範囲 (${rms.toFixed(3)})`,
             interp: rms == null ? '' : rmsLow ? '廃用・すり足歩行・疼痛回避歩行を検討。' : rmsHigh ? '体幹筋力低下・バランス障害・関節疾患を検討。' : '良好な衝撃吸収能と体幹安定性。',
-            evidence: 'Moe-Nilssen & Helbostad, J Biomech 2004; Tao et al. IEEE Trans Biomed Eng 2012',
+            evidence: 'Moe-Nilssen & Helbostad, J Biomech 2004; Tao W et al. Sensors 2012;12(2):2255-2283',
           },
         ];
 
@@ -2520,6 +3806,123 @@
       }
 
 
+      // ============================================================
+      //  ADVICE FUNCTIONS
+      // ============================================================
+      function assessInterventionProfile() {
+        const sp  = S.speedVal || 0;
+        const age = S.age || 70;
+        return {
+          fallRisk:        sp > 0 && sp < 0.8,
+          frailSuspect:    sp > 0 && sp < 1.0,
+          deconditioning:  sp >= 1.0 && sp < 1.2,
+          highFunction:    sp >= 1.2,
+          rhythmImpaired:  S.bioCV  != null && S.bioCV  > 4.0,
+          asymmetry:       S.bioSI  != null && S.bioSI  > 5.0,
+          trunkInstability:S.bioRMS != null && S.bioRMS > 2.5,
+          shufflingGait:   S.bioRMS != null && S.bioRMS < 0.5,
+          inefficientGait: S.bioWR  != null && (S.bioWR < 0.38 || S.bioWR > 0.42),
+          elderly:         age >= 75,
+        };
+      }
+
+      function selectAdvice(profile) {
+        const cats = [];
+        if      (profile.fallRisk)       { cats.push('BALANCE', 'STRENGTH'); }
+        else if (profile.frailSuspect)   { cats.push('STRENGTH', 'ENDURANCE'); }
+        else if (profile.deconditioning) { cats.push('ENDURANCE', 'GAIT_QUALITY'); }
+        else if (profile.highFunction)   { cats.push('ENDURANCE', 'FLEXIBILITY'); }
+
+        if (profile.rhythmImpaired  && !cats.includes('GAIT_QUALITY')) cats.push('GAIT_QUALITY');
+        if (profile.asymmetry       && !cats.includes('GAIT_QUALITY')) cats.push('GAIT_QUALITY');
+        if (profile.trunkInstability && !cats.includes('BALANCE'))     cats.push('BALANCE');
+        if (profile.shufflingGait   && !cats.includes('STRENGTH'))     cats.push('STRENGTH');
+        if (profile.elderly         && !cats.includes('FLEXIBILITY'))  cats.push('FLEXIBILITY');
+
+        cats.length = Math.min(cats.length, 3);
+
+        const selected = [];
+        cats.forEach((cat, idx) => {
+          const pool = ADVICE_DB
+            .filter(a => a.category === cat)
+            .map(a => ({ ...a, matchCount: a.conditions.filter(c => profile[c]).length }))
+            .sort((a, b) => b.matchCount - a.matchCount);
+          selected.push(...pool.slice(0, idx === 0 ? 2 : 1));
+        });
+
+        const seen = new Set();
+        const unique = selected.filter(a => { if (seen.has(a.id)) return false; seen.add(a.id); return true; });
+        return unique.slice(0, 5);
+      }
+
+      function getActiveAdvice() {
+        const advice = window._selectedAdvice || [];
+        if (!S.isAdviceEdited) return advice;
+        const list = document.getElementById('advice-checklist');
+        if (!list) return advice;
+        const checkedIds = new Set(
+          Array.from(list.querySelectorAll('input[type="checkbox"]:checked')).map(cb => cb.dataset.adviceId)
+        );
+        return advice.filter(a => checkedIds.has(a.id));
+      }
+
+      function populateAdviceChecklist() {
+        const list = document.getElementById('advice-checklist');
+        if (!list) return;
+        const advice = window._selectedAdvice || [];
+        list.innerHTML = advice.map(a => {
+          const col = ADVICE_COLORS[a.category];
+          return `<label style="display:flex;align-items:center;gap:6px;font-size:10.5px;color:#334155;padding:3px 0;cursor:pointer;">
+            <input type="checkbox" checked data-advice-id="${a.id}">
+            <span style="color:${col.color};font-weight:600;">${col.icon}</span> ${a.title}
+          </label>`;
+        }).join('');
+        list.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+          cb.addEventListener('change', () => {
+            S.isAdviceEdited = true;
+            renderAdviceFull();
+          });
+        });
+      }
+
+      function renderAdviceFull() {
+        const container = document.getElementById('page15-advice-cards');
+        if (!container) return;
+        const CAT_NAMES = { BALANCE:'バランス', STRENGTH:'筋力', ENDURANCE:'持久力', GAIT_QUALITY:'歩行の質', FLEXIBILITY:'柔軟性' };
+        const advice = getActiveAdvice();
+        const renderCard = (a) => {
+          const col    = ADVICE_COLORS[a.category];
+          const safety = a.safetyNote ? `<div style="font-size:10px;color:#DC2626;background:#FEF2F2;border-radius:4px;padding:4px 8px;margin-bottom:4px;">⚠️ ${a.safetyNote}</div>` : '';
+          const intens = a.prescription.intensity   ? `<div><span style="color:#94A3B8;">強度:</span> <b>${a.prescription.intensity}</b></div>` : '';
+          const prog   = a.prescription.progression ? `<div><span style="color:#94A3B8;">段階:</span> <b>${a.prescription.progression}</b></div>` : '';
+          return `<div style="border:1px solid ${col.color}33;border-left:5px solid ${col.color};border-radius:0 10px 10px 0;padding:12px 16px;margin-bottom:8px;background:${col.bg};">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+              <span style="font-size:13px;">${col.icon}</span>
+              <span style="font-size:12px;font-weight:800;color:${col.color};">${a.title}</span>
+              <span style="font-size:9px;background:${col.color};color:#fff;padding:1px 6px;border-radius:10px;">${CAT_NAMES[a.category]}</span>
+            </div>
+            <div style="font-size:10px;color:#64748B;margin-bottom:6px;">目的: ${a.target}</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px 12px;background:#fff;border:1px solid #E2E8F0;border-radius:6px;padding:8px 10px;margin-bottom:6px;font-size:10px;">
+              <div><span style="color:#94A3B8;">頻度:</span> <b>${a.prescription.frequency}</b></div>
+              <div><span style="color:#94A3B8;">量:</span> <b>${a.prescription.duration}</b></div>
+              ${intens}${prog}
+            </div>
+            <div style="font-size:10.5px;color:#334155;line-height:1.6;margin-bottom:4px;">📝 ${a.howTo}</div>
+            ${safety}
+            <div style="font-size:9px;color:#64748B;border-top:1px solid #E2E8F0;padding-top:4px;">📖 ${a.evidence.source} [${a.evidence.level}]<br>${a.evidence.finding}</div>
+          </div>`;
+        };
+        const customCard = S.adviceCustom ? `<div style="border:1px solid #64748B33;border-left:5px solid #64748B;border-radius:0 10px 10px 0;padding:12px 16px;margin-bottom:8px;background:#F8FAFC;">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+            <span style="font-size:13px;">✏️</span>
+            <span style="font-size:12px;font-weight:800;color:#64748B;">担当者からの追加アドバイス</span>
+          </div>
+          <div style="font-size:10.5px;color:#334155;line-height:1.6;white-space:pre-wrap;">${S.adviceCustom}</div>
+        </div>` : '';
+        container.innerHTML = advice.map(renderCard).join('') + customCard;
+      }
+
+
       function updateAllViews() {
         setView('userName', S.userName);
         setView('gender', S.gender);
@@ -2558,8 +3961,16 @@
 
         renderRadar();
         renderMetricsList();
+        renderCommunityPage();
         renderPage2();
         renderPage3();
+
+        // アドバイス自動選択 & 描画
+        if (!S.isAdviceEdited && S.speedVal > 0) {
+          window._selectedAdvice = selectAdvice(assessInterventionProfile());
+          populateAdviceChecklist();
+        }
+        renderAdviceFull();
       }
 
 
@@ -2595,7 +4006,10 @@
               if (field === 'reportDate') setView('reportDate', val);
               if (field === 'userId') setView('userId', val);
               if (field === 'userName') setView('userName', val);
-              if (field === 'height') setView('height', val);
+              if (field === 'height') {
+                setView('height', val);
+                if (S.exportRows) showNotif('身長を変更しました。正確なIP推定のためCSVを再読み込みしてください。');
+              }
             }
           });
         });
@@ -2606,6 +4020,8 @@
         document.querySelectorAll('[data-field="speedVal"]').forEach(el => el.value = S.speedVal);
         document.querySelectorAll('[data-field="strideVal"]').forEach(el => el.value = S.strideVal);
         document.querySelectorAll('[data-field="cadenceVal"]').forEach(el => el.value = S.cadenceVal);
+        const advCustomEl = document.getElementById('advice-custom');
+        if (advCustomEl) advCustomEl.value = S.adviceCustom || '';
       }
 
 
@@ -2646,7 +4062,7 @@
       async function buildPDFBlob() {
         const { jsPDF } = window.jspdf;
         const pdf = new jsPDF({ format: 'a4', unit: 'mm', orientation: 'portrait' });
-        const pages = document.querySelectorAll('.pdf-page');
+        const pages = Array.from(document.querySelectorAll('.pdf-page')).filter(p => !p.classList.contains('hidden'));
         const scale = 2;
         for (let i = 0; i < pages.length; i++) {
           if (i > 0) pdf.addPage();
@@ -2686,8 +4102,12 @@
       // ============================================================
       function exportCSV() {
         if (!S.exportRows) return;
-        const header = 'Step,Time(s),Acceleration(m/s2),StepInterval(s)\n';
-        const body = S.exportRows.map(r => r.join(',')).join('\n');
+        const ipSL = S._ipResult && S._ipResult.stepLengths ? S._ipResult.stepLengths : [];
+        const header = 'Step,Time(s),Acceleration(m/s2),StepInterval(s),StepLength_IP(m)\n';
+        const body = S.exportRows.map((r, i) => {
+          const sl = i > 0 && ipSL[i - 1] != null ? ipSL[i - 1].toFixed(4) : '';
+          return [...r, sl].join(',');
+        }).join('\n');
         const blob = new Blob([header + body], { type: 'text/csv' });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
@@ -2696,6 +4116,82 @@
         showNotif('CSVをエクスポートしました');
       }
 
+
+      // ============================================================
+      //  BATCH PROCESSING
+      // ============================================================
+      async function processBatch(files, subjectMap, defaultGender, defaultAge, defaultDist, onProgress) {
+        // S の全プロパティをディープコピーでバックアップ
+        const backup = JSON.parse(JSON.stringify(S));
+
+        const results = [];
+        try {
+          for (let i = 0; i < files.length; i++) {
+            const file = files[i];
+            const info = subjectMap.get(file.name) || {};
+            const userName   = info.userName  || '';
+            const gender     = info.gender    || defaultGender;
+            const age        = info.age       != null ? +info.age    : +defaultAge;
+            const height     = info.height    != null ? +info.height : S.height;
+            const userId     = info.userId    || '';
+            const walkDist   = +defaultDist;
+
+            // S を一時上書き
+            S.userName   = userName;
+            S.gender     = gender;
+            S.age        = age;
+            S.height     = height;
+            S.userId     = userId;
+            S.walkDist   = walkDist;
+
+            let row = {
+              filename: file.name, userName, gender, age, height, userId,
+              speedVal: null, strideVal: null, cadenceVal: null,
+              totalScore: null, walkingAge: null,
+              speedScore: null, strideScore: null, cadenceScore: null,
+              speedZ: null, strideZ: null, cadenceZ: null,
+              bioCV: null, bioSI: null, bioWR: null, bioRMS: null,
+              peakCount: null, steadyPeakCount: null,
+              error: null,
+            };
+
+            try {
+              const text = await file.text();
+              processCSV(text);
+              calcAllScores();
+              row.speedVal       = S.speedVal;
+              row.strideVal      = S.strideVal;
+              row.cadenceVal     = S.cadenceVal;
+              row.totalScore     = S.totalScore     ?? null;
+              row.walkingAge     = S.walkingAge     ?? null;
+              row.speedScore     = S.speedScore     ?? null;
+              row.strideScore    = S.strideScore    ?? null;
+              row.cadenceScore   = S.cadenceScore   ?? null;
+              row.speedZ         = S.speedZ         ?? null;
+              row.strideZ        = S.strideZ        ?? null;
+              row.cadenceZ       = S.cadenceZ       ?? null;
+              row.bioCV          = S.bioCV          ?? null;
+              row.bioSI          = S.bioSI          ?? null;
+              row.bioWR          = S.bioWR          ?? null;
+              row.bioRMS         = S.bioRMS         ?? null;
+              row.peakCount      = S.peaks          ? S.peaks.length       : null;
+              row.steadyPeakCount= S.steadyPeaks    ? S.steadyPeaks.length : null;
+            } catch (err) {
+              row.error = err.message;
+            }
+
+            results.push(row);
+            if (onProgress) onProgress(i + 1, files.length);
+          }
+        } finally {
+          // S を復元（try-finally で必ず実行）
+          Object.keys(backup).forEach(k => { S[k] = backup[k]; });
+          calcAllScores();
+          updateAllViews();
+        }
+
+        return results;
+      }
 
       // ============================================================
       //  NOTIFICATION
@@ -2714,6 +4210,196 @@
 
 
       // ============================================================
+      //  直接計測 (DeviceMotionEvent API)
+      // ============================================================
+      let _dmT = [], _dmX = [], _dmY = [], _dmZ = [];
+      let _dmStart = null, _dmHandler = null;
+      const DIRECT_MIN_SEC = 15;
+      // ── リングバッファ（波形プレビュー用）
+      const _waveBufSize = 500;
+      let _waveBuffer = new Float64Array(_waveBufSize);
+      let _waveBufferIdx = 0, _waveBufferCount = 0;
+      let _waveDrawing = false;
+
+      async function requestMotionPermission() {
+        if (typeof DeviceMotionEvent === 'undefined')
+          throw new Error('このデバイスはモーションセンサーに対応していません。スマートフォンで開いてください。');
+        if (typeof DeviceMotionEvent.requestPermission === 'function') {
+          const perm = await DeviceMotionEvent.requestPermission();
+          if (perm !== 'granted') throw new Error('センサーの許可が必要です。設定から許可してください。');
+        }
+      }
+
+      function drawWaveLive() {
+        if (!_waveDrawing) return;
+        const canvas = document.getElementById('wave-canvas');
+        if (!canvas) { requestAnimationFrame(drawWaveLive); return; }
+        const ctx = canvas.getContext('2d');
+        const W = canvas.width, H = canvas.height;
+        const n = Math.min(_waveBufferCount, _waveBufSize);
+
+        // background
+        ctx.fillStyle = '#0F172A';
+        ctx.fillRect(0, 0, W, H);
+
+        if (n < 2) { requestAnimationFrame(drawWaveLive); return; }
+
+        // collect ordered samples
+        const samples = new Float64Array(n);
+        if (_waveBufferCount <= _waveBufSize) {
+          samples.set(_waveBuffer.subarray(0, n));
+        } else {
+          const start = _waveBufferIdx;
+          for (let i = 0; i < n; i++) samples[i] = _waveBuffer[(start + i) % _waveBufSize];
+        }
+
+        // mean
+        let sum = 0; for (let i = 0; i < n; i++) sum += samples[i];
+        const mean = sum / n;
+
+        // amplitude range for scaling (use max deviation from mean, min 2 m/s²)
+        let maxDev = 0;
+        for (let i = 0; i < n; i++) { const d = Math.abs(samples[i] - mean); if (d > maxDev) maxDev = d; }
+        const amp = Math.max(maxDev, 2);
+
+        // zero-line (mean)
+        ctx.strokeStyle = '#475569';
+        ctx.lineWidth = 1;
+        ctx.setLineDash([4, 4]);
+        ctx.beginPath();
+        ctx.moveTo(0, H / 2);
+        ctx.lineTo(W, H / 2);
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        // waveform
+        ctx.strokeStyle = '#3B82F6';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        for (let i = 0; i < n; i++) {
+          const x = (i / (n - 1)) * W;
+          const y = H / 2 - ((samples[i] - mean) / amp) * (H / 2 - 4);
+          i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+        }
+        ctx.stroke();
+
+        // walking detection: 2+ peaks > mean+0.8 in last 100 samples
+        const tail = Math.min(n, 100);
+        const threshold = mean + 0.8;
+        let peaks = 0;
+        for (let i = n - tail + 1; i < n - 1; i++) {
+          if (samples[i] > threshold && samples[i] > samples[i - 1] && samples[i] > samples[i + 1]) peaks++;
+        }
+        const walking = peaks >= 2;
+        const indR = 7;
+        ctx.beginPath();
+        ctx.arc(W - indR - 6, indR + 6, indR, 0, Math.PI * 2);
+        ctx.fillStyle = walking ? '#22C55E' : '#475569';
+        ctx.fill();
+        ctx.font = 'bold 8px sans-serif';
+        ctx.fillStyle = '#F8FAFC';
+        ctx.textAlign = 'right';
+        ctx.fillText(walking ? '歩行中' : '待機', W - indR * 2 - 10, indR * 2 + 6 + 1);
+
+        requestAnimationFrame(drawWaveLive);
+      }
+
+      function updateDirectUI(elapsedSec) {
+        const mm = String(Math.floor(elapsedSec / 60)).padStart(2, '0');
+        const ss = String(Math.floor(elapsedSec % 60)).padStart(2, '0');
+        document.getElementById('direct-timer').textContent = mm + ':' + ss;
+        document.getElementById('direct-sample-count').textContent = _dmT.length;
+        const pct = Math.min(100, (elapsedSec / DIRECT_MIN_SEC) * 100);
+        document.getElementById('direct-progress').style.width = pct + '%';
+        if (elapsedSec >= DIRECT_MIN_SEC) {
+          const stopBtn = document.getElementById('btn-direct-stop');
+          if (stopBtn.disabled && !window._directStopAnnounced) {
+            window._directStopAnnounced = true;
+            announceText('停止できます。準備ができたら停止ボタンを押してください。');
+          }
+          stopBtn.disabled = false;
+          stopBtn.className = 'w-full py-2 rounded-lg font-bold text-sm transition-all bg-red-500 text-white hover:bg-red-600 active:scale-95';
+          document.getElementById('direct-hint').textContent = '停止できます。準備ができたら「停止して分析」を押してください。';
+        }
+      }
+
+      async function startDirectMeasure() {
+        try {
+          await requestMotionPermission();
+        } catch (err) {
+          showNotif(err.message, true);
+          return;
+        }
+        _dmT = []; _dmX = []; _dmY = []; _dmZ = [];
+        _waveBuffer = new Float64Array(_waveBufSize);
+        _waveBufferIdx = 0; _waveBufferCount = 0;
+        _dmStart = performance.now();
+        _waveDrawing = true;
+        requestAnimationFrame(drawWaveLive);
+        document.getElementById('btn-direct-start').classList.add('hidden');
+        document.getElementById('direct-measure-panel').classList.remove('hidden');
+        document.getElementById('direct-timer').textContent = '00:00';
+        document.getElementById('direct-sample-count').textContent = '0';
+        document.getElementById('direct-progress').style.width = '0%';
+        document.getElementById('direct-hint').textContent = '15秒以上歩くと停止できます';
+        const stopBtn = document.getElementById('btn-direct-stop');
+        stopBtn.disabled = true;
+        stopBtn.className = 'w-full py-2 rounded-lg font-bold text-sm transition-all bg-slate-200 text-slate-400 cursor-not-allowed';
+        const statusEl = document.getElementById('csv-status');
+        statusEl.textContent = '計測中...';
+        statusEl.classList.remove('hidden');
+        _dmHandler = (e) => {
+          const a = e.acceleration || e.accelerationIncludingGravity;
+          if (!a || a.x == null) return;
+          _dmT.push((performance.now() - _dmStart) / 1000);
+          const ax = a.x ?? 0, ay = a.y ?? 0, az = a.z ?? 0;
+          _dmX.push(ax); _dmY.push(ay); _dmZ.push(az);
+          _waveBuffer[_waveBufferIdx] = Math.sqrt(ax * ax + ay * ay + az * az);
+          _waveBufferIdx = (_waveBufferIdx + 1) % _waveBufSize;
+          _waveBufferCount++;
+          updateDirectUI(_dmT[_dmT.length - 1]);
+        };
+        window.addEventListener('devicemotion', _dmHandler);
+        window._directStopAnnounced = false;
+        announceText('計測を開始します。3秒後に歩き始めてください。');
+      }
+
+      function stopDirectMeasure() {
+        _waveDrawing = false;
+        if (_dmHandler) {
+          window.removeEventListener('devicemotion', _dmHandler);
+          _dmHandler = null;
+        }
+        document.getElementById('direct-measure-panel').classList.add('hidden');
+        document.getElementById('btn-direct-start').classList.remove('hidden');
+        if (_dmT.length < 50) {
+          showNotif('データ不足です。もう少し歩いてください（目安: 15秒以上）', true);
+          return;
+        }
+        const statusEl = document.getElementById('csv-status');
+        statusEl.textContent = '解析中...';
+        statusEl.classList.remove('hidden');
+        try {
+          processRawArrays(_dmT, _dmX, _dmY, _dmZ);
+          calcAllScores();
+          syncInputs();
+          updateAllViews();
+          announceText('計測が完了しました。'); announceResult();
+          statusEl.textContent = `✓ 直接計測 完了: ${S.plotData.length} サンプル / ステップ数: ${S.peaks.length} (定常: ${S.steadyPeaks.length})`;
+          statusEl.classList.remove('hidden');
+          const expBtn = document.getElementById('btn-export-csv');
+          expBtn.disabled = false;
+          expBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+          showNotif('直接計測を読み込みました');
+          window.dispatchEvent(new Event('directMeasureComplete'));
+        } catch (err) {
+          statusEl.textContent = '✗ エラー: ' + err.message;
+          showNotif(err.message, true);
+        }
+      }
+
+
+      // ============================================================
       //  INIT
       // ============================================================
       function init() {
@@ -2722,8 +4408,123 @@
         bindInputs();
 
 
+        // ---- 計測モードタブ切り替え（3タブ対応）----
+        const _measureTabs = ['direct', 'phyphox', 'batch'];
+        function setMeasureTab(mode) {
+          _measureTabs.forEach(m => {
+            const panel = document.getElementById('panel-' + m);
+            const tab   = document.getElementById('tab-' + m);
+            if (!panel || !tab) return;
+            const active = m === mode;
+            panel.classList.toggle('hidden', !active);
+            if (active) {
+              tab.classList.add('bg-white', 'text-blue-600', 'shadow-sm');
+              tab.classList.remove('text-slate-500');
+            } else {
+              tab.classList.remove('bg-white', 'text-blue-600', 'shadow-sm');
+              tab.classList.add('text-slate-500');
+            }
+          });
+        }
+        document.getElementById('tab-direct').addEventListener('click', () => setMeasureTab('direct'));
+        document.getElementById('tab-phyphox').addEventListener('click', () => setMeasureTab('phyphox'));
+        document.getElementById('tab-batch').addEventListener('click', () => setMeasureTab('batch'));
+        document.getElementById('btn-direct-start').addEventListener('click', startDirectMeasure);
+        document.getElementById('btn-direct-stop').addEventListener('click', stopDirectMeasure);
+
+
+        // ---- 歩行距離プリセット ----
+        function recalcSpeedFromDist() {
+          if (S._ipResult && S._ipResult.ok) {
+            // IP mode: recalibrate with new walkDist
+            if (S.walkDist > 0 && S._ipResult.stepLengths.length > 0) {
+              const estTotalDist = S._ipResult.stepLengths.reduce((s, v) => s + v, 0);
+              const alpha = S.walkDist / estTotalDist;
+              S._calibrationAlpha = alpha;
+              S._calibrationWarning = Math.abs(alpha - 1) > 0.3;
+              if (!S._calibrationWarning) {
+                S.strideVal = Math.round(S._ipResult.meanSL * alpha * 100) / 100;
+                S.speedVal  = Math.round(S.strideVal * (S.cadenceVal / 60) * 100) / 100;
+                S._estimationMode = 'IP+CAL';
+              } else {
+                S.strideVal = Math.round(S._ipResult.meanSL * 100) / 100;
+                S.speedVal  = Math.round(S.strideVal * (S.cadenceVal / 60) * 100) / 100;
+                S._estimationMode = 'IP';
+              }
+            } else {
+              S.strideVal = Math.round(S._ipResult.meanSL * 100) / 100;
+              S.speedVal  = Math.round(S.strideVal * (S.cadenceVal / 60) * 100) / 100;
+              S._calibrationAlpha = null;
+              S._calibrationWarning = false;
+              S._estimationMode = 'IP';
+            }
+          } else {
+            // DIST fallback — 定常区間ベース（全ピーク区間にフォールバック）
+            const steadyDist = S._totalSteps > 0 ? S.walkDist * (S._steadySteps / S._totalSteps) : null;
+            const autoSpeed = S._steadyTime && S._steadyTime > 0 && steadyDist
+              ? steadyDist / S._steadyTime
+              : (S._allPeakTime && S._allPeakTime > 0 ? S.walkDist / S._allPeakTime : null);
+            if (autoSpeed && autoSpeed > 0.3 && autoSpeed < 3.0) {
+              S.speedVal = Math.round(autoSpeed * 100) / 100;
+              S.strideVal = Math.round((S.speedVal / (S.cadenceVal / 60)) * 100) / 100;
+            }
+          }
+        }
+        function updateDistButtons(val) {
+          [5, 10, 20].forEach(d => {
+            const b = document.getElementById(`btn-dist-${d}`);
+            const on = d === val;
+            b.classList.toggle('bg-blue-600',    on);
+            b.classList.toggle('border-blue-600', on);
+            b.classList.toggle('text-white',      on);
+            b.classList.toggle('bg-white',        !on);
+            b.classList.toggle('border-slate-200',!on);
+            b.classList.toggle('text-slate-600',  !on);
+            b.classList.toggle('hover:bg-slate-50',!on);
+          });
+        }
+        [5, 10, 20].forEach(d => {
+          document.getElementById(`btn-dist-${d}`).addEventListener('click', () => {
+            S.walkDist = d;
+            document.getElementById('input-walk-dist').value = d;
+            updateDistButtons(d);
+            recalcSpeedFromDist(); calcAllScores(); updateAllViews(); syncInputs();
+          });
+        });
+        document.getElementById('input-walk-dist').addEventListener('change', () => {
+          const v = parseFloat(document.getElementById('input-walk-dist').value);
+          if (v > 0 && v <= 100) {
+            S.walkDist = v;
+            updateDistButtons(v);
+            recalcSpeedFromDist(); calcAllScores(); updateAllViews(); syncInputs();
+          }
+        });
+
+
+        // ---- 音声フィードバック トグル ----
+        (function () {
+          const btn  = document.getElementById('btn-voice');
+          const icon = document.getElementById('voice-icon');
+          function setVoice(active) {
+            localStorage.setItem('walkingAgeVoiceEnabled', active ? 'true' : 'false');
+            icon.textContent = active ? '🔊' : '🔇';
+            btn.classList.toggle('bg-emerald-600',     active);
+            btn.classList.toggle('text-white',         active);
+            btn.classList.toggle('!border-emerald-600', active);
+            btn.classList.toggle('hover:bg-emerald-700',active);
+            btn.classList.toggle('text-slate-600',     !active);
+            btn.classList.toggle('hover:bg-slate-50',  !active);
+          }
+          btn.addEventListener('click', () =>
+            setVoice(localStorage.getItem('walkingAgeVoiceEnabled') !== 'true')
+          );
+          setVoice(localStorage.getItem('walkingAgeVoiceEnabled') === 'true');
+        })();
+
+
         // ---- CSV helpers ----
         function csvLoaded(label) {
+          S.isAdviceEdited = false;
           calcAllScores();
           syncInputs();
           updateAllViews();
@@ -2742,7 +4543,9 @@
           try {
             processCSV(text);
             csvLoaded(source + ' 読み込み完了');
+            announceText('データを読み込みました。'); announceResult();
             showNotif(source + ' を読み込みました');
+            window.dispatchEvent(new Event('csvLoadComplete'));
           } catch (err) {
             statusEl.textContent = '✗ エラー: ' + err.message;
             showNotif(err.message, true);
@@ -2805,12 +4608,27 @@
 
 
         // phyphox WiFi remote fetch
-        async function fetchPhyphoxRemote(ip) {
-          const phyphoxUrl = `http://${ip.trim()}/get?acc_time&accX&accY&accZ`;
+        async function fetchPhyphoxRemote(rawIp) {
+          // http:// プレフィクス・ポート・末尾スラッシュを除去して正規化
+          const ip = rawIp.trim()
+            .replace(/^https?:\/\//i, '')
+            .replace(/:[\d]+$/, '')
+            .replace(/\/+$/, '');
+          const phyphoxUrl = `http://${ip}/get?acc_time&accX&accY&accZ`;
           const statusEl = document.getElementById('csv-status');
           statusEl.textContent = '取得中...'; statusEl.classList.remove('hidden');
           try {
-            const res = await fetch(phyphoxUrl, { signal: AbortSignal.timeout(12000) });
+            let res;
+            if (IS_NETLIFY) {
+              // HTTPS環境: Netlifyプロキシ経由（Mixed Content 回避）
+              res = await fetch(
+                `/.netlify/functions/proxy?url=${encodeURIComponent(phyphoxUrl)}`,
+                { signal: AbortSignal.timeout(12000) }
+              );
+            } else {
+              // ローカルhttp環境: 直接fetch
+              res = await fetch(phyphoxUrl, { signal: AbortSignal.timeout(12000) });
+            }
             if (!res.ok) throw new Error(`HTTP ${res.status}`);
             const json = await res.json();
             const t = json.acc_time.buffer;
@@ -2823,8 +4641,10 @@
             handleCSVText(lines.join('\n'), 'phyphox WiFi');
           } catch (err) {
             statusEl.textContent = '✗ 取得エラー: ' + err.message;
-            const msg = `phyphox に接続できません。\nPCとスマホが同じWiFiに接続され、入力したアドレス（${ip.trim()}）が正しいことを確認してください。`;
-            showNotif(msg, true);
+            const hint = IS_NETLIFY
+              ? 'HTTPS環境ではブラウザの Mixed Content 制限によりphyphox WiFi直接接続はブロックされます。\nCSVファイル経由での読み込みを推奨します。'
+              : `PCとスマホが同じWiFiに接続され、入力したアドレス（${ip}）が正しいことを確認してください。`;
+            showNotif(`phyphox に接続できません。\n${hint}`, true);
           }
         }
 
@@ -3008,30 +4828,56 @@
         }
 
 
-        // ---- 専門家モード トグル ----
-        function setExpertMode(active) {
-          const page2 = document.getElementById('page2-expert');
-          const btn = document.getElementById('btn-expert-mode');
-          const badge = document.getElementById('expert-mode-badge');
+        // ---- 地域在住者向けモード トグル ----
+        function setCommunityMode(active) {
+          const page = document.getElementById('page2-community');
+          const btn = document.getElementById('btn-community-mode');
+          const badge = document.getElementById('community-mode-badge');
           if (active) {
-            page2.classList.remove('hidden');
-            btn.classList.add('bg-indigo-600', 'text-white', '!border-indigo-600');
-            btn.classList.remove('text-slate-600');
+            page.classList.remove('hidden');
+            btn.classList.add('bg-emerald-600', 'text-white', '!border-emerald-600', 'hover:bg-emerald-700');
+            btn.classList.remove('text-slate-600', 'hover:bg-slate-50');
             badge.textContent = 'ON';
-            badge.className = 'inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-black bg-white text-indigo-600 leading-none';
-            setTimeout(() => page2.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50);
+            badge.className = 'inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-black bg-white text-emerald-600 leading-none';
+            setTimeout(() => page.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50);
           } else {
-            page2.classList.add('hidden');
-            btn.classList.remove('bg-indigo-600', 'text-white', '!border-indigo-600');
-            btn.classList.add('text-slate-600');
+            page.classList.add('hidden');
+            btn.classList.remove('bg-emerald-600', 'text-white', '!border-emerald-600', 'hover:bg-emerald-700');
+            btn.classList.add('text-slate-600', 'hover:bg-slate-50');
             badge.textContent = 'OFF';
             badge.className = 'inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-black bg-slate-100 text-slate-500 leading-none';
           }
-          window._expertModeActive = active;
+          window._communityModeActive = active;
         }
 
-        document.getElementById('btn-expert-mode').addEventListener('click', () => {
-          setExpertMode(!window._expertModeActive);
+        document.getElementById('btn-community-mode').addEventListener('click', () => {
+          setCommunityMode(!window._communityModeActive);
+        });
+
+        // ---- 臨床向けモード トグル ----
+        function setClinicalMode(active) {
+          const page = document.getElementById('page2-expert');
+          const btn = document.getElementById('btn-clinical-mode');
+          const badge = document.getElementById('clinical-mode-badge');
+          if (active) {
+            page.classList.remove('hidden');
+            btn.classList.add('bg-indigo-600', 'text-white', '!border-indigo-600', 'hover:bg-indigo-700');
+            btn.classList.remove('text-slate-600', 'hover:bg-slate-50');
+            badge.textContent = 'ON';
+            badge.className = 'inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-black bg-white text-indigo-600 leading-none';
+            setTimeout(() => page.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50);
+          } else {
+            page.classList.add('hidden');
+            btn.classList.remove('bg-indigo-600', 'text-white', '!border-indigo-600', 'hover:bg-indigo-700');
+            btn.classList.add('text-slate-600', 'hover:bg-slate-50');
+            badge.textContent = 'OFF';
+            badge.className = 'inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-black bg-slate-100 text-slate-500 leading-none';
+          }
+          window._clinicalModeActive = active;
+        }
+
+        document.getElementById('btn-clinical-mode').addEventListener('click', () => {
+          setClinicalMode(!window._clinicalModeActive);
         });
 
 
@@ -3044,16 +4890,16 @@
           if (active) {
             section.classList.remove('hidden');
             page3.classList.remove('hidden');
-            btn.classList.add('bg-blue-600', 'text-white', '!border-blue-600');
-            btn.classList.remove('text-slate-600');
+            btn.classList.add('bg-blue-600', 'text-white', '!border-blue-600', 'hover:bg-blue-700');
+            btn.classList.remove('text-slate-600', 'hover:bg-slate-50');
             badge.textContent = 'ON';
             badge.className = 'inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-black bg-white text-blue-600 leading-none';
-            section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            setTimeout(() => page3.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50);
           } else {
             section.classList.add('hidden');
             page3.classList.add('hidden');
-            btn.classList.remove('bg-blue-600', 'text-white', '!border-blue-600');
-            btn.classList.add('text-slate-600');
+            btn.classList.remove('bg-blue-600', 'text-white', '!border-blue-600', 'hover:bg-blue-700');
+            btn.classList.add('text-slate-600', 'hover:bg-slate-50');
             badge.textContent = 'OFF';
             badge.className = 'inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-black bg-slate-100 text-slate-500 leading-none';
           }
@@ -3066,15 +4912,65 @@
         });
 
 
+        // ---- 詳細アドバイスモード トグル ----
+        function setAdviceMode(active) {
+          const page15   = document.getElementById('page15-advice');
+          const section  = document.getElementById('advice-input-section');
+          const btn      = document.getElementById('btn-advice-mode');
+          const badge    = document.getElementById('advice-mode-badge');
+          if (active) {
+            page15.classList.remove('hidden');
+            section.classList.remove('hidden');
+            btn.classList.add('bg-orange-600', 'text-white', '!border-orange-600', 'hover:bg-orange-700');
+            btn.classList.remove('text-slate-600', 'hover:bg-slate-50');
+            badge.textContent = 'ON';
+            badge.className = 'inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-black bg-white text-orange-600 leading-none';
+            setTimeout(() => page15.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50);
+          } else {
+            page15.classList.add('hidden');
+            section.classList.add('hidden');
+            btn.classList.remove('bg-orange-600', 'text-white', '!border-orange-600', 'hover:bg-orange-700');
+            btn.classList.add('text-slate-600', 'hover:bg-slate-50');
+            badge.textContent = 'OFF';
+            badge.className = 'inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-black bg-slate-100 text-slate-500 leading-none';
+          }
+          window._adviceModeActive = active;
+        }
+
+        document.getElementById('btn-advice-mode').addEventListener('click', () => {
+          setAdviceMode(!window._adviceModeActive);
+        });
+
+        // アドバイスリセットリンク
+        document.getElementById('advice-reset').addEventListener('click', (e) => {
+          e.preventDefault();
+          S.isAdviceEdited = false;
+          window._selectedAdvice = selectAdvice(assessInterventionProfile());
+          populateAdviceChecklist();
+          renderAdviceFull();
+        });
+
+        document.getElementById('advice-custom').addEventListener('input', (e) => {
+          S.adviceCustom = e.target.value;
+          renderAdviceFull();
+        });
+
+
         document.getElementById('btn-load-sheet').addEventListener('click', loadShoeSheet);
 
 
         // ── パーソナライズ設問のイベントリスナー ──
-        document.querySelectorAll('input[name="q-knee"]').forEach(el => {
-          el.addEventListener('change', () => {
-            S.shoeQKnee = el.value;
-            if (window._shoeData && window._shoeData.length) renderPage3();
-          });
+        document.querySelectorAll('input[type="radio"]').forEach(el => {
+          if (['q-knee', 'q-foot', 'q-fasten', 'q-purpose', 'q-design'].includes(el.name)) {
+            el.addEventListener('change', (e) => {
+              if (el.name === 'q-knee') S.shoeQKnee = e.target.value;
+              if (el.name === 'q-foot') S.shoeQFoot = e.target.value;
+              if (el.name === 'q-fasten') S.shoeQFasten = e.target.value;
+              if (el.name === 'q-purpose') S.shoeQPurpose = e.target.value;
+              if (el.name === 'q-design') S.shoeQDesign = e.target.value;
+              if (window._shoeData && window._shoeData.length) renderPage3();
+            });
+          }
         });
         document.getElementById('q-rain').addEventListener('change', e => {
           S.shoeQRain = e.target.checked;
@@ -3110,6 +5006,8 @@
           generateDemoData();
           calcAllScores();
           S.isCommentEdited = false;
+          S.isAdviceEdited = false;
+          S.adviceCustom = '';
           S.comment = generateComment();
           populateInputs();
           csvLoaded('サンプルデータ読み込み完了');
@@ -3122,7 +5020,12 @@
 
 
         // Buttons
-        document.getElementById('btn-download').addEventListener('click', generatePDF);
+        document.getElementById('btn-download').addEventListener('click', () => {
+          saveResult()
+            .then(() => showNotif('計測結果を履歴に保存しました'))
+            .catch(() => {}); // エラーは saveResult 内で通知済み
+          generatePDF();
+        });
         document.getElementById('btn-print').addEventListener('click', () => window.print());
         document.getElementById('btn-share').addEventListener('click', async () => {
           const overlay = document.getElementById('pdf-overlay');
@@ -3181,6 +5084,290 @@
         calcAllScores();
         updateAllViews();
         window.addEventListener('load', () => setTimeout(fitToScreen, 150));
+        // ── バッチ処理 ────────────────────────────────────────────────
+        (function () {
+          let _batchResults = [];
+          let _batchAccelFiles = null;
+
+          // ドロップゾーン
+          const dropzone = document.getElementById('batch-dropzone');
+          const accelInput = document.getElementById('batch-accel-files');
+          const filesLabel = document.getElementById('batch-files-label');
+
+          function setAccelFiles(fileList) {
+            if (fileList.length > 50) { showNotif('最大50ファイルまでです', true); return; }
+            _batchAccelFiles = fileList;
+            filesLabel.textContent = fileList.length + ' 件選択';
+          }
+
+          dropzone.addEventListener('click', () => accelInput.click());
+          accelInput.addEventListener('change', e => setAccelFiles(e.target.files));
+          dropzone.addEventListener('dragover', e => { e.preventDefault(); dropzone.classList.add('border-blue-400', 'bg-blue-50/30'); });
+          dropzone.addEventListener('dragleave', () => { dropzone.classList.remove('border-blue-400', 'bg-blue-50/30'); });
+          dropzone.addEventListener('drop', e => {
+            e.preventDefault();
+            dropzone.classList.remove('border-blue-400', 'bg-blue-50/30');
+            const csvFiles = Array.from(e.dataTransfer.files).filter(f => f.name.endsWith('.csv'));
+            if (csvFiles.length === 0) { showNotif('CSVファイルを選択してください', true); return; }
+            // FileList は読み取り専用なので DataTransfer で再構築
+            const dt = new DataTransfer();
+            csvFiles.forEach(f => dt.items.add(f));
+            setAccelFiles(dt.files);
+          });
+
+          // 対象者情報CSVファイル選択
+          const subjectInput = document.getElementById('batch-subject-file');
+          const subjectName  = document.getElementById('batch-subject-name');
+          document.querySelector('label[for]'); // 直接labelを使う
+          subjectInput.addEventListener('change', e => {
+            subjectName.textContent = e.target.files[0] ? e.target.files[0].name : '未選択';
+          });
+
+          // 対象者情報CSVをパースして Map を返す
+          async function parseSubjectCSV(file) {
+            const map = new Map();
+            if (!file) return map;
+            const text = await file.text();
+            const lines = text.trim().split('\n');
+            if (lines.length < 2) return map;
+            const headers = lines[0].split(',').map(h => h.trim());
+            const idx = k => headers.indexOf(k);
+            for (let i = 1; i < lines.length; i++) {
+              const cols = lines[i].split(',').map(c => c.trim());
+              const fname = cols[idx('filename')] || '';
+              if (!fname) continue;
+              map.set(fname, {
+                userName: idx('userName') >= 0 ? cols[idx('userName')] : '',
+                gender:   idx('gender')   >= 0 ? cols[idx('gender')]   : '',
+                age:      idx('age')      >= 0 ? cols[idx('age')]      : null,
+                height:   idx('height')   >= 0 ? cols[idx('height')]   : null,
+                userId:   idx('userId')   >= 0 ? cols[idx('userId')]   : '',
+              });
+            }
+            return map;
+          }
+
+          // テーブル描画
+          function renderBatchTable(results) {
+            const tbody   = document.getElementById('batch-result-tbody');
+            const summary = document.getElementById('batch-result-summary');
+            const area    = document.getElementById('batch-result-area');
+            area.classList.remove('hidden');
+            const ok  = results.filter(r => !r.error).length;
+            const err = results.filter(r =>  r.error).length;
+            summary.textContent = `成功 ${ok} 件 / 失敗 ${err} 件`;
+            tbody.innerHTML = results.map((r, i) => {
+              const bg = r.error ? 'background:#fff1f2;' : '';
+              const fmt = (v, d) => v != null ? (+v).toFixed(d) : '—';
+              return `<tr style="${bg}border-bottom:1px solid #f1f5f9;">
+                <td class="px-2 py-1.5 text-slate-400">${i + 1}</td>
+                <td class="px-2 py-1.5 text-slate-700 font-mono" style="max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${r.filename}">${r.filename}</td>
+                <td class="px-2 py-1.5 text-slate-600">${r.userName || '—'}</td>
+                <td class="px-2 py-1.5 text-right text-slate-600">${r.age ?? '—'}</td>
+                <td class="px-2 py-1.5 text-right font-bold text-slate-700">${fmt(r.speedVal, 2)}</td>
+                <td class="px-2 py-1.5 text-right text-slate-600">${fmt(r.strideVal, 2)}</td>
+                <td class="px-2 py-1.5 text-right text-slate-600">${fmt(r.cadenceVal, 0)}</td>
+                <td class="px-2 py-1.5 text-right font-bold text-blue-700">${fmt(r.totalScore, 0)}</td>
+                <td class="px-2 py-1.5 text-right text-slate-600">${r.walkingAge ?? '—'}</td>
+                <td class="px-2 py-1.5 text-rose-600" style="max-width:100px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${r.error||''}">${r.error || ''}</td>
+              </tr>`;
+            }).join('');
+          }
+
+          // 実行ボタン
+          document.getElementById('btn-batch-run').addEventListener('click', async () => {
+            if (!_batchAccelFiles || _batchAccelFiles.length === 0) {
+              showNotif('加速度CSVを選択してください', true); return;
+            }
+            if (_batchAccelFiles.length > 50) {
+              showNotif('最大50ファイルまでです', true); return;
+            }
+            const runBtn = document.getElementById('btn-batch-run');
+            runBtn.disabled = true;
+
+            const subjectMap = await parseSubjectCSV(subjectInput.files[0]);
+            const defaultGender = document.getElementById('batch-gender').value;
+            const defaultAge    = document.getElementById('batch-age').value;
+            const defaultDist   = document.getElementById('batch-dist').value;
+
+            _batchResults = await processBatch(
+              _batchAccelFiles, subjectMap, defaultGender, defaultAge, defaultDist,
+              (done, total) => { runBtn.textContent = `解析中... (${done}/${total})`; }
+            );
+            runBtn.disabled = false;
+            runBtn.textContent = '▶ 一括解析を実行';
+            renderBatchTable(_batchResults);
+          });
+
+          // CSVエクスポート
+          document.getElementById('btn-batch-export').addEventListener('click', () => {
+            if (!_batchResults.length) return;
+            const header = ['filename','userName','gender','age','height','userId',
+              'speedVal','strideVal','cadenceVal','totalScore','walkingAge',
+              'speedScore','strideScore','cadenceScore','speedZ','strideZ','cadenceZ',
+              'bioCV','bioSI','bioWR','bioRMS','peakCount','steadyPeakCount','error'];
+            const now = new Date();
+            const ts = `${now.getFullYear()}${String(now.getMonth()+1).padStart(2,'0')}${String(now.getDate()).padStart(2,'0')}_${String(now.getHours()).padStart(2,'0')}${String(now.getMinutes()).padStart(2,'0')}${String(now.getSeconds()).padStart(2,'0')}`;
+            const csv = [header.join(','),
+              ..._batchResults.map(r => header.map(k => r[k] ?? '').join(','))
+            ].join('\n');
+            const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+            const a = Object.assign(document.createElement('a'), {
+              href: URL.createObjectURL(blob),
+              download: `batch_results_${ts}.csv`,
+            });
+            a.click(); URL.revokeObjectURL(a.href);
+          });
+
+          // 履歴DBに一括保存
+          document.getElementById('btn-batch-save-db').addEventListener('click', async () => {
+            const ok = _batchResults.filter(r => !r.error);
+            if (!ok.length) { showNotif('保存対象のデータがありません', true); return; }
+            const backup = JSON.parse(JSON.stringify(S));
+            let saved = 0;
+            try {
+              for (const r of ok) {
+                Object.assign(S, r);
+                try { await saveResult(); saved++; } catch (e) { /* 個別エラーは継続 */ }
+              }
+            } finally {
+              Object.keys(backup).forEach(k => { S[k] = backup[k]; });
+            }
+            showNotif(`${saved} 件を履歴DBに保存しました`);
+          });
+        })();
+        // ── バッチ処理ここまで ────────────────────────────────────────
+
+        // ── 履歴モーダル制御 ──────────────────────────────────────────
+        (function () {
+          const modal   = document.getElementById('history-modal');
+          const tbody   = document.getElementById('history-modal-tbody');
+          const empty   = document.getElementById('history-modal-empty');
+
+          function fmtDate(ts) {
+            const d = new Date(ts);
+            return `${d.getFullYear()}.${String(d.getMonth()+1).padStart(2,'0')}.${String(d.getDate()).padStart(2,'0')}`;
+          }
+
+          async function renderModal() {
+            let records = [];
+            try { records = await getHistory(''); } catch (e) { return; }
+            tbody.innerHTML = '';
+            if (records.length === 0) {
+              empty.classList.remove('hidden');
+              return;
+            }
+            empty.classList.add('hidden');
+            tbody.innerHTML = records.map(r => `
+              <tr style="border-bottom:1px solid #f1f5f9;">
+                <td style="padding:7px 8px;color:#64748b;white-space:nowrap;">${fmtDate(r.timestamp)}</td>
+                <td style="padding:7px 8px;font-weight:600;color:#0f172a;">${r.userName || '—'}</td>
+                <td style="padding:7px 8px;text-align:right;color:#475569;">${r.speedVal != null ? (+r.speedVal).toFixed(2)+' m/s' : '—'}</td>
+                <td style="padding:7px 8px;text-align:right;font-weight:700;color:#1e3a8a;">${r.totalScore != null ? Math.round(r.totalScore)+' 点' : '—'}</td>
+                <td style="padding:7px 8px;text-align:right;color:#475569;">${r.walkingAge != null ? r.walkingAge+' 歳' : '—'}</td>
+                <td style="padding:7px 8px;text-align:center;">
+                  <button data-id="${r.id}" class="hist-del-btn" style="background:none;border:none;cursor:pointer;font-size:15px;color:#94a3b8;" title="削除">🗑</button>
+                </td>
+              </tr>`).join('');
+
+            // 削除ボタン
+            tbody.querySelectorAll('.hist-del-btn').forEach(btn => {
+              btn.addEventListener('click', async () => {
+                if (!confirm('このレコードを削除しますか？')) return;
+                try {
+                  await deleteResult(btn.dataset.id);
+                  await renderModal();
+                } catch (e) { showNotif('削除エラー: ' + e.message, true); }
+              });
+            });
+          }
+
+          // 開く
+          document.getElementById('btn-history').addEventListener('click', () => {
+            modal.style.display = 'flex';
+            renderModal();
+          });
+
+          // 閉じる
+          document.getElementById('btn-history-close').addEventListener('click', () => {
+            modal.style.display = 'none';
+          });
+          modal.addEventListener('click', (e) => {
+            if (e.target === modal) modal.style.display = 'none';
+          });
+
+          // CSV エクスポート
+          document.getElementById('btn-history-csv-export').addEventListener('click', async () => {
+            let records = [];
+            try { records = await getHistory(''); } catch (e) { return; }
+            if (records.length === 0) { showNotif('履歴データがありません', true); return; }
+            const header = ['id','userId','userName','gender','age','height','reportDate','timestamp',
+              'speedVal','strideVal','cadenceVal','walkDist','totalScore','speedScore','strideScore',
+              'cadenceScore','walkingAge','bioCV','bioSI','bioWR','bioRMS','speedZ','strideZ','cadenceZ'];
+            const csv = [header.join(','),
+              ...records.map(r => header.map(k => r[k] ?? '').join(','))
+            ].join('\n');
+            const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+            const a = Object.assign(document.createElement('a'), {
+              href: URL.createObjectURL(blob),
+              download: 'walking_age_history.csv'
+            });
+            a.click(); URL.revokeObjectURL(a.href);
+          });
+        })();
+        // ── 履歴モーダル制御ここまで ───────────────────────────────────
+
+        // ── ガイドボタン → 簡易ヘルプダイアログ ────────────────────
+        (function () {
+          document.getElementById('btn-guide').addEventListener('click', () => {
+            // 既存モーダルがあれば閉じる
+            const existing = document.getElementById('guide-help-modal');
+            if (existing) { existing.remove(); return; }
+
+            const modal = document.createElement('div');
+            modal.id = 'guide-help-modal';
+            modal.style.cssText = 'position:fixed;inset:0;z-index:1000;background:rgba(15,23,42,0.7);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;animation:fadeIn .2s ease;';
+            modal.innerHTML = `
+              <div style="background:#fff;border-radius:16px;box-shadow:0 20px 60px rgba(0,0,0,0.3);padding:32px;width:min(520px,calc(100vw - 32px));max-height:calc(100vh - 48px);overflow-y:auto;position:relative;">
+                <button id="guide-close" style="position:absolute;top:12px;right:14px;background:none;border:none;font-size:18px;color:#94a3b8;cursor:pointer;padding:4px 8px;border-radius:6px;">✕</button>
+                <h2 style="font-size:20px;font-weight:900;color:#0f172a;margin:0 0 16px;text-align:center;">🚶 計測ガイド</h2>
+
+                <div style="display:flex;flex-direction:column;gap:12px;">
+                  <div style="background:#EFF6FF;border:1px solid #BFDBFE;border-radius:10px;padding:14px 16px;">
+                    <div style="font-size:14px;font-weight:800;color:#1E40AF;margin-bottom:6px;">Step 1: 対象者情報を入力</div>
+                    <div style="font-size:12px;color:#1E3A5F;line-height:1.6;">左パネルに<strong>氏名・性別・年齢</strong>を入力してください。</div>
+                  </div>
+
+                  <div style="background:#F0FDF4;border:1px solid #BBF7D0;border-radius:10px;padding:14px 16px;">
+                    <div style="font-size:14px;font-weight:800;color:#166534;margin-bottom:6px;">Step 2: 計測方法を選択</div>
+                    <div style="font-size:12px;color:#14532D;line-height:1.6;">
+                      <strong>📱 直接計測</strong>: スマホブラウザで歩きながら計測（phyphox不要）<br>
+                      <strong>📄 phyphox / CSV</strong>: phyphoxでエクスポートしたCSVを読み込み<br>
+                      <strong>📊 バッチ</strong>: 複数のCSVを一括処理
+                    </div>
+                  </div>
+
+                  <div style="background:#FFFBEB;border:1px solid #FDE68A;border-radius:10px;padding:14px 16px;">
+                    <div style="font-size:14px;font-weight:800;color:#92400E;margin-bottom:6px;">Step 3: 結果を確認・PDF出力</div>
+                    <div style="font-size:12px;color:#78350F;line-height:1.6;">データ読み込み後、右側にレポートが自動生成されます。<br>右上の<strong>「共有」</strong>ボタンでPDFをダウンロードできます。</div>
+                  </div>
+                </div>
+
+                <div style="margin-top:16px;text-align:center;">
+                  <button id="guide-ok" style="padding:10px 32px;background:#2563eb;color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;">OK</button>
+                </div>
+              </div>
+            `;
+            document.body.appendChild(modal);
+
+            const close = () => modal.remove();
+            document.getElementById('guide-close').addEventListener('click', close);
+            document.getElementById('guide-ok').addEventListener('click', close);
+            modal.addEventListener('click', (e) => { if (e.target === modal) close(); });
+          });
+        })();
+        // ── ガイドボタン制御ここまで ─────────────────────────────────
+
         window.addEventListener('resize', () => setTimeout(renderWaveform, 100));
       }
 
@@ -3189,6 +5376,17 @@
 
 
     })();
+  </script>
+
+  <script>
+    // Service Worker 登録（GAS環境ではスキップ）
+    if ('serviceWorker' in navigator && typeof google === 'undefined') {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js')
+          .then(reg => console.log('SW registered:', reg.scope))
+          .catch(err => console.warn('SW registration failed:', err));
+      });
+    }
   </script>
 </body>
 

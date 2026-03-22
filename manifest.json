@@ -1,0 +1,12 @@
+{
+  "name": "歩行年齢テスト 計測システム",
+  "short_name": "歩行年齢",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "theme_color": "#1e3a8a",
+  "background_color": "#f1f5f9",
+  "lang": "ja",
+  "orientation": "any",
+  "icons": []
+}

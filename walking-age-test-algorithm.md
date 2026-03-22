@@ -1,8 +1,8 @@
 # 歩行年齢テスト計測システム
 ## 評価指標アルゴリズム リファレンス
 
-**対象**: `walking-age-test.html` の解析・スコアリング・判定ロジック
-**作成日**: 2026-03-04
+**対象**: `index.html` の解析・スコアリング・判定ロジック
+**最終更新**: 2026-03-22
 
 ---
 
@@ -50,18 +50,18 @@ phyphox「Linear Acceleration」エクスポート CSV
 ### 1.3 バンドパスフィルタ（2次 Butterworth、ゼロ位相）
 
 ```
-通過帯域: 0.7 – 6.0 Hz
+通過帯域: 0.5 – 6.0 Hz
 フィルタ次数: 2
 設計方法: バイリニア変換
 
 カットオフ正規化:
-  f_low  = 0.7 / (fs/2)
+  f_low  = 0.5 / (fs/2)
   f_high = 6.0 / (fs/2)
 
 ゼロ位相処理: 順方向フィルタ → 逆順フィルタ（filtfilt 等価）
 ```
 
-**設計根拠**: 成人歩行ケイデンス 50–180 歩/分（0.83–3.0 Hz）。高調波成分を含むため上限 6 Hz。
+**設計根拠**: 成人歩行ケイデンス 50–180 歩/分（0.83–3.0 Hz）。超低速歩行（ケイデンス < 60 歩/分 = 0.5 Hz）にも対応するため下限 0.5 Hz。高調波成分を含むため上限 6 Hz。
 
 ---
 
@@ -115,7 +115,7 @@ CV   = SD / Mean × 100  [%]
 | 注意 | 4.0–8.0 % | 恐怖性歩行・軽度認知障害・神経疾患の影響を検討 |
 | 要精査 | ≥ 8.0 % | 高度の不規則歩行。多職種評価を推奨。 |
 
-**根拠**: Hausdorff et al. Arch Phys Med Rehabil 2001（前向きコホート, Level II）; BMC Geriatrics 2022 アンブレラレビュー
+**根拠**: Hausdorff JM et al. Arch Phys Med Rehabil 2001;82(8):1050-1056（前向きコホート, Level II）; BMC Geriatrics 2022 アンブレラレビュー
 
 ---
 
@@ -131,6 +131,8 @@ SI = |OddMean - EvenMean| / Overall × 100  [%]
 
 > Robinson 1987 式。奇数・偶数ステップ交互の時間差で左右非対称性を評価。
 
+> **実装上の制約**: 本システムは腰部加速度センサーから左右脚を直接同定できないため、奇数・偶数ステップを左右の代理指標として使用している。歩行開始足によりマッピングが反転する可能性があり、臨床的な左右差の方向（どちらが患側か）の判定には使用できない。Patterson et al. Gait Posture 2010 はSymmetry Ratioを推奨しており、本SIの閾値（5%/10%）は臨床コンセンサスに基づく参考値である。
+
 #### 判定グレード
 
 | グレード | 閾値 | 臨床的意義 |
@@ -140,7 +142,7 @@ SI = |OddMean - EvenMean| / Overall × 100  [%]
 | 注意 | 5.0–10.0 % | 跛行・整形外科疾患・片麻痺の可能性 |
 | 要精査 | ≥ 10.0 % | 顕著な左右非対称。筋骨格・神経系疾患を疑う。 |
 
-**根拠**: Robinson et al. Dev Med Child Neurol 1987（原典）; Patterson et al. Gait Posture 2010
+**根拠**: Robinson et al. J Manipulative Physiol Ther 1987;10(4):172-176（原典）; Patterson et al. Gait Posture 2010
 
 ---
 
@@ -156,15 +158,15 @@ Walk Ratio = Step Length [m] / Step Frequency [Hz]
 
 | グレード | 閾値 | 臨床的意義 |
 |---------|------|-----------|
-| 正常 | 0.38–0.42 m/Hz | 中枢神経による効率的な歩行制御 |
-| 注意（低値） | 0.30–0.38 m/Hz | 神経疾患・恐怖性歩行・廃用症候群の可能性 |
-| 注意（高値） | 0.42–0.48 m/Hz | 代償的大股歩き・筋力低下の可能性 |
-| 要精査（低値） | < 0.30 m/Hz | パーキンソン病様の小刻み歩行パターン |
-| 要精査（高値） | > 0.48 m/Hz | 高度の代償歩行 |
+| 正常 | 0.35–0.45 m/Hz（参考値） | 中枢神経による効率的な歩行制御 |
+| 注意（低値） | 0.28–0.35 m/Hz | 神経疾患・恐怖性歩行・廃用症候群の可能性 |
+| 注意（高値） | 0.45–0.50 m/Hz | 代償的大股歩き・筋力低下の可能性 |
+| 要精査（低値） | < 0.28 m/Hz | パーキンソン病様の小刻み歩行パターン |
+| 要精査（高値） | > 0.50 m/Hz | 高度の代償歩行 |
 
-> 実装上の判定: `|WR - 0.40| ≤ 0.02` → 正常 / `≤ 0.08` → 注意 / `> 0.08` → 要精査
+> 実装上の判定: `|WR - 0.40| ≤ 0.05` → 正常 / `≤ 0.10` → 注意 / `> 0.10` → 要精査
 
-**根拠**: Sekiya & Nagasaki, Gait Posture 1998（不変性の実証）; Plotnik et al. J Neurol Sci 2011
+**根拠**: Sekiya & Nagasaki, Gait Posture 1998（不変性の実証; 原典単位 mm/(steps/min)≈6.5, 本システムはm/Hz換算の参考範囲）; Plotnik et al. J Neurol Sci 2011
 
 ---
 
@@ -184,21 +186,22 @@ RMS = √( Σ signal[k]² / N )  [m/s²]
 | 注意（低値） | < 0.50 m/s² | すり足・廃用・疼痛回避歩行 |
 | 注意（高値） | > 2.50 m/s² | 体幹動揺大・バランス障害・関節疾患の疑い |
 
-**根拠**: Moe-Nilssen & Helbostad, J Biomech 2004; Tao et al. IEEE Trans Biomed Eng 2012
+**根拠**: Moe-Nilssen & Helbostad, J Biomech 2004; Tao W et al. Sensors 2012;12(2):2255-2283
 
 ---
 
 ## 3. 歩行速度・歩幅・ケイデンスの算出
 
 ```
-計測距離: D = 10.0 m（固定）
+計測距離: D = walkDist [m]  （ユーザー設定: 5 / 10 / 20 m、デフォルト 10 m）
 
 歩行速度 [m/s]:
-  T = t[steadyPeaks.last] - t[steadyPeaks.first]  （定常区間経過時間）
-  speed = D / T
+  allPeakTime = t[peaks.last] - t[peaks.first]  （全ピーク区間の経過時間）
+  speed = D / allPeakTime
+  ※ 有効範囲: 0.3 < speed < 3.0 m/s の場合のみ採用
 
 ステップ数 n = steadyPeaks.length - 1
-平均ステップ時間 meanST = T / n  [s]
+平均ステップ時間 meanST = (t[steadyPeaks.last] - t[steadyPeaks.first]) / n  [s]
 
 ケイデンス [歩/分]:
   cadence = 60 / meanST
@@ -208,17 +211,86 @@ RMS = √( Σ signal[k]² / N )  [m/s²]
          = speed × meanST
 ```
 
+> **歩行距離変更時の再計算（recalcSpeedFromDist）**: ユーザーが walkDist を変更すると、保存済みの `_allPeakTime` から速度・歩幅を自動再計算する。`_allPeakTime` が未取得（CSV未読込）の場合は再計算をスキップする。
+
+---
+
+### 3.1 倒立振子モデルによるステップ長直接推定（Mode A）
+
+身長が入力されている場合、加速度データからステップ長を直接推定する。
+歩行距離の入力は校正用のオプションとなり、距離に依存しない推定が可能。
+
+**エビデンス**:
+- Zijlstra W, Hof AL. Gait Posture 2003;18(2):1-10（原典, 被引用1,138回）
+- Zijlstra A, Zijlstra W. Gait Posture 2013;38(4):940-4（高齢者での検証, 4バリアント比較）
+
+**アルゴリズム**:
+
+```
+脚長推定:
+  L = height_cm × 0.53 / 100  [m]（地面〜大転子高）
+
+各ステップの鉛直変位算出:
+  1. 定常区間の隣接ピーク間で加速度を抽出
+  2. 台形積分で速度を算出 → 線形トレンド除去
+  3. 台形積分で変位を算出 → 線形トレンド除去
+  4. h = max(displacement) − min(displacement)
+
+倒立振子モデル:
+  SL = K × 2 × √(2Lh − h²)
+  K = 1.25（Zijlstra 2003 補正係数、2013で高齢者にも有効と検証）
+
+収束チェック:
+  hCV（鉛直変位のCV）< 30% かつ 有効ステップ率 > 70%
+
+速度算出:
+  speed = mean(SL) × cadence / 60
+
+距離校正（オプション, walkDist入力あり時）:
+  α = walkDist / Σ(各ステップ長)
+  0.7 < α < 1.3 → 校正適用（IP+CAL）
+  |α − 1| > 0.3 → 警告フラグ
+```
+
+**モード分岐**:
+
+| 条件 | 推定モード | 速度算出 |
+|------|-----------|---------|
+| 身長あり＋IP収束 | `IP` | mean(SL) × cadence/60 |
+| 身長あり＋IP収束＋距離校正 | `IP+CAL` | mean(SL) × α × cadence/60 |
+| 身長なし or IP失敗 | `DIST` | 定常区間距離 ÷ 定常区間時間 |
+| サンプルデータ | `DEMO` | 固定値 |
+
+> **Mode B（DIST）速度算出:**
+>
+> ```
+> steadySteps = steadyPeaks.length - 1
+> steadyTime  = t[steadyPeaks.last] - t[steadyPeaks.first]
+> steadyDist  = walkDist × (steadySteps / totalSteps)
+> speed       = steadyDist / steadyTime
+> ※ 定常区間データが不十分な場合は全ピーク区間（walkDist / allPeakTime）にフォールバック
+> ```
+
 ---
 
 ## 4. スコアリングアルゴリズム
 
 ### 4.1 規範値テーブル（NORM）
 
-**出典**: Mobbs et al. Sensors 2025（胸骨装着・50 m歩行, N=313）
+**出典（複数文献参照による合成規範値テーブル）**:
+- Bohannon RW, Andrews AW. Physiotherapy 2011;97(3):182-189（メタ分析, N=23,111, 20研究統合）— 主要参照
+- Hollman JH et al. Gait Posture 2011;34(1):111-118（高齢者規範値, N=118）
+- Mobbs RJ et al. Sensors 2025;25(2):581（IMUベース, N=280解析対象, 胸骨装着・50m歩行）
+- Schwesig R et al. Gait Posture 2011;33(4):673-678（IMUベース, N=1,860, 5-100歳）
+
+※ 各年齢ブラケットの値は上記文献を参考に構成した合成規範値であり、単一文献からの直接引用ではない。
+※ 原典（Mobbs 2025）は10歳刻み。5歳刻みの値は線形補間により生成。85歳・90歳は外挿推定。
 
 構造: `NORM[gender][ageKey]` → `{ speed:{mu,sig}, stride:{mu,sig}, cadence:{mu,sig} }`
 
-年齢ブラケット: 20, 25, 30, … , 75, 80 歳（5歳刻み）
+年齢ブラケット: 20, 25, 30, … , 80, 85, 90 歳（5歳刻み）
+※ 原典文献は10歳刻みのため、5歳刻みの中間値は線形補間で生成。85歳・90歳は80歳からの外挿推定。
+※ Mobbs 2025の解析対象はN=280（313名中33名を除外）。装着位置は胸骨角（sternal angle）、本システムの腰部装着とは条件が異なる。
 
 ```
 男性 抜粋:
@@ -240,7 +312,7 @@ RMS = √( Σ signal[k]² / N )  [m/s²]
 
 ```javascript
 function getNormRow(age, gender) {
-  const keys = [20, 25, 30, ..., 75, 80];
+  const keys = [20, 25, 30, ..., 75, 80, 85, 90];
   const key = keys.reduce((best, k) =>
     Math.abs(k - age) < Math.abs(best - age) ? k : best
   );
@@ -285,8 +357,10 @@ TotalScore = clamp( round(50 + 20 × weightedZ), 0, 100 )
 | 指標 | 重み | 根拠 |
 |------|------|------|
 | 歩行速度 | 45 % | 最も強力な生命予後予測因子（Studenski JAMA 2011） |
-| 歩幅 | 40 % | 転倒・認知機能と強く関連（Verghese NEJM 2002） |
+| 歩幅 | 40 % | 転倒・認知機能低下と強く関連（Verghese et al. JNNP 2007;78:929; PMC 2021 stride length meta-analysis） |
 | ケイデンス | 15 % | 速度・歩幅から導出される従属変数のため重み小 |
+
+> **統計的注記**: speed = stride × cadence/60 の数学的関係から3変数は独立ではない（多重共線性）。ケイデンスの重みを15%に抑え、速度と歩幅を主要評価軸とすることで冗長性の影響を最小化している。ケイデンスは速度・歩幅と異なる臨床的意味（神経系のリズム生成能力）を持つため、低い重みで包含する設計とした。
 
 ---
 
@@ -309,17 +383,22 @@ TotalScore = clamp( round(50 + 20 × weightedZ), 0, 100 )
 
 w_speed = 0.45,  w_stride = 0.40,  w_cadence = 0.15
 
-探索範囲: age_candidate ∈ {20, 25, 30, ..., 75, 80}
+探索範囲: age_candidate ∈ {20, 25, 30, ..., 80, 85, 90}
 
 手順:
-  for each candidate in [20..80, step 5]:
+  for each candidate in [20..90, step 5]:
     norm = getNormRow(candidate, gender)
     zS = (speedVal   - norm.speed.mu)   / norm.speed.sig
     zSt= (strideVal  - norm.stride.mu)  / norm.stride.sig
     zC = (cadenceVal - norm.cadence.mu) / norm.cadence.sig
     cost = 0.45×zS² + 0.40×zSt² + 0.15×zC²
 
-  walkingAge = candidate with minimum cost
+  bestCandidate = candidate with minimum cost
+
+  // 隣接ブラケット線形補間
+  neighbor = 隣接ブラケットのうちコストが小さい方
+  w = bestCandidate.cost / (bestCandidate.cost + neighbor.cost)
+  walkingAge = round(bestCandidate.age × (1-w) + neighbor.age × w)
 ```
 
 ---
@@ -330,9 +409,9 @@ w_speed = 0.45,  w_stride = 0.40,  w_cadence = 0.15
 
 | カード | 閾値 | 判定 | 臨床的意義 | 根拠文献 |
 |--------|------|------|-----------|---------|
-| 転倒・入院リスク | < 0.8 m/s | NG: 要注意 / OK: クリア | 転倒・入院リスクが有意に上昇する閾値 | Fritz & Lusardi PTJ 2009; Quach et al. Arch Intern Med 2011 |
+| 転倒・入院リスク | < 0.8 m/s | NG: 要注意 / OK: クリア | 転倒・入院リスクが有意に上昇する閾値 | Fritz S, Lusardi M. J Geriatr Phys Ther 2009;32(2):46; Quach L et al. J Am Geriatr Soc 2011;59(6):1069-1073 |
 | サルコペニア・フレイル精査 | < 1.0 m/s | NG: 精査推奨 / OK: クリア | AWGS 2019 現行スクリーニング閾値 | Chen LK et al. J Am Med Dir Assoc. 2020 |
-| 社会参加・屋外自立歩行 | ≥ 1.0 m/s | OK: 自立 / NG: 要支援 | 横断歩道通過・屋外活動に必要な速度水準 | 日本交差点設計ガイドライン; Cesari et al. J Gerontol A 2005 |
+| 社会参加・屋外自立歩行 | ≥ 1.0 m/s | OK: 自立 / NG: 要支援 | 横断歩道通過・屋外活動に必要な速度水準 | 道路構造令に基づく歩行者横断速度基準（1.0 m/s）; Cesari et al. J Gerontol A 2005 |
 | 良好な生命予後水準 | ≥ 1.2 m/s | OK: 高機能 / NG: 未達 | 地域在住高齢者の高機能群。ADL 維持・生命予後良好と関連 | Studenski et al. JAMA 2011;305(1):50-58（N=34,485, Level I-II） |
 
 > **設計方針**: AWGS 2014（< 0.8 m/s）はサルコペニア旧基準として廃止されたが、0.8 m/s 閾値は転倒・入院リスクの独立した予測因子として有効であるため「転倒・入院リスク」として再位置づけた。
@@ -404,11 +483,11 @@ function pick(arr, offset) {
 
 | 定数 | 値 | 用途 |
 |------|----|------|
-| `WALK_DIST` | 10.0 m | 歩行距離 |
+| `walkDist` | 5 / 10 / 20 m（デフォルト 10 m） | 歩行距離（ユーザー選択） |
 | `MIN_PEAK_INTERVAL` | 0.3 s | ピーク検出最小間隔 |
 | `PEAK_THRESHOLD_PERCENTILE` | 40 % | ピーク動的閾値 |
 | `TRIM_FRACTION` | 0.20 | 定常区間トリミング率 |
-| `BP_LOW` | 0.7 Hz | バンドパス下限 |
+| `BP_LOW` | 0.5 Hz | バンドパス下限（超低速歩行対応） |
 | `BP_HIGH` | 6.0 Hz | バンドパス上限 |
 | `PCA_ITER` | 300 | べき乗法反復回数 |
 | `W_SPEED` | 0.45 | 総合スコア重み（速度） |
@@ -418,148 +497,338 @@ function pick(arr, offset) {
 | `SCORE_SCALE` | 20 | スコア感度（Z=1 → +20点） |
 | `CV_WARN` | 4.0 % | CV 注意閾値 |
 | `SI_WARN` | 5.0 % | SI 注意閾値 |
-| `WR_NORMAL_LO` | 0.38 m/Hz | Walk Ratio 正常下限 |
-| `WR_NORMAL_HI` | 0.42 m/Hz | Walk Ratio 正常上限 |
+| `WR_NORMAL_LO` | 0.35 m/Hz（参考値） | Walk Ratio 正常下限 |
+| `WR_NORMAL_HI` | 0.45 m/Hz（参考値） | Walk Ratio 正常上限 |
 | `RMS_LOW` | 0.50 m/s² | RMS 低値閾値 |
 | `RMS_HIGH` | 2.50 m/s² | RMS 高値閾値 |
 
 ---
 
-## 9. シューズレコメンドアルゴリズム
+## 9. シューズレコメンドアルゴリズム（scoreShoeV2）
+
+> **アーキテクチャ変更**: v6.1 より、旧 `getShoeRequirements()` + `scoreShoeAdvanced()` を廃止し、`SHOE_KMAP` ベースの新分類エンジン + `scoreShoeV2()` 多次元スコアリングに全面移行。
+
+---
 
 ### 9.1 assessWalkingProfile() — プロファイル生成
 
-歩行計測結果と質問回答からシューズ要件プロファイルを生成する。
+歩行計測結果と Q1–Q6 質問回答からシューズ要件プロファイルを生成する。
 
 ```javascript
-function assessWalkingProfile(S) {
+function assessWalkingProfile() {
   return {
-    speed:         S.speedVal,           // 歩行速度 [m/s]
-    stride:        S.strideVal,          // 歩幅 [m]
-    knee:          S.shoeQKnee  || false,// Q2: 膝関節問題あり
-    rain:          S.shoeQRain  || false,// Q3: 防水・防滑希望
-    foot:          S.shoeQFoot  || 'none',// Q1: 足幅 ('none'|'wide'|'bunion'|'higharch')
-    fasten:        S.shoeQFasten|| 'any',// Q4: 着脱方法 ('any'|'lace'|'velcro'|'zipper')
-    gender:        S.gender     || 'male',// 対象者性別 ('male'|'female')
-    activityLevel: (() => {              // 歩行速度から自動算出
-      const sp = typeof S.speedVal === 'number' ? S.speedVal : 0;
-      if (sp <= 0)   return 'unknown';
-      if (sp < 0.8)  return 'verylow';  // < 0.8 m/s
-      if (sp < 1.0)  return 'low';      // 0.8–1.0 m/s
-      if (sp < 1.2)  return 'moderate'; // 1.0–1.2 m/s
-      return 'high';                    // ≥ 1.2 m/s
-    })(),
+    sp, st, ca,              // 歩行速度・歩幅・ケイデンス
+    spZ, stZ, caZ,           // Z スコア（各指標）
+    cv, si, wr, rms,         // バイオメカニクス指標
+    age, walkingAge,         // 実年齢・歩行年齢
+    knee,    // Q1: 'none' | 'mild' | 'severe'
+    rain,    // Q2: boolean
+    foot,    // Q3: 'none' | 'bunion' | 'flat' | 'both' | 'wide'
+    fasten,  // Q4: 'any' | 'lace' | 'velcro' | 'zipper'
+    purpose, // Q5: 'auto' | 'daily' | 'walking' | 'active'
+    design,  // Q6: 'any' | 'sporty' | 'smart'
+    gender,  // 'male' | 'female'
+    activityLevel,  // 速度or Q5から算出
   };
 }
 ```
 
-**activityLevel 閾値テーブル**
+**activityLevel 決定ロジック（Q5 優先）**
 
-| activityLevel | 歩行速度 | 臨床的意義 |
-|---------------|---------|-----------|
-| `verylow` | < 0.8 m/s | 転倒・入院リスク上昇域。紐靴の着脱が困難な可能性 |
-| `low` | 0.8–1.0 m/s | サルコペニア・フレイル精査推奨域 |
-| `moderate` | 1.0–1.2 m/s | 屋外自立歩行は可能。標準的な活動量 |
-| `high` | ≥ 1.2 m/s | 高機能群。高い推進力・エネルギーリターンに適応 |
-
----
-
-### 9.2 getShoeRequirements() — 要件ルールテーブル
-
-プロファイルから重み付き要件リストを生成する。`negativeKeywords` を持つ要件はペナルティルールとして扱われる（スコアを減算し、UI バッジ表示には出力しない）。
-
-| ルール | 条件 | label | weight | 種別 |
-|--------|------|-------|--------|------|
-| 1 | 常時 | クッション・衝撃吸収 | 2 | 正 |
-| 2 | `speed < 1.0` | ローリング・推進サポート | 3 | 正 |
-| 3 | `speed < 0.8` | 転倒予防・安定性強化 | 3 | 正 |
-| 4 | `speed >= 1.2` | 高反発・軽量性 | 2 | 正 |
-| 5 | `stride < 0.55` | 歩幅拡大サポート | 2 | 正 |
-| 6 | `foot === 'wide'` | 幅広（3E以上）対応 | 4 | 正 |
-| 7 | `foot === 'bunion'` | 外反母趾対応 | 4 | 正 |
-| 8 | `foot === 'higharch'` | 甲高・アーチサポート | 3 | 正 |
-| 9 | `knee === true` | 膝関節保護・クッション | 3 | 正 |
-| 10 | `rain === true` | 防水・防滑 | 3 | 正 |
-| 11 | 常時 | ウォーキング専用設計 | 1 | 正 |
-| 12a | `fasten === 'velcro'` | マジックテープ・ワンタッチ | 4 | 正 |
-| 12b | `fasten === 'velcro'` | 紐靴を回避 | 2 | **負** |
-| 12c | `fasten === 'zipper'` | サイドジッパー | 4 | 正 |
-| 12d | `fasten === 'lace'` | 紐靴（フィット調整） | 2 | 正 |
-| 12e | `fasten === 'lace'` | ベルクロ・ジッパーを回避 | 2 | **負** |
-| 13a | `activityLevel === 'high'` | 推進力・エネルギーリターン | 2 | 正 |
-| 13b | `activityLevel === 'high' && fasten === 'any'` | ベルクロ・ジッパー不要 | 1 | **負** |
-| 13c | `activityLevel === 'verylow' && fasten === 'any'` | 着脱しやすさ自動推奨 | 3 | 正 |
-| 13d | `activityLevel === 'low'` | 日常歩行・快適性 | 1 | 正 |
-| 13e | `activityLevel === 'low' && fasten === 'any'` | 着脱しやすさ配慮 | 1 | 正 |
-| 14a | `gender === 'male'` | メンズモデル | 3 | 正 |
-| 14b | `gender === 'male'` | レディースを除外 | 4 | **負** |
-| 14c | `gender === 'female'` | レディースモデル | 3 | 正 |
-| 14d | `gender === 'female'` | メンズを除外 | 4 | **負** |
-
-> **設計方針：** Q4（着脱方法）でユーザーが明示的に選択した場合、活動量による自動推薦（ルール 13c/13e/13b）は適用しない（`fasten === 'any'` 条件で制御）。これによりユーザーの明示的な希望が活動量による自動推薦に優先される。
+| 条件 | activityLevel | 根拠 |
+|------|--------------|------|
+| Q5 = `daily` | `low` | ユーザー明示選択が速度判定に優先 |
+| Q5 = `walking` | `moderate` | 同上 |
+| Q5 = `active` | `high` | 同上 |
+| Q5 = `auto` かつ speed < 0.8 m/s | `verylow` | Fritz 2009 — 転倒リスク閾値 |
+| Q5 = `auto` かつ 0.8–1.0 m/s | `low` | AWGS 2019 |
+| Q5 = `auto` かつ 1.0–1.2 m/s | `moderate` | 標準活動量 |
+| Q5 = `auto` かつ ≥ 1.2 m/s | `high` | Studenski 2011 — 高機能群 |
 
 ---
 
-### 9.3 scoreShoeAdvanced() — スコアリング
+### 9.2 SHOE_KMAP — シューズ分類キーワードマップ
 
-```javascript
-function scoreShoeAdvanced(shoe, requirements) {
-  // 検索対象テキスト（名前 + 説明 + features を結合して小文字化）
-  const searchText = [shoe.name || '', shoe.description || '',
-                      ...(shoe.features || [])].join(' ').toLowerCase();
-  const featureText = (shoe.features || []).join(' ').toLowerCase();
+商品名・説明文・features を全文結合したテキストに対し、キーワードマッチで構造化属性を生成する。
 
-  // totalWeight: 負要件を除く正要件の重み合計（ゼロ除算防止で最小 1）
-  const totalWeight = requirements
-    .filter(r => !r.negativeKeywords)
-    .reduce((s, r) => s + r.weight, 0) || 1;
+#### 9.2.1 活動量分類
 
-  let score = 0;
-  const reasons = [];  // UI 表示用マッチ理由（負要件は追加しない）
+| レベル | キーワード |
+|--------|-----------|
+| high | スポーツ, フィットネス, ランニング, FlyteFoam, フルイドライド, エナジーセービング |
+| moderate | ウォーキング, walking, ロッカー, ガイダンスライン, グルーヴ設計, 屈曲性 |
+| low | クッション, GEL, fuzeGEL, 衝撃吸収, 快適 |
+| verylow | シニア, 高齢, マジックテープ, ベルクロ, BOA, サイドジッパー, ワンタッチ |
 
-  requirements.forEach(req => {
-    if (req.negativeKeywords) {
-      // 負要件: キーワードに一致した場合スコアを減算（サイレントペナルティ）
-      const hitNeg = req.negativeKeywords.find(kw =>
-        searchText.includes(kw.toLowerCase()));
-      if (hitNeg) score -= req.weight;
-    } else {
-      // 正要件: keywords または featureKeys に一致した場合スコアを加算
-      const hitKw   = req.keywords.find(kw =>
-        searchText.includes(kw.toLowerCase()));
-      const hitFeat = (req.featureKeys || []).find(fk =>
-        featureText.includes(fk.toLowerCase()));
-      if (hitKw || hitFeat) {
-        score += req.weight;
-        reasons.push({ label: req.label, reason: req.reason, term: hitFeat || hitKw });
-      }
-    }
-  });
+活動量スコア計算: 基準値1に対し high=+3, moderate=+2, low=+1, verylow=-1 を加算。
+合計 ≥5 → high / ≥4 → moderate / ≥2 → low / <2 → verylow
 
-  // 適合度 [%]: 0〜100 にクランプ
-  const pct = Math.max(0, Math.min(100, Math.round(score / totalWeight * 100)));
-  return { score, totalWeight, pct, reasons };
-}
+#### 9.2.2 性別判定
+
+`メンズ` → male / `レディース` → female / どちらも含まない → unisex
+
+#### 9.2.3 機能フラグ
+
+| フラグ | キーワード | 用途 |
+|--------|-----------|------|
+| `stability` | 安定性, ガイドレール, モーションコントロール, メディアルサポート, デュアルデンシティ, MCCS, バランスサポート, ヒールカウンター | 膝・低速域マッチ |
+| `cushion` | クッション, GEL, fuzeGEL, 衝撃吸収, FlyteFoam, P-GEL, T-GEL, SPEVA | 衝撃吸収マッチ |
+| `wideWidth` | 3E幅, 4E幅, 5E幅, 幅広, ワイドフィット, ワイドトゥ, 外反母趾対応, スクエアトゥ, 幅広フィット | Q3 足幅マッチ |
+| `archSupport` | アーチサポート, OrthoLite, メディアルサポート, インソール, 扁平足対応, アーチサポートベルト, 3D成型インソール | 扁平足マッチ |
+| `waterproof` | 防水, GORE-TEX, ゴアテックス, 撥水, 耐水, 合皮, 合成皮革, 防水透湿 | Q2 防水マッチ |
+| `easyOn` | マジックテープ, ベルクロ, BOAフィット, サイドジッパー, ワンタッチ, ファスナー, スリップオン, ゴムひも | 着脱容易マッチ |
+| `rocker` | ロッカー, グルーヴ設計, ガイダンスライン, ロッカーソール, エナジーセービング, 省エネ機能, 省エネ設計 | 中〜高速域マッチ |
+| `lightweight` | 軽量, ライト, 軽量クッション | 高速域マッチ |
+| `lace` | レースアップ, 靴紐 | 紐靴判定 |
+| `sportyDesign` | メッシュ, ニット, ラッセルメッシュ, ニットメッシュ, 運動特化, モノソックアッパー | Q6 スポーティマッチ |
+| `smartDesign` | 天然皮革, 人工皮革, 合成皮革, 本革, プレミアム, スマートデザイン, ビジネスカジュアル, コートスニーカー, 人工皮革ストレッチ | Q6 キレイめマッチ |
+| `antiTrip` | つまずき防止, グルーヴチェンジ | つまずき防止 |
+| `odorControl` | 消臭機能, MOFF, 消臭繊維 | 消臭機能 |
+
+---
+
+### 9.3 ACT_COMPAT — 活動量互換性マトリクス
+
+シューズ設計活動量とユーザー活動量の互換度（0–100%）を 4×4 マトリクスで定義。
+
+```
+ユーザー →      verylow  low   moderate  high
+シューズ ↓
+verylow           100     60      30       5
+low                70    100      70      40
+moderate           30     70     100      70
+high                5     30      60     100
 ```
 
-**スコア計算例**
+スコア = `round(compat / 100 × 20)` → 最大 20 点
+
+---
+
+### 9.4 SERIES_KMAP / SERIES_PROFILE — シリーズコンセプト適合
+
+#### 9.4.1 シリーズ検出テーブル（SERIES_KMAP）
+
+| シリーズ ID | 検出キーワード |
+|------------|-------------|
+| `ridewalk` | ゲルライドウォーク, GEL-RIDEWALK, RIDEWALK |
+| `fieldwalker` | フィールドウォーカー, FIELDWALKER |
+| `fastwalk` | ゲルファストウォーク, GEL-FASTWALK, FASTWALK |
+| `lasiro` | ゲルラシーロ, GEL-LASIRO, LASIRO |
+| `hadashi` | ハダシウォーカー, HADASHIWALKER |
+| `funwalker` | ゲルファンウォーカー, GEL-FUNWALKER, FUNWALKER |
+| `lifewalk` | ライフウォーカー, LIFE WALKER, LIFEWALKER |
+| `kneesup` | ニーズアップ, KNEESUP |
+
+#### 9.4.2 シリーズプロファイル（SERIES_PROFILE）
+
+| シリーズ | 速度帯 (m/s) | 適合活動量 | 設計コンセプト |
+|---------|-------------|------------|-------------|
+| ridewalk | 0.8–1.2 | low, moderate | エネルギーセービング快適ウォーキング |
+| fieldwalker | 1.0–1.5 | moderate, high | アウトドア・低山ハイキング |
+| fastwalk | 1.2–2.0 | high | ファストウォーキング高機能 |
+| lasiro | 0.8–1.3 | low, moderate | ライフスタイル・カジュアルウォーキング |
+| hadashi | 1.0–1.5 | moderate, high | ハダシ感覚・軽量スポーティ |
+| funwalker | 0.5–1.0 | verylow, low | 足への負担軽減・日常歩行快適 |
+| lifewalk | 0.0–1.0 | verylow, low | ヘルスサポート・日常生活支援 |
+| kneesup | 0.0–1.5 | verylow, low, moderate | O脚・ひざ関節負担軽減専用 |
+
+**シリーズ適合スコア（max 15 点）:**
+- 速度帯適合: ユーザー速度がシリーズ速度帯内 → +8 / 0.3 m/s 以内 → +3 / 範囲外 → 0
+- 活動量適合: ユーザー活動量がシリーズ適合リストに含まれる → +7
+
+---
+
+### 9.5 preFilterShoes() — 事前フィルタリング
+
+スコアリング前にハードフィルタでシューズ候補を絞り込む。
+
+| ルール | 条件 | フィルタ動作 |
+|--------|------|------------|
+| 1. 速度フィルタ | 歩行速度 ≤ 0.9 m/s（安全マージンとして0.9 m/sに設定。1.0 m/s以下でも手動選択によりライフウォーカー以外を推薦可能） | ライフウォーカーのみに絞込 |
+| 2. マジックテープ指定 | Q4 = `velcro` | ライフウォーカーのみに絞込 |
+| 3. ジッパー指定 | Q4 = `zipper` | テキストに「ジッパー/ファスナー/zipper」を含む靴のみ |
+| 4. 紐靴指定 | Q4 = `lace` | `lace`フラグ有り、またはeasyOn・ジッパー・BOA無しの靴 |
+
+> **設計方針**: マジックテープはライフウォーカーシリーズのみが対応するため、velcro 選択時はライフウォーカーに限定。
+
+---
+
+### 9.6 scoreShoeV2() — 多次元スコアリング（8次元）
+
+#### 全体構造
 
 ```
-totalWeight = 正要件の重み合計  例: 2+3+3+1+3 = 12
-score = 正マッチ合計 − 負マッチ合計  例: 9 − 4 = 5
-pct   = clamp(round(5 / 12 × 100), 0, 100) = 42%
+scoreShoeV2(shoe, profile) → { score, pct, reasons[] }
+
+1. classifyShoe(shoe) → { activityLevel, gender, flags{} }
+2. 8 次元でスコア加算/減算
+3. dynamicMax（動的最大値）で正規化
+4. pct = clamp(score / dynamicMax × 100, 0, 100)
+```
+
+#### 次元別スコアリング詳細
+
+**次元 1: 性別マッチング (max 20)**
+
+| 条件 | スコア |
+|------|--------|
+| シューズ性別 = ユーザー性別 | +20 |
+| ユニセックス | +5 |
+| 性別不一致 | −30 |
+
+**次元 2: 活動量互換性 (max 20)**
+
+ACT_COMPAT マトリクスから互換度を取得し `round(compat/100 × 20)` でスコア化。
+
+**次元 3: 歩行速度・臨床ニーズ (max 28)**
+
+| 速度帯 | stability | cushion | easyOn | rocker | lightweight |
+|--------|-----------|---------|--------|--------|-------------|
+| < 0.8 m/s | +12 | +8 | +8 (fasten=any時) | — | — |
+| 0.8–1.0 | +8 | +5 | — | — | — |
+| 1.0–1.2 | — | +4 | — | +8 | — |
+| ≥ 1.2 | — | — | — | +10 | +8 |
+
+**次元 4: バイオメカニクス (max 10)**
+
+| 指標 | 閾値 | 条件 | スコア |
+|------|------|------|--------|
+| CV | > 8.0% | stability | +10 |
+| CV | 4.0–8.0% | stability | +5 |
+| SI | > 10.0% | archSupport | +10 |
+| SI | 5.0–10.0% | archSupport | +5 |
+
+**次元 5: パーソナライズ設問 (max ~83)**
+
+| 設問 | 条件 | スコア | 備考 |
+|------|------|--------|------|
+| Q1 膝 severe | stability | +15 | |
+| Q1 膝 severe | cushion | +8 | |
+| Q1 膝 mild | stability | +8 | |
+| Q2 防水 | GORE-TEX検出 | +20 | 最優先 |
+| Q2 防水 | 合皮/合成皮革検出 | +15 | 次優先 |
+| Q2 防水 | waterproofフラグ | +10 | 一般防水 |
+| Q2 防水 | 上記いずれも非該当 | −5 | ペナルティ |
+| Q3 外反母趾/both | wideWidth | +15 | |
+| Q3 外反母趾/both | 非該当 | −8 | |
+| Q3 扁平足/both | archSupport | +15 | |
+| Q3 扁平足/both | 非該当 | −5 | |
+| Q3 幅広・甲高 | wideWidth + 4E/5E | +20 | 超幅広ボーナス |
+| Q3 幅広・甲高 | wideWidth（標準） | +15 | |
+| Q3 幅広・甲高 | 非該当 | −10 | |
+| Q4 ジッパー | テキストマッチ | +15 | |
+| Q4 紐靴 | lace フラグ | +8 | |
+| Q4 any + verylow | easyOn フラグ | +10 | 低活動量自動推奨 |
+| Q6 スポーティ | sportyDesign | +15 | |
+| Q6 スポーティ | smartDesign | −8 | ミスマッチ減点 |
+| Q6 キレイめ | smartDesign | +15 | |
+| Q6 キレイめ | sportyDesign | −8 | ミスマッチ減点 |
+
+**次元 6: 年齢・ADL考慮 (max 8)**
+
+| 条件 | フラグ | スコア |
+|------|--------|--------|
+| 75歳以上 | easyOn | +5 |
+| 75歳以上 | wideWidth | +3 |
+| 65歳以上 | wideWidth | +3 |
+
+**次元 7: シリーズコンセプト適合 (max 15)**
+
+9.4.2 参照。速度帯適合 (max 8) + 活動量適合 (max 7)
+
+**次元 8: KNEESUP 膝悩み専用ボーナス (max 40)**
+
+| 条件 | スコア | 根拠 |
+|------|--------|------|
+| シリーズ = kneesup かつ Q1 = severe | +40 | O脚専用設計への強力な適合 |
+| シリーズ = kneesup かつ Q1 = mild | +25 | 膝負担軽減設計への適合 |
+
+---
+
+### 9.7 dynamicMax — 動的最大値正規化
+
+ユーザーの条件に関係ない項目が分母を水増しして正規化スコアが不自然に低くなる問題を解消するため、各ユーザーが理論上獲得できる最大点のみを分母にする。
+
+```
+基本: 40 点（性別 20 + 活動量 20）
+
++ 速度帯別最大:
+  < 0.8 m/s: +28  (stability 12 + cushion 8 + easyOn 8)
+  0.8–1.0:   +13  (stability 8 + cushion 5)
+  1.0–1.2:   +12  (rocker 8 + cushion 4)
+  ≥ 1.2:     +18  (rocker 10 + lightweight 8)
+
++ バイオ指標（CSV データありの場合のみ）:
+  CV > 8.0%: +10 / CV > 4.0%: +5
+  SI > 10.0%: +10 / SI > 5.0%: +5
+
++ 設問条件（ユーザー該当分のみ加算）:
+  Q1 severe: +23 (stability 15 + cushion 8) / Q1 mild: +8
+  Q2 防水: +20
+  Q3 外反母趾/both: +15 / 扁平足/both: +15 / 幅広・甲高: +20
+  Q4 zipper: +15 / lace: +8 / any+verylow: +10
+  Q6 sporty|smart: +15
+  年齢 ≥75: +8 / ≥65: +3
+
++ シリーズコンセプト: +15（常時加算）
+
++ KNEESUP膝悩みボーナス（膝問題ありの場合のみ）:
+  severe: +40 / mild: +25
+
+dynamicMax = max(合計, 1)
+pct = clamp(round(score / dynamicMax × 100), 0, 100)
 ```
 
 ---
 
-### 9.4 アルゴリズム定数（シューズレコメンド）
+### 9.8 Q2 防水スコアリング（3 段階優先度）
+
+雨天使用希望時に、素材ベースで 3 段階のスコアを適用する。
+
+```
+テキスト = name + description + features（結合テキスト）
+
+1. GORE-TEX / ゴアテックス → +20（最優先）
+2. 合皮 / 合成皮革           → +15（次優先）
+3. waterproof フラグのみ      → +10（一般防水）
+4. いずれも非該当             → −5（ペナルティ）
+```
+
+**根拠**: GORE-TEX は透湿防水の最高規格。合皮は撥水性が高いが透湿性は劣る。一般防水は撥水加工のみ。
+
+---
+
+### 9.9 パーソナライズ設問一覧（Q1–Q6）
+
+| 設問 | 質問文 | 選択肢 | 主な影響 |
+|------|--------|--------|---------|
+| Q1 | O脚・膝の悩みはありますか？ | なし / 軽度 / 強い悩みあり | stability/cushion ボーナス + KNEESUP 専用ボーナス |
+| Q2 | 雨の日でも着用したい（防水性重視） | チェックボックス | 3段階防水スコア（GORE-TEX > 合皮 > 一般） |
+| Q3 | 足の悩み・特徴はありますか？ | 特になし / 外反母趾 / 扁平足 / 外反母趾＋扁平足 / 幅広・甲高 | wideWidth/archSupport マッチ + 4E/5E 超幅広ボーナス |
+| Q4 | 靴の着脱方法は？ | こだわらない / 紐靴 / マジックテープ / サイドジッパー | preFilter + スコアリング |
+| Q5 | 主な使用目的は？ | 自動判定（推奨） / 日常のお出かけ / ウォーキング / アクティブ | activityLevel のオーバーライド |
+| Q6 | 好みのデザインや着用シーンは？ | こだわらない / スポーティ / キレイめ | sportyDesign/smartDesign マッチ |
+
+---
+
+### 9.10 アルゴリズム定数（シューズレコメンド）
 
 | 定数 | 値 | 説明 |
 |------|----|------|
 | 上位表示件数 | 3 件 | pct 降順ソートの上位 3 件を表示 |
-| 最低スコア閾値 | 0 % | 0 以上なら表示対象（厳格な除外基準なし） |
-| activityLevel `verylow` 閾値 | < 0.8 m/s | 着脱自動推薦トリガー |
-| activityLevel `low` 閾値 | 0.8–1.0 m/s | 軽度着脱配慮トリガー |
-| activityLevel `high` 閾値 | ≥ 1.2 m/s | ベルクロ軽減ペナルティトリガー |
-| 性別マッチ重み（正） | 3 | メンズ→メンズ / レディース→レディース |
-| 性別ミスマッチ重み（負） | 4 | メンズ→レディース / レディース→メンズ |
+| 性別マッチスコア | +20 / ユニセックス +5 / 不一致 −30 | 性別による強力なフィルタリング |
+| GORE-TEX 防水スコア | +20 | 最高ランク防水素材 |
+| 合皮防水スコア | +15 | 次ランク防水素材 |
+| 一般防水スコア | +10 | 標準防水 |
+| KNEESUP severe ボーナス | +40 | 膝悩み強 → KNEESUP 強推奨 |
+| KNEESUP mild ボーナス | +25 | 膝悩み軽度 → KNEESUP 推奨 |
+| 超幅広(4E/5E)ボーナス | +20 | Q3 幅広 + 4E/5E テキスト検出 |
+| デザインマッチボーナス | +15 | Q6 sporty/smart が合致 |
+| デザインミスマッチ減点 | −8 | Q6 不一致時のペナルティ |
+| シリーズ速度帯適合 | +8 (適合) / +3 (近接) / 0 (範囲外) | SERIES_PROFILE による |
+| シリーズ活動量適合 | +7 | 活動量リストに含まれる場合 |
+| 速度フィルタ閾値 | ≤ 0.9 m/s | ライフウォーカー限定 |
+
+
+
+

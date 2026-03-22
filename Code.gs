@@ -1,9 +1,9 @@
 // ============================================================
-// 歩行年齢テスト計測システム v6 — Google Apps Script サーバー側コード
+// 歩行年齢テスト計測システム v7 — Google Apps Script サーバー側コード
 // ============================================================
 // 【デプロイ手順】
 //   1. このファイル(Code.gs)をApps Scriptプロジェクトに貼付
-//   2. index.html ファイルを作成し、walking_age_test_index.html の内容を貼付
+//   2. index.html ファイルを作成し、index.html の内容を貼付
 //   3. デプロイ → 新しいデプロイ → 種類:ウェブアプリ
 //      実行するユーザー: 自分　アクセスできるユーザー: 全員
 //   4. 発行されたURLを共有するだけ
@@ -12,7 +12,7 @@
 // HTMLページを配信
 function doGet(e) {
   return HtmlService.createHtmlOutputFromFile('index')
-    .setTitle('歩行年齢テスト計測システム v6')
+    .setTitle('歩行年齢テスト計測システム v7')
     .addMetaTag('viewport', 'width=device-width, initial-scale=1')
     .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
 }
